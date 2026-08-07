@@ -75,8 +75,6 @@ When implementing a **Cursor plan**, commit in-session per **Plan execution (aut
 
 ---
 
----
-
 ## Brand / package rename
 
 - **Document brand:** **Swiver** — see [reference/project/naming.md](reference/project/naming.md).

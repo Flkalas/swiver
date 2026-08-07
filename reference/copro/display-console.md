@@ -2,7 +2,7 @@
 
 **Related:** [rp2350-coprocessor.md](rp2350-coprocessor.md) · [mailbox-protocol.md](mailbox-protocol.md) · [dos-shell.md](dos-shell.md) · [software-memory-layout.md](software-memory-layout.md)
 
-Normative text console and HDMI output for Plover v0.1. The **8-bit CPU does not own a framebuffer**; the **RP2350B** coprocessor renders and drives HDMI via HSTX.
+Normative text console and HDMI output for Swiver v0.1. The **8-bit CPU does not own a framebuffer**; the **RP2350B** coprocessor renders and drives HDMI via HSTX.
 
 ---
 
@@ -50,7 +50,7 @@ The RP2350B maintains **two RGB565 buffers** (double buffering). Core1 composite
 
 ```mermaid
 flowchart LR
-    cpu[Plover CPU text via Mailbox]
+    cpu[Swiver CPU text via Mailbox]
     rp[RP2350B Core1 VDU]
     fbA[FB 320x240 30Hz]
     fbB[FB 320x240 30Hz]
@@ -87,7 +87,7 @@ Source 1×1     HDMI 2×2 block
 
 1. **Integer text grid** — 8 px cells, no sub-pixel font clipping.
 2. **Copro RAM budget** — two RGB565 planes: 320×240×2 × 2 ≈ **300 KiB** (fits RP2350 SRAM with headroom for font, HID, vFDD).
-3. **CPU stays light** — Plover only writes characters/attributes through Mailbox; no VRAM on the 64 KiB map.
+3. **CPU stays light** — Swiver only writes characters/attributes through Mailbox; no VRAM on the 64 KiB map.
 4. **Retro look** — 2×2 block upscale (1→4 pixels) keeps square chunky tiles on 640×480 HDMI (C64/Apple II aesthetic).
 5. **60 Hz HDMI** — panel sees smooth refresh; **content** updates at 30 Hz (same class as NTSC-era machines).
 

@@ -1,4 +1,4 @@
-# Plover — 구매 목록 (v0.1, 1세트 · 3.3 V PCB)
+# Swiver — 구매 목록 (v0.1, 1세트 · 3.3 V PCB)
 
 **1세트 부품 명세** · 단일 **3.3 V** · **PCB SMD**  
 5 V 빵판 구매 목록: [BOM.md](BOM.md) (**중복 주문 금지**)
@@ -7,7 +7,7 @@
 
 | # | 구분 | MPN | Description | Pkg | Qty | 역할 · 목적 | 비고 |
 |---|------|-----|-------------|-----|-----|-------------|------|
-| 0 | PCB | *(Plover v0.1 CPU PCB)* | Bare PCB, 2–4 layer FR4 | — | 1 | 모든 SMD·커넥터 | [BOM.md](BOM.md) 빵판·어댑터 **대체** |
+| 0 | PCB | *(Swiver v0.1 CPU PCB)* | Bare PCB, 2–4 layer FR4 | — | 1 | 모든 SMD·커넥터 | [BOM.md](BOM.md) 빵판·어댑터 **대체** |
 | 0b | PCB | *(SMD stencil, 선택)* | Stencil | — | 0–1 | 납땜 보조 | |
 | P1 | 전원 | USB-C receptacle (USB 2.0) | — | SMD | 1 | 외부 5 V 입력 | ↔ BOM #20 |
 | P2 | 전원 | AP2112K-3.3TRG1 (또는 동급 ≥600 mA) | LDO | SOT-23-5 | 1 | **3.3 V** 레일 | |

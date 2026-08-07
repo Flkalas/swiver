@@ -1,6 +1,6 @@
-# Plover v1.0 P12 — CU·DP 소자·구조 비교 (TTL peers)
+# Swiver v1.0 P12 — CU·DP 소자·구조 비교 (TTL peers)
 
-**Audience:** learners and external reviewers comparing **Plover v1.0 P12** control-unit and datapath design to other discrete-logic 8-bit machines (plus commercial / minicomputer baselines).  
+**Audience:** learners and external reviewers comparing **Swiver v1.0 P12** control-unit and datapath design to other discrete-logic 8-bit machines (plus commercial / minicomputer baselines).  
 **Status:** Archived background (Illustrative) — not Active implementer spec.  
 **Related (peers):** [ttl-computer-comparison.md](ttl-computer-comparison.md) · [rom-comparison.md](rom-comparison.md)  
 **Active:** [system-architecture.md](../../../reference/hardware/system-architecture.md) · [control-and-decode.md](../../../reference/hardware/control-and-decode.md) · [cpld-pipe-cu.md](../../../reference/hardware/cpld-pipe-cu.md) · [cpld-system-controller.md](../../../reference/hardware/cpld-system-controller.md)
@@ -13,7 +13,7 @@ This report focuses on **control unit (CU)** and **datapath (DP)** — chips, re
 
 | Machine | Why included |
 |---------|----------------|
-| **Plover v1.0 P12** | Normative breadboard target (pipe CU) |
+| **Swiver v1.0 P12** | Normative breadboard target (pipe CU) |
 | **Gigatron** | Closest ALU/AC cousin (153 bit-slice) |
 | **Ben Eater 8-bit** | Canonical EEPROM horizontal microcode teaching path |
 | **Magic-1** | Full-scale TTL with hardware stack and wide ROM microstore |
@@ -30,14 +30,14 @@ For stack growth, hosted `CALL`/`RET`, and emulation ISA summary, see [ttl-compu
 
 ## 2. Executive summary
 
-Plover Gi1 splits **CU** and **DP** across **two CPLD chips**. Peers use **EEPROM/ROM horizontal microcode** (Ben Eater, Magic-1, Isetta), **combinational ROM decode** (Gigatron), **ROM µprog + ROM ALU LUT** (Novasaur), a **monolithic hardwired PLA** (Apple II / 6502), or a **16-bit microprogrammed minicomputer** (PDP-11 family).
+Swiver Gi1 splits **CU** and **DP** across **two CPLD chips**. Peers use **EEPROM/ROM horizontal microcode** (Ben Eater, Magic-1, Isetta), **combinational ROM decode** (Gigatron), **ROM µprog + ROM ALU LUT** (Novasaur), a **monolithic hardwired PLA** (Apple II / 6502), or a **16-bit microprogrammed minicomputer** (PDP-11 family).
 
 ### 2.1 TTL / discrete peers (8-bit class)
 
-| Axis | Plover Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur |
+| Axis | Swiver Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur |
 |------|------------|-----------|----------|---------|--------|----------|
 | **CU core** | CPLD idx5 FSM | EEPROM ×2 | Diode ROM matrix | PROM ×5 (56b µword) | **24b Flash µcode** ×3 | ROM µprog + **PAL** |
-| **Native / exposed ISA** | Plover macros | Microcoded 8-bit | Gigatron vCPU | Magic-1 | *(none)* | Novasaur native |
+| **Native / exposed ISA** | Swiver macros | Microcoded 8-bit | Gigatron vCPU | Magic-1 | *(none)* | Novasaur native |
 | **Emulated ISA** | — | — | — | — | **6502 + Z80** | **8080** (bytecode) |
 | **DP GPR (HW)** | **R0 only** (CPLD-DP) | **A, B** (173) | **AC** + X/Y/D | **A, B, C** + SP… | **A, T**; PC; **DPH/DPL** | **A, HL**; X, Y; PC, Pg |
 | **Registers in RAM** | Variables + **RP** | — (SP in HW) | vSP, temps | — | **6502 X,Y,S**; Z80 sets | **8080 model** in firmware |
@@ -47,21 +47,21 @@ Plover Gi1 splits **CU** and **DP** across **two CPLD chips**. Peers use **EEPRO
 
 ### 2.2 Commercial / historical baselines
 
-| Axis | Plover Gi1 | **Apple II** | **PDP-11** |
+| Axis | Swiver Gi1 | **Apple II** | **PDP-11** |
 |------|------------|--------------|------------|
 | **CU core** | CPLD idx5 FSM | **On-die PLA** (6502) | **Microcode** (11/40+, LSI-11); early 11/20 combined path |
 | **Data / address** | **8 / 16** | **8 / 16** | **16 / 16** (+ MMU on later models) |
-| **Native ISA** | Plover macros | **6502** | **PDP-11** (orthogonal) |
+| **Native ISA** | Swiver macros | **6502** | **PDP-11** (orthogonal) |
 | **DP GPR (HW)** | **R0 only** | **A, X, Y** | **R0–R5**; **R6=SP**; **R7=PC** |
 | **ALU** | 153 bit-slice (12 DIP) | On-die | On-board / LSI ALU (model-dependent) |
 | **Stack** | RAM RP + CU assist | **HW S** → page `$01` | **HW R6 (SP)**; grows **down** |
 | **Interrupts** | **None** (v1.0) | IRQ / NMI | Vectored IRQ via UNIBUS / stack |
 
-**Key difference:** Plover does **not** use program Flash as a control store. A CPLD FSM emits **14 direct strobes**. The DP keeps a **single GPR (R0)** and routes operand B through **MBR → ALU B** off-chip. Apple II puts CU·DP in one 8-bit die; PDP-11 puts eight **16-bit** GPRs (including SP and PC) in a minicomputer datapath — the opposite of Gi1’s thin AC model.
+**Key difference:** Swiver does **not** use program Flash as a control store. A CPLD FSM emits **14 direct strobes**. The DP keeps a **single GPR (R0)** and routes operand B through **MBR → ALU B** off-chip. Apple II puts CU·DP in one 8-bit die; PDP-11 puts eight **16-bit** GPRs (including SP and PC) in a minicomputer datapath — the opposite of Gi1’s thin AC model.
 
 ---
 
-## 3. Plover Gi1 — CU·DP structure
+## 3. Swiver Gi1 — CU·DP structure
 
 ### 3.1 Block diagram
 
@@ -81,7 +81,7 @@ Plover Gi1 splits **CU** and **DP** across **two CPLD chips**. Peers use **EEPRO
 
 ### 3.2 Control unit (CU)
 
-| Item | Plover Gi1 |
+| Item | Swiver Gi1 |
 |------|------------|
 | **Chip** | **ATF1504AS** ×1 (CPLD-CU) |
 | **Control store** | **CPLD internal PLA/LUT** — Flash `$4000` CW **unused** |
@@ -96,7 +96,7 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 ### 3.3 Datapath (DP)
 
-| Item | Plover Gi1 |
+| Item | Swiver Gi1 |
 |------|------------|
 | **Chip** | **ATF1504AS** ×1 (CPLD-DP) |
 | **GPR** | **R0 (AC) — 8 FF** — sole programmer-visible register in CPLD |
@@ -175,9 +175,9 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 | **PC** | 161 ×4 | Program counter |
 | **IR** | 273 | Instruction |
 
-**Structure:** **Harvard** (split ROM/RAM), **one instruction per clock** pipeline. CU is almost a **pure combinational decoder** — no EEPROM sequencer. ALU matches Plover: **153×8 + 283×2** bit-slice (~10 IC). ~**36 TTL IC** total.
+**Structure:** **Harvard** (split ROM/RAM), **one instruction per clock** pipeline. CU is almost a **pure combinational decoder** — no EEPROM sequencer. ALU matches Swiver: **153×8 + 283×2** bit-slice (~10 IC). ~**36 TTL IC** total.
 
-**vs Plover:** Same AC-centric RAM-backed philosophy and ALU family; Gigatron CU is one ROM table, Plover uses **CPLD FSM + multi-phase macros**; Gigatron has X/Y address registers in DP, Plover uses **MBR+PC** for address and operands.
+**vs Swiver:** Same AC-centric RAM-backed philosophy and ALU family; Gigatron CU is one ROM table, Swiver uses **CPLD FSM + multi-phase macros**; Gigatron has X/Y address registers in DP, Swiver uses **MBR+PC** for address and operands.
 
 ---
 
@@ -205,7 +205,7 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 **Internal buses:** **L, R** (ALU operands), **Z** (ALU result) — µcode `e_l`/`e_r`/`e_z` ensures **one driver per bus**.
 
-**ALU:** 74F381/382 + 182 (74181 family) — **not** the 153 bit-slice used by Plover/Gigatron.
+**ALU:** 74F381/382 + 182 (74181 family) — **not** the 153 bit-slice used by Swiver/Gigatron.
 
 **Structure:** Largest CU+DP split. Every register is a **physical 374/273**; microcode bit fields control buses, latches, ALU, and branches together. SP is a **hardware register** (µcode `latch:0x5`).
 
@@ -241,9 +241,9 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 **ALU:** **74AC283** ×2 + multiplexers — µcode-sequenced, **not** the 153 Gigatron bit-slice. Flags **N, C**, plus internal **TC**; conditionals use µcode **F** track select.
 
-**Structure:** ~**42 TTL IC** total. Minimal HW register file by design — most 6502/Z80 state lives in **banked RAM**. CU is entirely **Flash microcode**; each guest opcode maps to up to **16 µsteps** per page (longer sequences via µjump). Similar *thin HW pointer* philosophy to Plover (one data pointer + AC), but **emulation** is the goal, not a native macro ISA.
+**Structure:** ~**42 TTL IC** total. Minimal HW register file by design — most 6502/Z80 state lives in **banked RAM**. CU is entirely **Flash microcode**; each guest opcode maps to up to **16 µsteps** per page (longer sequences via µjump). Similar *thin HW pointer* philosophy to Swiver (one data pointer + AC), but **emulation** is the goal, not a native macro ISA.
 
-**vs Plover:** Both keep stack/index state in RAM without HW SP/S. Plover uses **CPLD FSM + native idx5**; Isetta uses **3× wider Flash µstore** to **be** 6502/Z80. Operand B comes from bus/RAM under µcode, not a dedicated MBR→ALU wire.
+**vs Swiver:** Both keep stack/index state in RAM without HW SP/S. Swiver uses **CPLD FSM + native idx5**; Isetta uses **3× wider Flash µstore** to **be** 6502/Z80. Operand B comes from bus/RAM under µcode, not a dedicated MBR→ALU wire.
 
 ---
 
@@ -277,7 +277,7 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 **Structure:** Software-defined CPU — schematic shows buses and latches; behavior is in **ROM microprogram + ALU tables**. GPU is a **transparent-mode DMA controller**, not a second GPR file. Opposite extreme from Magic-1’s per-register 374 farm: **minimal TTL, maximal ROM**.
 
-**vs Plover:** Both avoid exposing a rich GPR file in silicon. Plover’s ALU is **combinational 153+283** with CPLD strobes; Novasaur’s ALU is **ROM LUT** with nibble serialization. Plover targets **native** bring-up; Novasaur trades native speed for **8080/CP/M compatibility**.
+**vs Swiver:** Both avoid exposing a rich GPR file in silicon. Swiver’s ALU is **combinational 153+283** with CPLD strobes; Novasaur’s ALU is **ROM LUT** with nibble serialization. Swiver targets **native** bring-up; Novasaur trades native speed for **8080/CP/M compatibility**.
 
 ---
 
@@ -292,7 +292,7 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 | Core | **Hardwired PLA / decode ROM** on the MOS 6502 die — not an external EEPROM/Flash µstore |
 | Timing | Two-phase clock (**Φ1 / Φ2**); instructions take a fixed number of **T-states** (typically 2–7 cycles) |
 | Sequencing | On-die state machine driven by decode PLA; no breadboard-visible µword |
-| Interrupts | **IRQ**, **NMI**, **RESET** — first-class (unlike Plover / Gigatron v1.0 path) |
+| Interrupts | **IRQ**, **NMI**, **RESET** — first-class (unlike Swiver / Gigatron v1.0 path) |
 | Patchability | None at board level — change the die or run different machine code |
 
 **DP (inside 6502 die)**
@@ -309,9 +309,9 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 **Board-level TTL (not CU·DP):** Apple II motherboard uses discrete logic for **video timing**, soft switches, DRAM refresh, and I/O decoding (Wozniak design). Those chips are **system glue**, not the processor CU/DP.
 
-**Structure:** Entire programmer-visible CU·DP is **one 40-pin DIP**. Contrast with Plover (2× CPLD + 12 DIP ALU + 574s), Gigatron (~36 TTL), and Isetta (~42 TTL emulating this same ISA).
+**Structure:** Entire programmer-visible CU·DP is **one 40-pin DIP**. Contrast with Swiver (2× CPLD + 12 DIP ALU + 574s), Gigatron (~36 TTL), and Isetta (~42 TTL emulating this same ISA).
 
-**vs Plover:** Apple II has **HW S + X/Y + full flags + IRQ**; Plover has **R0 only**, **RAM RP**, **Z/C**, **no IRQ**. Closest *software* peer for 6502 code is **Isetta** (emulation), not Gi1.
+**vs Swiver:** Apple II has **HW S + X/Y + full flags + IRQ**; Swiver has **R0 only**, **RAM RP**, **Z/C**, **no IRQ**. Closest *software* peer for 6502 code is **Isetta** (emulation), not Gi1.
 
 **vs Isetta:** Same guest ISA family; Apple II implements it in **silicon**, Isetta in **24-bit Flash µcode** with X/Y/S in RAM.
 
@@ -344,9 +344,9 @@ The CU does not read a wide horizontal µword each cycle. Each **opcode×phase r
 
 **Bus:** **UNIBUS** (later **Q-bus** on LSI-11) — memory and device registers share one address space.
 
-**Structure:** Full minicomputer board set (or LSI chip set). Opposite of Plover: **eight 16-bit GPRs**, SP and PC in the register file, rich orthogonal ISA, interrupts first-class.
+**Structure:** Full minicomputer board set (or LSI chip set). Opposite of Swiver: **eight 16-bit GPRs**, SP and PC in the register file, rich orthogonal ISA, interrupts first-class.
 
-**vs Plover:** PDP-11 is **16-bit**, multi-GPR, HW SP, IRQ; Gi1 is **8-bit**, **R0 only**, RAM RP, no IRQ.
+**vs Swiver:** PDP-11 is **16-bit**, multi-GPR, HW SP, IRQ; Gi1 is **8-bit**, **R0 only**, RAM RP, no IRQ.
 
 **vs Magic-1:** Same *class* of design goals (HW SP, wide microstore, rich native ISA). Magic-1 is a homebrew TTL realization; PDP-11 is the commercial ancestor of that style.
 
@@ -363,14 +363,14 @@ EEPROM/ROM µword            24-bit Flash µword         ROM µprog + 96k ALU LU
   native ISA steps            emulates 6502/Z80          native + 8080 bytecode
   SP in register file         X/Y/S in RAM               8080 SP in interpreter
 
-Gigatron                    Plover Gi1                 Apple II / PDP-11
+Gigatron                    Swiver Gi1                 Apple II / PDP-11
 ────────                    ──────────                 ─────────────────
 Diode ROM matrix            CPLD idx5 row              PLA (8b) / µcode (16b)
 IR → 19 ctrl lines          few phases / macro         T-states / µseq
 vSP in zero page            RP in RAM @ $0F00          HW S / HW R6=SP
 ```
 
-| Item | Plover | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
+| Item | Swiver | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
 |------|--------|-----------|----------|---------|--------|----------|----------|------------|
 | **Control medium** | CPLD LUT | EEPROM | Diode ROM | PROM | Flash µcode | ROM + PAL | On-die PLA | **µROM** (typ.) |
 | **µword width** | Per-row constants | ~16b × 8 | Combinational | **56 bits** | **24 bits** | Native + ALU LUT | *(internal)* | **Wide** (model-dep.) |
@@ -386,7 +386,7 @@ vSP in zero page            RP in RAM @ $0F00          HW S / HW R6=SP
 
 ### 6.1 Register file
 
-| | Plover Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
+| | Swiver Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
 |---|------------|-----------|----------|---------|--------|----------|----------|------------|
 | **GPR count (HW)** | **1** (R0) | **2** (A, B) | **1** (AC)+D | **3+** | **2** (A, T) | A+HL | **3** (A,X,Y) | **8** (R0–R7) |
 | **GPR implementation** | CPLD MC | 74LS173 | 74HCT377 | 74374 | 74xx | 74xx | On-die | Board / LSI |
@@ -397,7 +397,7 @@ vSP in zero page            RP in RAM @ $0F00          HW S / HW R6=SP
 
 ### 6.2 ALU and operand paths
 
-| | Plover | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
+| | Swiver | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
 |---|--------|-----------|----------|---------|--------|----------|----------|------------|
 | **ALU style** | 153 bit-slice | 283 + logic | 153 bit-slice | 381/382 | 283×2 + mux | ROM LUT | On-die | **16-bit** ALU |
 | **ALU A** | CPLD `q_a` | A → bus | AC / bus | A → L | A | A | A | Any Rn / mem |
@@ -409,7 +409,7 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 
 ### 6.3 Bus and memory interface
 
-| | Plover | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
+| | Swiver | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
 |---|--------|-----------|----------|---------|--------|----------|----------|------------|
 | **Data bus** | 8b + 245 | 8b | 8b | L/R/Z | 8b | 8b CPU/GPU | 8b | **16b UNIBUS** |
 | **Address width** | 16b | 16b | 16b | **24b** | 16b+bank | 16b+Pg | 16b | **16b** (+MMU) |
@@ -427,13 +427,13 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 ```text
   Fixed / minimal ◄──────────────────────────────────────────────────────────► Flexible / complex
 
-  Gigatron  Plover   Apple II  Ben Eater  Isetta    Magic-1   PDP-11      Novasaur
+  Gigatron  Swiver   Apple II  Ben Eater  Isetta    Magic-1   PDP-11      Novasaur
   comb ROM  CPLD FSM on-die    EEPROM µ   Flash µ   horiz µ   µROM 16b    ROM µ+ALU LUT
             native   6502      native     6502/Z80  native    orthogonal  + 8080 VM
 ```
 
 - **Gigatron:** Thinnest CU — IR is the control pattern; more DP registers, fewer CU chips.
-- **Plover:** Phase FSM in CPLD, **no µstore**; native macro ISA; CALL/RET via CU stack assist.
+- **Swiver:** Phase FSM in CPLD, **no µstore**; native macro ISA; CALL/RET via CU stack assist.
 - **Apple II:** **Monolithic** 8-bit CU·DP — richest hobby software ecosystem of its era.
 - **Ben Eater:** Best teaching EEPROM lab — one µcode line per bus cycle; standard A/B/IR/SP DP.
 - **Magic-1:** Maximum native TTL visibility — every register and bus is a physical chip.
@@ -441,7 +441,7 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 - **PDP-11:** Commercial **16-bit** orthogonal register machine — HW SP=PC in GPR file; microcoded family.
 - **Novasaur:** **Minimal native TTL** — ALU is ROM; 8080 compatibility via **bytecode interpreter**.
 
-### 7.2 Plover-specific traits
+### 7.2 Swiver-specific traits
 
 1. **Dual CPLD split:** CU (sequencer + decode) / DP (GPR) — G-IC is **`reg_we` only** (1 wire).
 2. **GPR inside CPLD, B outside:** Operand B separated from register file — smaller DP area and wiring.
@@ -450,7 +450,7 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 
 ### 7.3 Trade-offs
 
-| Plover choice | Benefit | Cost |
+| Swiver choice | Benefit | Cost |
 |---------------|---------|------|
 | CPLD FSM (not EEPROM) | Single-chip phase control; no breadboard CW latch | WinCUPL fit limit; no lab µcode EEPROM patch |
 | R0 only + MBR→B | DP 17 pins; ph2 ADD ~133 ns | No `PUSH`/`POP`; variables in RAM |
@@ -461,7 +461,7 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 
 ## 8. CU·DP BOM snapshot
 
-| Block | Plover Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
+| Block | Swiver Gi1 | Ben Eater | Gigatron | Magic-1 | Isetta | Novasaur | Apple II | **PDP-11** |
 |-------|------------|-----------|----------|---------|--------|----------|----------|------------|
 | **Control** | ATF1504 CU | EEPROM ×2 | Diode ROM | PROM ×5 | Flash ×3 | ROM+PAL | Inside 6502 | **µROM board/LSI** |
 | **GPR / latch** | ATF1504 DP | 173 ×6 | 377 ×5+ | 374/273 ×20+ | 74xx | 74xx | Inside 6502 | **R0–R7 file** |
@@ -473,19 +473,19 @@ Gi1 **MBR → ALU B** (vs rev G CPLD `q_b`) cuts DP CPLD pins to **17/32** and e
 
 ## 9. Conclusion
 
-| View | Closest peer | Plover Gi1 differentiator |
+| View | Closest peer | Swiver Gi1 differentiator |
 |------|--------------|---------------------------|
 | **ALU / AC model** | Gigatron | Same 153 bit-slice; CU is **CPLD FSM** not ROM table |
 | **Microcode teaching** | Ben Eater | **idx5 FSM** instead of EEPROM; patch via JTAG CPLD |
 | **Subroutines / stack** | Magic-1 / Ben Eater / Apple II / **PDP-11** | CALL/RET present; **no HW SP** — CU manipulates RAM stack |
-| **6502 software richness** | Apple II / Isetta | Native Plover macros only; **no 6502 die or emu** on v1.0 |
+| **6502 software richness** | Apple II / Isetta | Native Swiver macros only; **no 6502 die or emu** on v1.0 |
 | **Orthogonal multi-GPR** | **PDP-11** / Magic-1 | **R0 only**; 8-bit; no UNIBUS-class ISA |
 | **Thin HW + RAM state** | Isetta | Native ISA (not 6502/Z80 emu); **CU stack assist** not Flash µpages |
 | **ROM-heavy minimal TTL** | Novasaur | **Combinational ALU** (not ROM LUT); no 8080 bytecode layer |
 | **DP simplicity** | Gigatron / Isetta | **One GPR** + MBR→B; no X/Y or R0–R7 file |
 | **CU·DP integration** | *(unique among TTL peers)* | **2-CPLD split** — opposite of Apple II **1-die** and PDP-11 **board/LSI** |
 
-Plover Gi1 is a hybrid: **Gigatron-minimal DP** plus **CPLD multi-phase sequencer CU**. Unlike Apple II’s **monolithic 6502**, PDP-11’s **16-bit orthogonal register machine**, Ben Eater/Magic-1 **EEPROM/PROM horizontal microcode**, Isetta **Flash emulation µcode**, Novasaur **ROM ALU + bytecode**, or Gigatron **combinational CU**, Gi1 places **control in CPLD-CU**, **operand B in MBR**, and the **sole GPR in CPLD-DP** — that three-way split is the structural identity of v1.0.
+Swiver Gi1 is a hybrid: **Gigatron-minimal DP** plus **CPLD multi-phase sequencer CU**. Unlike Apple II’s **monolithic 6502**, PDP-11’s **16-bit orthogonal register machine**, Ben Eater/Magic-1 **EEPROM/PROM horizontal microcode**, Isetta **Flash emulation µcode**, Novasaur **ROM ALU + bytecode**, or Gigatron **combinational CU**, Gi1 places **control in CPLD-CU**, **operand B in MBR**, and the **sole GPR in CPLD-DP** — that three-way split is the structural identity of v1.0.
 
 ---
 

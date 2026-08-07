@@ -107,7 +107,7 @@ Pair with a RAM program at `$0800` (e.g. `HALT` or kernel stub). Host/sim may pr
 
 ## 5. Init contract and JMP handoff rules
 
-Plover v1.0 **8-bit direct addressing** and **Boot-mode low-page ROM masking** define a **hardware–software split**. RAM (`$0800+`) constants are not loadable with `LDA`; **16-bit RAM writes** are Boot ROM's job via a block-copy primitive.
+Swiver v1.0 **8-bit direct addressing** and **Boot-mode low-page ROM masking** define a **hardware–software split**. RAM (`$0800+`) constants are not loadable with `LDA`; **16-bit RAM writes** are Boot ROM's job via a block-copy primitive.
 
 ### 5.1 Responsibility table
 

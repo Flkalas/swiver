@@ -1,6 +1,6 @@
 # TTL homebrew CPU comparison (reference)
 
-**Audience:** learners and external reviewers positioning **Plover v1.0 P12** against other well-known discrete-logic machines (plus commercial / minicomputer baselines).  
+**Audience:** learners and external reviewers positioning **Swiver v1.0 P12** against other well-known discrete-logic machines (plus commercial / minicomputer baselines).  
 **Status:** Archived background (Illustrative) — not Active implementer spec. Active = **P12 pipe**.  
 **Related (peers):** [cu-dp-comparison.md](cu-dp-comparison.md) · [rom-comparison.md](rom-comparison.md) · [clock-comparison.md](clock-comparison.md)  
 **Active:** [system-architecture.md](../../../reference/hardware/system-architecture.md) · [cpld-pipe-cu.md](../../../reference/hardware/cpld-pipe-cu.md) · [microcode-spec.md](../../../reference/hardware/microcode-spec.md) · [calling-convention-v0.1.md](../../../reference/software/calling-convention-v0.1.md)
@@ -9,7 +9,7 @@
 
 ## 1. Scope
 
-This note compares **Plover v1.0 P12** with **five** representative TTL (or TTL-class) homebrew CPUs and **two** commercial / historical baselines:
+This note compares **Swiver v1.0 P12** with **five** representative TTL (or TTL-class) homebrew CPUs and **two** commercial / historical baselines:
 
 | Machine | Why included |
 |---------|----------------|
@@ -29,13 +29,13 @@ Pure-ASIC kits, FPGA-only replicas, and other classic MPU dies (Z80, 8080 as sil
 
 ### 2.1 TTL / discrete peers
 
-| | **Plover Gi1 v1.0** | **Gigatron** | **Ben Eater 8-bit** | **Magic-1** | **Isetta** | **Novasaur** |
+| | **Swiver Gi1 v1.0** | **Gigatron** | **Ben Eater 8-bit** | **Magic-1** | **Isetta** | **Novasaur** |
 |---|---------------------|--------------|---------------------|-------------|------------|--------------|
 | **Data / address** | 8 / 16 | 8 / 16 | 8 / 16 | 8 / 24 | 8 / 16 (+ banked RAM) | 8 / 16 (+ banks) |
 | **Memory model** | **von Neumann** (flat 64 KiB) | **Harvard** (ROM insn / RAM data) | **von Neumann** | **von Neumann** (+ paging) | **von Neumann** (banked RAM) | **Dual Harvard** (CPU+GPU) |
 | **Typical clock** | 2 MHz (target) | ~6.25 MHz (vCPU cycle) | ~500 kHz–1 MHz | ~4.09 MHz | **12.5 MHz** (µstep) | **8.25 MHz** native; **~450 kHz** effective 8080 |
 | **Control store** | **CPLD idx5 FSM** | ROM + sequencer (GT1 ASIC in prod.) | **EEPROM microcode** | **ROM microcode** | **24-bit Flash µcode** (3 chips, 16 pages) | **ROM** (incl. 96 KiB ALU table) + **PAL** |
-| **Native ISA** | Plover macro (`0x01–0x0F`) | Gigatron vCPU | Microcoded 8-bit | Magic-1 | *(none exposed)* | Novasaur native + drivers |
+| **Native ISA** | Swiver macro (`0x01–0x0F`) | Gigatron vCPU | Microcoded 8-bit | Magic-1 | *(none exposed)* | Novasaur native + drivers |
 | **Emulated ISA** | — | — | — | — | **6502 + Z80** (page switch) | **Intel 8080/8085** (bytecode) |
 | **Programmer-visible GPR** | **R0 (AC) only** in CPLD | **vAC** | **A**, **B** | **A**, **B**, index, … | **A**, **T**; PC; **DPH/DPL** | Via 8080 model / native regs |
 | **Registers in RAM** | Most variables + **RP** | vSP, temps | — (SP in HW) | — | **6502 X, Y, S** (+ Z80 set) | 8080 state in interpreter |
@@ -50,13 +50,13 @@ Pure-ASIC kits, FPGA-only replicas, and other classic MPU dies (Z80, 8080 as sil
 
 ### 2.2 Commercial / historical baselines
 
-| | **Plover Gi1 v1.0** | **Apple II** | **PDP-11** |
+| | **Swiver Gi1 v1.0** | **Apple II** | **PDP-11** |
 |---|---------------------|--------------|------------|
 | **Data / address** | 8 / 16 | 8 / 16 | **16 / 16** (+ MMU on later models) |
 | **Memory model** | **von Neumann** (flat 64 KiB) | **von Neumann** | **von Neumann** (+ MMU on later models) |
 | **Typical clock** | 2 MHz (target) | **~1.023 MHz** (6502) | Model-dependent (µs-class core / LSI) |
 | **Control store** | **CPLD idx5 FSM** | **On-die PLA** (6502) | **Microcode** (11/40+, LSI-11); early 11/20 combined |
-| **Native ISA** | Plover macros | **6502** | **PDP-11** (orthogonal) |
+| **Native ISA** | Swiver macros | **6502** | **PDP-11** (orthogonal) |
 | **Programmer-visible GPR** | **R0 only** | **A, X, Y** | **R0–R5**; **R6=SP**; **R7=PC** |
 | **ALU** | 74HC 153 bit-slice | On-die | 16-bit ALU (board / LSI) |
 | **Flags** | Z, C | N, V, B, D, I, Z, C | **N, Z, V, C** (PS) |
@@ -73,7 +73,7 @@ Pure-ASIC kits, FPGA-only replicas, and other classic MPU dies (Z80, 8080 as sil
 
 Gi1 normative **CALL/RET** ([microcode-spec.md](microcode-spec.md) §2.3) sits between “native thin registers” and “emulated classic ISAs”:
 
-| | **Plover Gi1** | **Gigatron** | **Ben Eater** | **Magic-1** | **Isetta** | **Novasaur** | **Apple II** | **PDP-11** |
+| | **Swiver Gi1** | **Gigatron** | **Ben Eater** | **Magic-1** | **Isetta** | **Novasaur** | **Apple II** | **PDP-11** |
 |---|----------------|--------------|---------------|-------------|------------|--------------|--------------|------------|
 | **`CALL` / `RET` (native)** | **Yes** — `0x06` / `0x07` | **Yes** (vCPU) | **Yes** (µprogram) | **Yes** | — | Native HAL | **JSR / RTS** | **JSR / RTS** |
 | **`CALL` / `RET` (hosted)** | — | — | — | — | **6502 / Z80** | **8080** | — | — |
@@ -83,7 +83,7 @@ Gi1 normative **CALL/RET** ([microcode-spec.md](microcode-spec.md) §2.3) sits b
 | **Return address** | 16-bit LE | 16-bit | 16-bit | 16-bit | 16-bit | 16-bit | 16-bit LE | **16-bit** |
 | **Dedicated `PUSH`/`POP`** | **No** | Compiler | Via µ-ops | **Yes** | 6502/Z80 | 8080 | **PHA/PLA** | Modes / MOV |
 
-**Takeaway:** Plover keeps a **native** thin-register machine like Gigatron but adds **hardware-assisted CALL/RET** without a dedicated SP register — similar *problem* to Isetta, solved with **Gi1 CU stack assist**. **Apple II** and **PDP-11** are the opposite extreme: **HW stack pointer + first-class JSR/RTS** (PDP-11 also vectors interrupts through the same stack). Novasaur targets **CP/M via 8080** at bytecode cost.
+**Takeaway:** Swiver keeps a **native** thin-register machine like Gigatron but adds **hardware-assisted CALL/RET** without a dedicated SP register — similar *problem* to Isetta, solved with **Gi1 CU stack assist**. **Apple II** and **PDP-11** are the opposite extreme: **HW stack pointer + first-class JSR/RTS** (PDP-11 also vectors interrupts through the same stack). Novasaur targets **CP/M via 8080** at bytecode cost.
 
 ---
 
@@ -96,7 +96,7 @@ EEPROM/ROM / µROM µword        24-bit Flash µword     ROM µprog + ALU LUT
   native ISA steps               emulates 6502/Z80      native + 8080 bytecode
   SP in register file            X/Y/S in RAM           dual CPU/GPU Harvard
 
-Gigatron                    Plover Gi1                 Apple II
+Gigatron                    Swiver Gi1                 Apple II
 ────────                    ──────────                 ────────
 ROM table + glue            CPLD idx5 row              On-die PLA (6502)
 vCPU fetch/exec             few phases / macro         Φ1/Φ2 T-states
@@ -107,16 +107,16 @@ vSP in zero page            RP in RAM @ $0F00          HW S → page $01
 |-------|----------|---------------|
 | **EEPROM microcode** (Ben Eater) | Patch control flow in the lab | Fitter-bound CPLD FSM; no breadboard EEPROM µstore |
 | **Horizontal ROM** (Magic-1) | Flexible µsequences per ISA insn | BOM/wiring beyond v1.0 breadboard scope |
-| **ROM sequencer** (Gigatron) | Proven AC machine at hobby scale | Plover adds mailbox copro + frozen **M3a** LUT |
+| **ROM sequencer** (Gigatron) | Proven AC machine at hobby scale | Swiver adds mailbox copro + frozen **M3a** LUT |
 | **Flash µcode emulator** (Isetta) | Run **existing** 6502/Z80 binaries | ~42 TTL + 3 Flash; not a small student FSM lab |
 | **8080 bytecode** (Novasaur) | **CP/M** and games without a real 8080 | Effective ~450 kHz 8080; dual-processor complexity |
 | **Monolithic PLA** (Apple II / 6502) | Dense ISA + IRQ + ecosystem | Not discrete; no breadboard CU visibility |
 | **16-bit µcode minicomputer** (PDP-11) | Orthogonal GPRs + HW SP + vectored IRQ | Far beyond v1.0 8-bit breadboard scope |
-| **CPLD FSM-only** (Plover) | Direct strobes; no µstore burn | CALL/RET needs **CU stack assist** — [call-ret-cu-fit.md](call-ret-cu-fit.md) |
+| **CPLD FSM-only** (Swiver) | Direct strobes; no µstore burn | CALL/RET needs **CU stack assist** — [call-ret-cu-fit.md](call-ret-cu-fit.md) |
 
 ---
 
-## 5. When Plover is the better teaching match
+## 5. When Swiver is the better teaching match
 
 | Goal | Favor |
 |------|-------|
@@ -127,9 +127,9 @@ vSP in zero page            RP in RAM @ $0F00          HW S → page $01
 | **CP/M and 8080 software on minimal TTL** | **Novasaur** |
 | **Commercial 6502 software / IRQ / HW stack baseline** | **Apple II** |
 | **Orthogonal multi-GPR / UNIBUS-class ISA baseline** | **PDP-11** |
-| **FSM-in-CPLD + frozen idx5 golden + copro OS path** | **Plover Gi1** |
+| **FSM-in-CPLD + frozen idx5 golden + copro OS path** | **Swiver Gi1** |
 
-Plover intentionally keeps **IRQ, MMU, multi-GPR, and ISA emulation** off the v1.0 normative path ([plover-whitepaper.md](../../plover-whitepaper.md) §2.3) while still providing **native CALL/RET** for functions, Forth, and Subset C bring-up.
+Swiver intentionally keeps **IRQ, MMU, multi-GPR, and ISA emulation** off the v1.0 normative path ([plover-whitepaper.md](../../plover-whitepaper.md) §2.3) while still providing **native CALL/RET** for functions, Forth, and Subset C bring-up.
 
 ---
 

@@ -1,6 +1,6 @@
 # 컴파일러 타깃 ISA·하드웨어 적합성 답변지 (v1.0)
 
-**대상:** Plover v1.0 breadboard CPU + software v0.1 macro ISA  
+**대상:** Swiver v1.0 breadboard CPU + software v0.1 macro ISA  
 **목적:** 실물 하드웨어에서 구동되는 컴파일러(`plover_cc` 등) 구현 전, 시스템 구현자가 확인할 항목에 대한 **현행 스펙 기준 답변**  
 **기준일:** 2026-06-24  
 **관련:** [microcode-spec.md](../hardware/microcode-spec.md) · [calling-convention-v0.1.md](calling-convention-v0.1.md) · [software-roadmap.md](software-roadmap.md)
@@ -84,7 +84,7 @@
 
 | 타깃 | v1.0으로 실물 컴파일 가능? | 비고 |
 |------|---------------------------|------|
-| Plover Assembly (S1) | **예** | ISA 1:1 |
+| Swiver Assembly (S1) | **예** | ISA 1:1 |
 | Forth primitives (S3) | **예** (스택=RAM 관례) | HW PUSH 불필요 |
 | Tiny C — `return` 상수만 (S5 smoke) | **예** | [codegen.py](../../plover_cc/codegen.py) |
 | Subset C — 포인터·배열·다중 로컬 | **아니오** (우회만) | §1–§5 갭 다수 |

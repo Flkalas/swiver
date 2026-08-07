@@ -1,6 +1,6 @@
 # 디바이스마트 보완 구매 (2026-07-06 · 07-08 · 07-13)
 
-Plover **dual CPLD 2번째** · SIP · DIP 소켓 · 브레드보드 · OSC 3.6864M · **74HC138×2**.  
+Swiver **dual CPLD 2번째** · SIP · DIP 소켓 · 브레드보드 · OSC 3.6864M · **74HC138×2**.  
 **보유·패키지 해석:** [parts-on-hand.md](parts-on-hand.md) · **현행 BOM:** [BOM.md](../reference/project/BOM.md)  
 이전 DS: [purchase-devicesmart.md](purchase-devicesmart.md) · [purchase-2026-06-01-followup.md](purchase-2026-06-01-followup.md)  
 동월 Ali: [purchase-2026-07-aliexpress.md](purchase-2026-07-aliexpress.md)

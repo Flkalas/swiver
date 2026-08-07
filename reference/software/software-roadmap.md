@@ -2,7 +2,7 @@
 
 **Related:** [software-memory-layout.md](software-memory-layout.md)
 
-Plover v0.1 software milestones **S0–S7** on logic VM (developer), then hardware bring-up (M1–M5).
+Swiver v0.1 software milestones **S0–S7** on logic VM (developer), then hardware bring-up (M1–M5).
 
 ## Phase overview
 

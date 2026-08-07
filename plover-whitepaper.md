@@ -1,4 +1,4 @@
-# Plover 프로젝트 백서
+# Swiver 프로젝트 백서
 
 **Version:** 1.0 P12 · **Date:** 2026-07-13  
 **Status:** Normative overview — **v1.0 P12** (IF|EX pipe CU + R0/MBR datapath)  
@@ -10,7 +10,7 @@
 
 ## 1. 이 문서가 하는 일
 
-Plover는 **74HC 디스크리트 로직으로 만드는 8비트 CPU** 프로젝트입니다. 하드웨어 명세, 소프트웨어 로드맵, 부트 체인이 여러 문서에 나뉘어 있어 **한눈에 보기 어렵습니다.** 본 백서는 다음을 **한 문서**에 정리합니다.
+Swiver는 **74HC 디스크리트 로직으로 만드는 8비트 CPU** 프로젝트입니다. 하드웨어 명세, 소프트웨어 로드맵, 부트 체인이 여러 문서에 나뉘어 있어 **한눈에 보기 어렵습니다.** 본 백서는 다음을 **한 문서**에 정리합니다.
 
 
 | 주제            | 본 문서 § | 세부 정본                                                                                                                             |
@@ -33,9 +33,9 @@ Plover는 **74HC 디스크리트 로직으로 만드는 8비트 CPU** 프로젝�
 
 ### 2.1 프로젝트가 존재하는 이유
 
-Plover는 **“컴퓨터가 어떻게 동작하는가”를 손으로 만지며 배우는** 것을 목표로 합니다. 현대 PC·스마트폰은 수억 게이트와 수십 년의 추상화 위에 있어, Fetch–Decode–Execute, ALU, 메모리 맵, MMIO, 부트로더, OS가 **관측 가능한 형태**로 남아 있지 않습니다.
+Swiver는 **“컴퓨터가 어떻게 동작하는가”를 손으로 만지며 배우는** 것을 목표로 합니다. 현대 PC·스마트폰은 수억 게이트와 수십 년의 추상화 위에 있어, Fetch–Decode–Execute, ALU, 메모리 맵, MMIO, 부트로더, OS가 **관측 가능한 형태**로 남아 있지 않습니다.
 
-Plover는 의도적으로 다음을 선택합니다.
+Swiver는 의도적으로 다음을 선택합니다.
 
 
 | 원칙                 | 교육적 의미                                          |
@@ -92,7 +92,7 @@ flowchart LR
 **언어 진화 경로 (로드맵 채택안):**
 
 ```
-기계어/Hex → Plover Assembly → Forth (인터프리터) → Subset C (컴파일) → PL-DOS (C 커널 + Forth 쉘)
+기계어/Hex → Swiver Assembly → Forth (인터프리터) → Subset C (컴파일) → PL-DOS (C 커널 + Forth 쉘)
 ```
 
 ### 2.3.1 S5/S6와 하드웨어 제약 (Subset 조건)
@@ -355,7 +355,7 @@ TTL CPU ↔ RP2350 경계는 **Mailbox MMIO** (`$FF00–$FFFB`, 폴링)입니다
 
 ## 7. 어셈블러 (Assembler)
 
-### 7.1 Plover Assembly (`plover_asm`)
+### 7.1 Swiver Assembly (`plover_asm`)
 
 
 | 항목       | 내용                                                |

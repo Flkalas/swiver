@@ -1,6 +1,6 @@
 # 디바이스마트 보완 구매 (2026-06-01 ~ 06-02)
 
-Plover **v0.1 BOM 보완** 기록 (역사 수량).  
+Swiver **v0.1 BOM 보완** 기록 (역사 수량).  
 **출처:** `archive/developer_docs.tar.gz` → `docs/developer/project/`  
 **보유·패키지 해석:** [parts-on-hand.md](parts-on-hand.md) · **현행:** [system-architecture.md](../reference/hardware/system-architecture.md) · [BOM.md](../reference/project/BOM.md)  
 1차 주문: [purchase-devicesmart.md](purchase-devicesmart.md)

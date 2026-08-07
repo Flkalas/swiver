@@ -12,7 +12,7 @@
 
 ## 1. Executive summary
 
-Plover v1.0 keeps the **8-bit TTL CPU as bus master**. A separate **RP2354B** board acts as a **Mailbox coprocessor**: the CPU talks only through MMIO **`$FF00–$FFFB`** (252 bytes, polling, **no IRQ**). The copro renders HDMI, mixes PSG audio, hosts USB HID, and serves virtual floppy sectors from microSD.
+Swiver v1.0 keeps the **8-bit TTL CPU as bus master**. A separate **RP2354B** board acts as a **Mailbox coprocessor**: the CPU talks only through MMIO **`$FF00–$FFFB`** (252 bytes, polling, **no IRQ**). The copro renders HDMI, mixes PSG audio, hosts USB HID, and serves virtual floppy sectors from microSD.
 
 This whitepaper defines **electrical interfaces, GPIO budget, power, PCB constraints, firmware split, and bring-up gates** for a production-oriented RP2354B daughterboard (or integrated 3.3 V PCB region).
 
@@ -33,7 +33,7 @@ This whitepaper defines **electrical interfaces, GPIO budget, power, PCB constra
 
 ### 2.1 In scope
 
-- RP2354B schematic, layout, and connector definition for Plover copro role
+- RP2354B schematic, layout, and connector definition for Swiver copro role
 - Mailbox hardware mirror of [mailbox-protocol.md](mailbox-protocol.md)
 - vFDD storage (microSD over SPI)
 - VDU pipeline per [display-console.md](display-console.md)
@@ -57,7 +57,7 @@ This whitepaper defines **electrical interfaces, GPIO budget, power, PCB constra
 
 ```text
   ┌─────────────────────────────────────────────────────────────┐
-  │  Plover CPU board (master)                                   │
+  │  Swiver CPU board (master)                                   │
   │  8-bit TTL · 2 MHz · MMIO LDIO/STIO                          │
   │  MAILBOX_EN + A[7:0] + D[7:0] + MEM_RD/WR + CLK              │
   └──────────────────────────┬──────────────────────────────────┘

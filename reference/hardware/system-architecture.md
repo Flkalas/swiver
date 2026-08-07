@@ -1,4 +1,4 @@
-# Plover v1.0 P12 — System Architecture
+# Swiver v1.0 P12 — System Architecture
 
 **Version:** 1.0 P12 · **Hardware:** dual-CPLD + IF\|EX pipe · **Date:** 2026-07-13  
 **Status:** Active normative specification

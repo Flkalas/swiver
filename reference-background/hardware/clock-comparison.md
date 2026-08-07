@@ -1,7 +1,7 @@
-# Plover v1.0 P12 — System clock comparison (peer set)
+# Swiver v1.0 P12 — System clock comparison (peer set)
 
-**Audience:** learners comparing **what “MHz” means** on Plover versus peer machines — master clock, micro-step, ISA throughput, and what limits Fmax.  
-**Status:** Archived background (Illustrative for peers) — not Active implementer spec. Plover timing: Active pipe CU.  
+**Audience:** learners comparing **what “MHz” means** on Swiver versus peer machines — master clock, micro-step, ISA throughput, and what limits Fmax.  
+**Status:** Archived background (Illustrative for peers) — not Active implementer spec. Swiver timing: Active pipe CU.  
 **Related (peers):** [rom-comparison.md](rom-comparison.md) · [cu-dp-comparison.md](cu-dp-comparison.md) · [ttl-computer-comparison.md](ttl-computer-comparison.md)  
 **Active:** [cpld-pipe-cu.md](../../../reference/hardware/cpld-pipe-cu.md) · [cpld-dual-timing.md](../../../reference/hardware/cpld-dual-timing.md) · [alu-opcodes-timing.md](../../../reference/hardware/alu-opcodes-timing.md)
 
@@ -15,7 +15,7 @@ Raw oscillator frequency is a poor peer metric. Machines differ in:
 - whether **control** is combinational, CPLD FSM, or **ROM µfetch** (ROM `t_ACC` on the critical path)
 - **effective** guest-ISA rate after interpretation (Novasaur 8080, Isetta 6502/Z80)
 
-This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is not read as a pure performance ranking.
+This note separates those layers so “Isetta is 12.5 MHz, Swiver is 2 MHz” is not read as a pure performance ranking.
 
 ---
 
@@ -24,7 +24,7 @@ This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is
 | Term | Meaning |
 |------|---------|
 | **Master / board clock** | Oscillator or divided clock distributed on the board |
-| **CPU / phase clock** | Clock that advances the sequencer (Plover phase FSM, Ben Eater µstep, …) |
+| **CPU / phase clock** | Clock that advances the sequencer (Swiver phase FSM, Ben Eater µstep, …) |
 | **µstep / T-state** | Smallest control quantum (one µword, one 6502 T-cycle, one Novasaur process cycle) |
 | **Macro / ISA instruction** | Programmer-visible opcode (may take many µsteps) |
 | **Effective ISA rate** | Guest or native instructions completed per second after multi-cycle / interpretation cost |
@@ -38,7 +38,7 @@ This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is
 
 | Machine | Master / board | CPU / µstep clock | Cycle time | Phases per native macro (typ.) | Effective “useful” rate |
 |---------|----------------|-------------------|------------|--------------------------------|-------------------------|
-| **Plover Gi1** | **4 MHz** osc → **÷2** | **2.0 MHz** (normative) | **500 ns** full; **250 ns** half | **2–3** phases (ADD, LDA, …) | ~0.7–1 M native macro/s (order) |
+| **Swiver Gi1** | **4 MHz** osc → **÷2** | **2.0 MHz** (normative) | **500 ns** full; **250 ns** half | **2–3** phases (ADD, LDA, …) | ~0.7–1 M native macro/s (order) |
 | **Gigatron** | ~**6.25 MHz** | Same (1 insn / clk) | **160 ns** | **1** (pipelined) | ~6.25 M native insn/s |
 | **Ben Eater** | Build-dep. | ~**0.5–1 MHz** typ. | 1–2 µs | Up to **8** µsteps / insn | Much lower than MHz |
 | **Magic-1** | ~**4.09 MHz** | Same + µseq | ~244 ns | Variable µops | Model / µcode dependent |
@@ -51,7 +51,7 @@ This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is
 
 | Machine | Dominant limit on raising the clock |
 |---------|-------------------------------------|
-| **Plover Gi1** | **ALU + CPLD + bus** in execute half-cycle; BEQ path **212 ns** vs **250 ns** budget; Flash **not** on control path |
+| **Swiver Gi1** | **ALU + CPLD + bus** in execute half-cycle; BEQ path **212 ns** vs **250 ns** budget; Flash **not** on control path |
 | **Gigatron** | Combinational CU + ALU + RAM/video timing (VGA-driven historically) |
 | **Ben Eater** | Breadboard + LS prop; µcode EEPROM access each µstep |
 | **Magic-1** | Wide µROM + multi-bus setup; discrete FF farms |
@@ -64,7 +64,7 @@ This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is
 
 | Machine | Control on every µstep? | Memory on that path? |
 |---------|-------------------------|----------------------|
-| **Plover** | CPLD LUT | **No Flash** |
+| **Swiver** | CPLD LUT | **No Flash** |
 | **Gigatron** | Diode ROM (comb) | No EEPROM µstore |
 | **Ben Eater** | EEPROM µword | **Yes** |
 | **Magic-1** | PROM µword | **Yes** |
@@ -75,7 +75,7 @@ This note separates those layers so “Isetta is 12.5 MHz, Plover is 2 MHz” is
 
 ---
 
-## 4. Plover Gi1 — normative clock detail
+## 4. Swiver Gi1 — normative clock detail
 
 ### 4.1 Generation
 
@@ -169,7 +169,7 @@ Flash appears on **instruction fetch** cycles, not on every control strobe. Rais
 
 - Early machines: **core cycle** (sub-µs to µs) dominates.
 - Microcoded models: µROM cycle + UNIBUS arbitration.
-- Compare to Magic-1 / Ben Eater in *structure*, not to Plover’s 2 MHz breadboard number.
+- Compare to Magic-1 / Ben Eater in *structure*, not to Swiver’s 2 MHz breadboard number.
 
 ---
 
@@ -179,9 +179,9 @@ Flash appears on **instruction fetch** cycles, not on every control strobe. Rais
 
 | Misleading claim | Better framing |
 |------------------|----------------|
-| “Isetta is 6× faster than Plover (12.5 vs 2)” | Isetta’s 12.5 MHz is **µsteps**; Plover’s 2 MHz is **macro phases** — guest 6502 rate is much lower than 12.5 M |
+| “Isetta is 6× faster than Swiver (12.5 vs 2)” | Isetta’s 12.5 MHz is **µsteps**; Swiver’s 2 MHz is **macro phases** — guest 6502 rate is much lower than 12.5 M |
 | “Novasaur is 33 MHz” | Dot clock; **CPU slice is 8.25 MHz**; **8080 ≈ 0.45 MHz** |
-| “Plover desk Fmax > 3.7 MHz so raise the crystal” | Normative **2 MHz** keeps BEQ / multi-phase / breadboard margin |
+| “Swiver desk Fmax > 3.7 MHz so raise the crystal” | Normative **2 MHz** keeps BEQ / multi-phase / breadboard margin |
 
 ### 6.2 Rough native-throughput sketch (order of magnitude)
 
@@ -190,7 +190,7 @@ Flash appears on **instruction fetch** cycles, not on every control strobe. Rais
   Novasaur nat ██████        ~3.5 M native/s
   Magic-1      ████          ~few M (µseq)
   Isetta µ     ████████████  12.5 M µstep/s  → guest << that
-  Plover       ██            ~0.7–1 M macro/s @ 2 MHz, 2–3 ph
+  Swiver       ██            ~0.7–1 M macro/s @ 2 MHz, 2–3 ph
   Apple II     █             ~0.3–0.5 M insn/s
   Novasaur 8080 ▏            ~0.45 M 8080/s
   Ben Eater    ▏             teaching rates
@@ -198,7 +198,7 @@ Flash appears on **instruction fetch** cycles, not on every control strobe. Rais
 
 (Bars are illustrative, not lab-measured cross-benchmarks.)
 
-### 6.3 Where Plover sits
+### 6.3 Where Swiver sits
 
 - **Slower raw clock** than Isetta/Novasaur/Gigatron by design (breadboard HC, 250 ns execute budget).
 - **Control path without Flash** → raising clock is an **ALU/CPLD/wiring** problem, not a “buy faster µcode Flash” problem ([rom-comparison.md](rom-comparison.md) §5).
@@ -209,9 +209,9 @@ Flash appears on **instruction fetch** cycles, not on every control strobe. Rais
 ## 7. Design takeaways
 
 1. Always state **which clock** (dot, CPU, µstep, guest).
-2. **ROM-based CU/ALU** machines (Isetta, Novasaur, Ben Eater, Magic-1, PDP-11 µcode) couple **memory `t_ACC`** to Fmax; Plover couples **combinational ALU + CPLD**.
+2. **ROM-based CU/ALU** machines (Isetta, Novasaur, Ben Eater, Magic-1, PDP-11 µcode) couple **memory `t_ACC`** to Fmax; Swiver couples **combinational ALU + CPLD**.
 3. **Interpretation** (Novasaur 8080, Isetta 6502/Z80) makes board MHz a weak proxy for software speed.
-4. Plover’s **2 MHz** is a **margin policy**, not the desk Fmax ceiling (~3.7 MHz on ph2 ADD).
+4. Swiver’s **2 MHz** is a **margin policy**, not the desk Fmax ceiling (~3.7 MHz on ph2 ADD).
 5. Active CU is **pipe** ([cpld-pipe-cu.md](cpld-pipe-cu.md)) — not a dual-clock CPLD-only µstep schedule.
 
 ---

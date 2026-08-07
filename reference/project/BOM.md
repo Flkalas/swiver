@@ -1,4 +1,4 @@
-# Plover — 구매 목록 (v1.0 breadboard, 1세트)
+# Swiver — 구매 목록 (v1.0 breadboard, 1세트)
 
 **Normative:** [../hardware/system-architecture.md](../hardware/system-architecture.md) v1.0  
 **1세트 부품 명세** · 5 V · 74HC DIP 빵판 · **dual CPLD** + **pipe CU**  

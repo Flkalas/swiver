@@ -1,6 +1,6 @@
 # 디바이스마트 구매 내역
 
-Plover 프로젝트 **초기 부품 주문** 기록 (역사 수량).  
+Swiver 프로젝트 **초기 부품 주문** 기록 (역사 수량).  
 **출처:** `archive/developer_docs.tar.gz` → `docs/developer/project/`  
 **보유·패키지 해석:** [parts-on-hand.md](parts-on-hand.md) · **현행 쇼핑 목록:** [BOM.md](../reference/project/BOM.md)
 

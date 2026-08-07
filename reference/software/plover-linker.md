@@ -1,4 +1,4 @@
-# Plover linker and object format (PLX) MVP
+# Swiver linker and object format (PLX) MVP
 
 `PLX` is a link input format for `plover_ld`. The runtime executable remains `.PLR`.
 

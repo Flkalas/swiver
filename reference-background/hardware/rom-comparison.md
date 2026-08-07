@@ -1,6 +1,6 @@
-# Plover Gi1 — ROM count, structure, and roles (peer comparison)
+# Swiver Gi1 — ROM count, structure, and roles (peer comparison)
 
-**Audience:** learners and external reviewers comparing how **Plover Gi1 v1.0** uses non-volatile memory versus peer machines.  
+**Audience:** learners and external reviewers comparing how **Swiver Gi1 v1.0** uses non-volatile memory versus peer machines.  
 **Status:** Archived background (Illustrative) — not Active implementer spec.  
 **Related (peers):** [cu-dp-comparison.md](cu-dp-comparison.md) · [ttl-computer-comparison.md](ttl-computer-comparison.md) · [clock-comparison.md](clock-comparison.md)  
 **Active:** [rom-architecture.md](../../../reference/hardware/rom-architecture.md) · [control-and-decode.md](../../../reference/hardware/control-and-decode.md)
@@ -17,7 +17,7 @@ This note answers three questions for each machine:
 
 | Term | Meaning in this document |
 |------|--------------------------|
-| **von Neumann** | Shared instruction/data address space (also called Princeton) — Plover’s flat 64 KiB map |
+| **von Neumann** | Shared instruction/data address space (also called Princeton) — Swiver’s flat 64 KiB map |
 | **Harvard** | Separate instruction and data paths (Gigatron ROM vs RAM; Novasaur dual CPU/GPU) |
 | **Control store** | Non-volatile memory (or on-die PLA) that drives **micro-ops / strobes** each cycle or phase — not user program bytes |
 | **Program store** | Instruction bytes the programmer / ISA executes (native or guest) |
@@ -32,7 +32,7 @@ This note answers three questions for each machine:
 
 | Machine | Discrete ROM/Flash packages | Memory model | Control store? | Program store? | Other ROM roles |
 |---------|----------------------------:|:------------:|:--------------:|:--------------:|-----------------|
-| **Plover Gi1** | **1** (SST39SF010A 128K×8) | **von Neumann** (flat 64 KiB) | **No** — CPLD FSM | **Yes** (boot + utility) | `$4000` CW **reserved unused** |
+| **Swiver Gi1** | **1** (SST39SF010A 128K×8) | **von Neumann** (flat 64 KiB) | **No** — CPLD FSM | **Yes** (boot + utility) | `$4000` CW **reserved unused** |
 | **Gigatron** | **1** (64K×16 EPROM) + diode matrix | **Harvard** | Diode ROM (CU) | **Yes** (Harvard ROM) | — |
 | **Ben Eater** | **2** (µcode EEPROM) + optional prog ROM | **von Neumann** | **Yes** (horizontal µcode) | Usually **RAM** (lab) | — |
 | **Magic-1** | **5** (512×8 PROM → 56b µword) + prog mem | **von Neumann** (+ paging) | **Yes** | Separate RAM/ROM | — |
@@ -41,7 +41,7 @@ This note answers three questions for each machine:
 | **Apple II** | **1–several** system ROMs (model-dep.) | **von Neumann** | **On-die PLA** only | Monitor / BASIC ROMs | Soft-switch firmware |
 | **PDP-11** | Multiple µPROMs (model-dep.) + media | **von Neumann** (+ MMU) | **Yes** (most models) | Core / RAM / tape | Console / bootstrap |
 
-**Plover’s distinctive choice:** one parallel NOR Flash for **lawful program content** (boot, vector, utilities), while **all phase control** lives in the **CPLD** — Flash `$4000–$4FFF` is explicitly **not** a control store in v1.0 ([rom-architecture.md](rom-architecture.md)).
+**Swiver’s distinctive choice:** one parallel NOR Flash for **lawful program content** (boot, vector, utilities), while **all phase control** lives in the **CPLD** — Flash `$4000–$4FFF` is explicitly **not** a control store in v1.0 ([rom-architecture.md](rom-architecture.md)).
 
 ```text
 Role spectrum (who owns “what happens next”)
@@ -49,14 +49,14 @@ Role spectrum (who owns “what happens next”)
   Control in silicon/CPLD     Control in discrete ROM        Control + ALU in same ROM
   ─────────────────────       ──────────────────────         ─────────────────────────
   Apple II (PLA)              Ben Eater (EEPROM×2)           Novasaur (prog + ALU LUT)
-  Plover (CPLD FSM)           Magic-1 (PROM×5)               Gigatron (prog ROM + diode CU)
+  Swiver (CPLD FSM)           Magic-1 (PROM×5)               Gigatron (prog ROM + diode CU)
                               Isetta (Flash×3)               PDP-11 (µROM + program media)
                               PDP-11 (µROM)
 ```
 
 ---
 
-## 3. Plover Gi1 — normative ROM model
+## 3. Swiver Gi1 — normative ROM model
 
 ### 3.1 Physical count
 
@@ -83,7 +83,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 - Not a horizontal microcode EEPROM (unlike Ben Eater / Magic-1 / Isetta).
 - Not an ALU lookup table (unlike Novasaur).
-- Not a Harvard instruction ROM clocked every cycle independent of data RAM (unlike Gigatron’s 16-bit ROM port) — Plover uses a **flat 64 KiB map** with Boot/Run MAP modes.
+- Not a Harvard instruction ROM clocked every cycle independent of data RAM (unlike Gigatron’s 16-bit ROM port) — Swiver uses a **flat 64 KiB map** with Boot/Run MAP modes.
 
 ---
 
@@ -99,7 +99,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** True **Harvard** — ROM address from PC; RAM for data/video. CU is **not** a wide EEPROM µstore; the diode matrix is a fixed decode table.
 
-**vs Plover:** Both avoid EEPROM µcode. Gigatron still needs a **large program ROM** as the only instruction source; Plover’s Flash is boot/utility and can yield to RAM after handoff. Plover’s CU is **stateful CPLD FSM**; Gigatron’s is **combinational diode ROM**.
+**vs Swiver:** Both avoid EEPROM µcode. Gigatron still needs a **large program ROM** as the only instruction source; Swiver’s Flash is boot/utility and can yield to RAM after handoff. Swiver’s CU is **stateful CPLD FSM**; Gigatron’s is **combinational diode ROM**.
 
 ---
 
@@ -113,7 +113,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** µcode address = `{flags, byte_sel, instruction, step}`. Two chips provide high/low control bytes. Lab workflow = Arduino burn of EEPROMs.
 
-**vs Plover:** Ben Eater puts **control** in reprogrammable ROM; Plover puts **control** in CPLD and **program/boot** in one Flash. Plover has **zero** discrete µcode EEPROMs.
+**vs Swiver:** Ben Eater puts **control** in reprogrammable ROM; Swiver puts **control** in CPLD and **program/boot** in one Flash. Swiver has **zero** discrete µcode EEPROMs.
 
 ---
 
@@ -126,7 +126,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** Wide horizontal microstore; opcode is a **direct index** into the low half of µROM. Classic “many PROMs = one fat µword” design.
 
-**vs Plover:** Magic-1 maximizes **ROM as control**. Plover maximizes **CPLD as control** and keeps Flash for **program law** only. Closest *control-store philosophy* peer is Ben Eater / PDP-11, not Gi1.
+**vs Swiver:** Magic-1 maximizes **ROM as control**. Swiver maximizes **CPLD as control** and keeps Flash for **program law** only. Closest *control-store philosophy* peer is Ben Eater / PDP-11, not Gi1.
 
 ---
 
@@ -140,7 +140,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** Harvard-style µfetch (µcode read while data bus moves). Control Flash is the CPU; application code lives in RAM.
 
-**vs Plover:** Isetta uses **three** Flashes purely as **µcode**. Plover uses **one** Flash purely as **program/boot**. Same “thin HW register” spirit; opposite ROM role.
+**vs Swiver:** Isetta uses **three** Flashes purely as **µcode**. Swiver uses **one** Flash purely as **program/boot**. Same “thin HW register” spirit; opposite ROM role.
 
 ---
 
@@ -157,7 +157,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** One physical ROM, **time-multiplexed address bus** — fetch cycle vs ALU execute cycle vs font lookup. Maximal “ROM does everything” design among TTL peers.
 
-**vs Plover:** Novasaur’s ROM **is** the ALU and the OS; Plover’s Flash **never** participates in ALU. Plover ALU is **12 DIP combinational**; Novasaur ALU is **ROM lookup**.
+**vs Swiver:** Novasaur’s ROM **is** the ALU and the OS; Swiver’s Flash **never** participates in ALU. Swiver ALU is **12 DIP combinational**; Novasaur ALU is **ROM lookup**.
 
 ---
 
@@ -169,9 +169,9 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 | **Monitor / BASIC ROMs** | Model-dependent (often ~2–12 KiB class) | Firmware: Monitor, Applesoft / Integer BASIC |
 | **Program** | RAM (+ ROM cartridges / language card) | User code |
 
-**Structure:** Control is **inside the MPU**. Board ROMs are **system firmware**, analogous to Plover’s boot/utility Flash — **not** a microcode store.
+**Structure:** Control is **inside the MPU**. Board ROMs are **system firmware**, analogous to Swiver’s boot/utility Flash — **not** a microcode store.
 
-**vs Plover:** Closest *role* match for Flash: both use discrete ROM/Flash for **boot/firmware**, not for µcode. Difference: Apple II CU is **on-die PLA**; Plover CU is **CPLD FSM**. Apple II may ship **multiple** firmware ROMs; Plover ships **one** NOR.
+**vs Swiver:** Closest *role* match for Flash: both use discrete ROM/Flash for **boot/firmware**, not for µcode. Difference: Apple II CU is **on-die PLA**; Swiver CU is **CPLD FSM**. Apple II may ship **multiple** firmware ROMs; Swiver ships **one** NOR.
 
 ---
 
@@ -186,7 +186,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 **Structure:** Classic minicomputer split — **µROM runs the processor**; **separate memory hierarchy** holds programs. UNIBUS maps devices into the same address space as RAM.
 
-**vs Plover:** PDP-11 is the commercial form of Magic-1’s “wide µstore + rich ISA.” Plover rejects external control ROM entirely for v1.0.
+**vs Swiver:** PDP-11 is the commercial form of Magic-1’s “wide µstore + rich ISA.” Swiver rejects external control ROM entirely for v1.0.
 
 ---
 
@@ -196,7 +196,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 ```text
   Packages (approx.)
-  0 control ROM + 1 prog Flash     Plover Gi1
+  0 control ROM + 1 prog Flash     Swiver Gi1
   0 board µROM (PLA on die)        Apple II (+ firmware ROMs)
   1 prog ROM + diode CU            Gigatron
   1 mega-ROM (prog+ALU+font)       Novasaur
@@ -208,7 +208,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 ### 5.2 Role matrix
 
-| Role | Plover | Gigatron | Ben Eater | Magic-1 | Isetta | Novasaur | Apple II | PDP-11 |
+| Role | Swiver | Gigatron | Ben Eater | Magic-1 | Isetta | Novasaur | Apple II | PDP-11 |
 |------|:------:|:--------:|:---------:|:-------:|:------:|:--------:|:--------:|:------:|
 | **Discrete µcode / CW ROM** | — | — | **●** | **●** | **●** | △ native in ROM | — | **●** |
 | **On-die / CPLD control** | **●** CPLD | △ diode | — | — | — | △ PAL | **●** PLA | △ early |
@@ -225,12 +225,12 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 | **Split: µROM ≠ program** | Ben Eater, Magic-1, Isetta, PDP-11 | Two non-volatile worlds; patch µcode without touching apps (or vice versa) |
 | **Harvard program ROM** | Gigatron | Instruction width can exceed data width (16b insn ROM) |
 | **Single ROM, many roles** | Novasaur | Address mux + timing critical; one chip burn updates ALU+OS+fonts |
-| **Firmware Flash + FSM control** | **Plover** | One Flash burn for boot/assets; CU change needs **CPLD JTAG** |
+| **Firmware Flash + FSM control** | **Swiver** | One Flash burn for boot/assets; CU change needs **CPLD JTAG** |
 | **Firmware ROMs + MPU PLA** | Apple II | CU invisible; only firmware ROMs on the board |
 
 ### 5.4 Patch / bring-up implications
 
-| If you change… | Plover | Ben Eater / Magic-1 / Isetta | Novasaur | Apple II |
+| If you change… | Swiver | Ben Eater / Magic-1 / Isetta | Novasaur | Apple II |
 |----------------|--------|------------------------------|----------|----------|
 | Instruction timing / strobes | **CPLD reburn** | µROM / Flash reburn | ROM / PAL | Impossible (die) |
 | Bootloader / fonts | **Flash reburn** | Program media | Same ROM chip | System ROM swap |
@@ -239,7 +239,7 @@ Detail: [rom-architecture.md](rom-architecture.md) · [memory-map.md](memory-map
 
 ---
 
-## 6. Design takeaways for Plover
+## 6. Design takeaways for Swiver
 
 1. **ROM count is intentionally minimal (1).** Control complexity moved into **2× CPLD**, not into EEPROM farms.
 2. **Flash `$4000` CW is a non-role** in v1.0 — documents must not treat program Flash as a microstore ([control-and-decode.md](control-and-decode.md)).

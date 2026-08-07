@@ -1,6 +1,6 @@
-# Plover assembler (S1)
+# Swiver assembler (S1)
 
-**Source extension:** `.pls` (Plover Language Source). Use frozen `.sram.hex` images in [fixtures](../fixtures/) for breadboard burn.
+**Source extension:** `.pls` (Swiver Language Source). Use frozen `.sram.hex` images in [fixtures](../fixtures/) for breadboard burn.
 
 ## Syntax
 

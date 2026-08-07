@@ -1,6 +1,6 @@
 # AliExpress 추가 구매 (2026-07)
 
-Plover **dual CPLD / 보조 모듈** 보완.  
+Swiver **dual CPLD / 보조 모듈** 보완.  
 **보유·패키지 해석:** [parts-on-hand.md](parts-on-hand.md) · **현행 BOM:** [BOM.md](../reference/project/BOM.md)  
 이전 AliExpress (2026-06-01): [purchase-2026-06-01-followup.md](purchase-2026-06-01-followup.md)
 

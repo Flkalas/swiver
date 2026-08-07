@@ -1,4 +1,4 @@
-# Plover hardware bring-up index
+# Swiver hardware bring-up index
 
 > **Normative v1.0 P12:** pipe CU — [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) · [system-architecture.md](../hardware/system-architecture.md).  
 > **Wiring:** [breadboard-wiring.md](breadboard-wiring.md).

@@ -1,6 +1,6 @@
 # Subset C (S5)
 
-The v0.1 Subset-C compiler is a **bootstrap tool** used to generate small Plover programs.
+The v0.1 Subset-C compiler is a **bootstrap tool** used to generate small Swiver programs.
 It is intentionally tiny and grows only as needed for kernel bring-up.
 
 ## Static allocation (normative target)
@@ -14,7 +14,7 @@ v1.0 breadboard has no hardware stack or frame pointer. **S5 Subset C** therefor
 
 ## Output
 
-- Subset C → Plover asm text → `.sram.hex` (use frozen images in [fixtures](../fixtures/))
+- Subset C → Swiver asm text → `.sram.hex` (use frozen images in [fixtures](../fixtures/))
 
 ## Frozen smoke image
 

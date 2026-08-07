@@ -1,6 +1,6 @@
 # Program loader (S7c)
 
-`.PLR` is the Plover executable format used by PL-DOS. It is intentionally minimal.
+`.PLR` is the Swiver executable format used by PL-DOS. It is intentionally minimal.
 
 ## Format
 
@@ -15,7 +15,7 @@
 ## Host reference implementation
 
 - `kern/plr.py` — pack/unpack
-- `kern/spawn.py` — `spawn()` loads into `PloverMachine` RAM and runs until HALT
+- `kern/spawn.py` — `spawn()` loads into `SwiverMachine` RAM and runs until HALT
 
 ## Gate
 
