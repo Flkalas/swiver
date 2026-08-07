@@ -1,4 +1,4 @@
-# Agent instructions (Plover)
+# Agent instructions (Swiver)
 
 Repository-wide guidance for coding agents. Cursor users: local mirrors in `.cursor/rules/` (`git-workflow-safety.mdc`, `korean-markdown-encoding.mdc`, `read-on-disk-only.mdc`; `.cursor/` is gitignored).
 
@@ -74,6 +74,16 @@ If the user asked for commits in the **same thread or plan**, treat that as perm
 When implementing a **Cursor plan**, commit in-session per **Plan execution (auto-commit)** above — do not defer to a later turn or wait for an extra commit message from the user.
 
 ---
+
+---
+
+## Brand / package rename
+
+- **Document brand:** **Swiver** — see [reference/project/naming.md](reference/project/naming.md).
+- **Do not** bulk-rename `plover_*` packages, modules, or format magics (`.PLR`, `PL-DOS`, etc.) in one shot.
+- When you **actually edit** a still-`plover_*` package or module, migrate that unit to `swiver_*` (or the agreed prefix) **in the same work unit**, and update related docs/identifiers/links with it.
+- **Do not** rename the GitHub repository or remote until the user explicitly asks.
+- Keep existing Hangul / UTF-8 markdown rules above.
 
 ## Test timeouts (cyclesim and new pytest suites)
 

@@ -1,4 +1,4 @@
-# Plover reference specifications
+# Swiver reference specifications
 
 **Audience:** learners, external reviewers, breadboard builders.
 
@@ -10,6 +10,7 @@
 |----------|-------------|
 | [plover-whitepaper.md](../plover-whitepaper.md) | **Root** — project overview, ISA, pipe narrative |
 | [hw-bringup/README.md](hw-bringup/README.md) | M1–M5 breadboard bring-up |
+| [project/naming.md](project/naming.md) | Brand name — reason, process, conclusion |
 
 ### Truth cascade (edit order)
 
@@ -30,7 +31,7 @@ Read bottom-up. One theme per rung.
 
 | Level | Theme | One job | Primary docs |
 |-------|-------|---------|--------------|
-| **L0** | Parts | What to buy | [BOM.md](project/BOM.md); skim [system-architecture.md](hardware/system-architecture.md) §1 |
+| **L0** | Parts | What to buy | [BOM.md](project/BOM.md); [naming.md](project/naming.md); skim [system-architecture.md](hardware/system-architecture.md) §1 |
 | **L1** | ALU | Comb `Y=f(A,B,ctrl)` only | [alu8-phase-b.md](hardware/alu8-phase-b.md) → [alu-opcodes-timing.md](hardware/alu-opcodes-timing.md) → [M1-alu](hw-bringup/M1-alu.md) / B3 |
 | **L2** | Datapath | R0, MBR→B, `reg_we`, D-bus | [cpld-system-controller.md](hardware/cpld-system-controller.md) (DP) → [M2b-gpr-datapath](hw-bringup/M2b-gpr-datapath.md) |
 | **L3** | Memory fabric | Map, /CE, SRAM×2, Flash | [memory-map.md](hardware/memory-map.md) → [rom-architecture.md](hardware/rom-architecture.md) → [M2b-memory](hw-bringup/M2b-memory.md) |
