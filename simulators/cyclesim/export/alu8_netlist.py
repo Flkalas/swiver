@@ -220,8 +220,10 @@ def export_alu8_func(
     netlist_path: Path,
     units_path: Path | None = None,
     schematic_path: Path | None = None,
-) -> tuple[Path, Path | None, Path | None]:
+    viewer_path: Path | None = None,
+) -> tuple[Path, Path | None, Path | None, Path | None]:
     from simulators.cyclesim.export.alu8_schematic_doc import write_alu8_schematic_doc
+    from simulators.cyclesim.export.alu8_viewer import write_alu8_viewer_html
 
     write_alu8_func_netlist(netlist_path)
     units_out = None
@@ -230,7 +232,10 @@ def export_alu8_func(
     schematic_out = None
     if schematic_path is not None:
         schematic_out = write_alu8_schematic_doc(schematic_path)
-    return netlist_path, units_out, schematic_out
+    viewer_out = None
+    if viewer_path is not None:
+        viewer_out = write_alu8_viewer_html(viewer_path)
+    return netlist_path, units_out, schematic_out, viewer_out
 
 
 def port_net_names() -> set[str]:

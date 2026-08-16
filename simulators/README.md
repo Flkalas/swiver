@@ -16,7 +16,7 @@ python -m pytest simulators/cyclesim/tests -q
 
 **Test timeouts:** every test has a `pytest-timeout` budget (default **30s** in [`pytest.ini`](cyclesim/pytest.ini)). Slow or hang-prone tests declare `@pytest.mark.timeout(N)` and/or CPU step caps. See [`tests/conftest.py`](cyclesim/tests/conftest.py) and **AGENTS.md** § Test timeouts.
 
-`export alu8` writes `simulators/cyclesim/build/alu8_func.yaml`, `alu8_func.units.yaml`, and `alu8_func.schematic.yaml` — **12 DIP** assembly (`74HC153`×8, `74HC283`×2, `74HC157`×2). Control nets and CMP flags are ports (CPLD / observe); no behavioral glue instances.
+`export alu8` writes `simulators/cyclesim/build/alu8_func.yaml`, `alu8_func.units.yaml`, `alu8_func.schematic.yaml`, and interactive **`alu8-schematic.html`** — **12 DIP** assembly (`74HC153`×8, `74HC283`×2, `74HC157`×2). Viewer expands each DIP into functional gates (153→mux1+mux2, 283→ADD4, 157→per-bit YMUX). Control nets and CMP flags are ports (CPLD / observe); no behavioral glue instances. Open the HTML in a browser (no server).
 
 Blocks: **CpldCu** (LUT + TFR + G-IC), **CpldDp** (GPR + TFR mux), Idx5Decoder, PhaseCounter, ALU8, PC/IR/MBR, memory array.
 

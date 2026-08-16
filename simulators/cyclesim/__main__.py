@@ -44,16 +44,21 @@ def cmd_export_alu8(args: argparse.Namespace) -> int:
     schematic = (
         Path(args.schematic) if args.schematic else DEFAULT_BUILD / "alu8_func.schematic.yaml"
     )
+    viewer = Path(args.viewer) if args.viewer else DEFAULT_BUILD / "alu8-schematic.html"
     if args.no_units:
         units = None
     if args.no_schematic:
         schematic = None
-    nl, up, sc = export_alu8_func(out, units, schematic)
+    if args.no_viewer:
+        viewer = None
+    nl, up, sc, vw = export_alu8_func(out, units, schematic, viewer)
     print(f"wrote {nl}")
     if up:
         print(f"wrote {up}")
     if sc:
         print(f"wrote {sc}")
+    if vw:
+        print(f"wrote {vw}")
     return 0
 
 
@@ -83,6 +88,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Schematic layout YAML path (default: build/alu8_func.schematic.yaml)",
     )
     alu_p.add_argument("--no-schematic", action="store_true", help="Skip schematic file")
+    alu_p.add_argument(
+        "--viewer",
+        help="Interactive gate viewer HTML (default: build/alu8-schematic.html)",
+    )
+    alu_p.add_argument("--no-viewer", action="store_true", help="Skip HTML viewer")
     alu_p.set_defaults(func=cmd_export_alu8)
 
     args = parser.parse_args(argv)

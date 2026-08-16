@@ -12,6 +12,10 @@ from simulators.cyclesim.export.alu8_netlist import (
     port_net_names,
     write_alu8_func_netlist,
 )
+from simulators.cyclesim.export.alu8_viewer import (
+    build_alu8_gate_graph,
+    write_alu8_viewer_html,
+)
 
 
 def _part_counts(netlist: dict) -> dict[str, int]:
@@ -63,7 +67,8 @@ def test_dump_and_export_files(tmp_path: Path) -> None:
     nl_path = tmp_path / "alu8_func.yaml"
     units_path = tmp_path / "alu8_func.units.yaml"
     sc_path = tmp_path / "alu8_func.schematic.yaml"
-    export_alu8_func(nl_path, units_path, sc_path)
+    vw_path = tmp_path / "alu8-schematic.html"
+    export_alu8_func(nl_path, units_path, sc_path, vw_path)
     text = nl_path.read_text(encoding="utf-8")
     assert "74HC153" in text
     assert "1C0" in text
@@ -72,6 +77,32 @@ def test_dump_and_export_files(tmp_path: Path) -> None:
     assert "port_groups:" not in text
     assert units_path.read_text(encoding="utf-8").count("package_ref:") == 12
     assert "template: alu8_row_grid" in sc_path.read_text(encoding="utf-8")
+    html = vw_path.read_text(encoding="utf-8")
+    assert "ALU8 gate viewer" in html
+    assert "12 DIP" in html
+    assert "mux1_bit_0" in html
+
+
+def test_gate_graph_12_dip() -> None:
+    g = build_alu8_gate_graph()
+    assert g["dip_count"] == 12
+    assert len(g["packages"]) == 12
+    kinds = {n["kind"] for n in g["nodes"]}
+    assert {"mux4", "mux2", "add4", "port"} <= kinds
+    assert g["gate_count"] == 8 + 8 + 2 + 8  # mux1 + mux2 + add4 + ymux
+    mux1 = next(n for n in g["nodes"] if n["id"] == "mux1_bit_0")
+    assert set(mux1["pins"]) == {"0", "1", "2", "3", "S0", "S1", "Y"}
+    ymux = next(n for n in g["nodes"] if n["id"] == "ymux_bit_0")
+    assert set(ymux["pins"]) == {"0", "1", "S", "Y"}
+    assert any(e["dst_pin"] == "S0" for e in g["edges"])
+    assert any(e["dst_pin"] == "S" and e["net"] == "net_y_mux_sel" for e in g["edges"])
+    assert any(e["net"] == "net_b_add0" for e in g["edges"])
+
+
+def test_write_viewer_html(tmp_path: Path) -> None:
+    path = write_alu8_viewer_html(tmp_path / "v.html")
+    assert path.is_file()
+    assert "application/json" in path.read_text(encoding="utf-8")
 
 
 def test_write_roundtrip_keys(tmp_path: Path) -> None:
