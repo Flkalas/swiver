@@ -16,4 +16,4 @@ Active implementer specs live in [`reference/`](../reference/).
 
 ## Current Active
 
-[plover-whitepaper.md](../plover-whitepaper.md) · [reference/hardware/system-architecture.md](../reference/hardware/system-architecture.md) · [reference/hardware/cpld-pipe-cu.md](../reference/hardware/cpld-pipe-cu.md)
+[swiver-whitepaper.md](../swiver-whitepaper.md) · [reference/hardware/system-architecture.md](../reference/hardware/system-architecture.md) · [reference/hardware/cpld-pipe-cu.md](../reference/hardware/cpld-pipe-cu.md)

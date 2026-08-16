@@ -1,4 +1,4 @@
-"""ISA helpers — implements plover-whitepaper §6 / microcode-spec.md."""
+"""ISA helpers — implements swiver-whitepaper §6 / microcode-spec.md."""
 
 
 from __future__ import annotations

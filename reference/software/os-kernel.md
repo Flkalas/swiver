@@ -4,7 +4,7 @@ Host-side microkernel model used for early bring-up on logic VM (developer).
 
 ## Cooperative / polling model
 
-Normative v1.0 hardware has **no IRQ**. **S6** uses **polling I/O** (Mailbox status polls) and **cooperative** tasking — no preemptive scheduler. See [plover-whitepaper.md](../../plover-whitepaper.md) §9.1.
+Normative v1.0 hardware has **no IRQ**. **S6** uses **polling I/O** (Mailbox status polls) and **cooperative** tasking — no preemptive scheduler. See [swiver-whitepaper.md](../../swiver-whitepaper.md) §9.1.
 
 ## Responsibilities
 

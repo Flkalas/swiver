@@ -5,7 +5,7 @@ It is intentionally tiny and grows only as needed for kernel bring-up.
 
 ## Static allocation (normative target)
 
-v1.0 breadboard has no hardware stack or frame pointer. **S5 Subset C** therefore targets **static allocation**: locals and parameters live in **fixed RAM cells** at compile time; **unbounded recursion** is out of scope. See [plover-whitepaper.md](../../plover-whitepaper.md) §2.3.1.
+v1.0 breadboard has no hardware stack or frame pointer. **S5 Subset C** therefore targets **static allocation**: locals and parameters live in **fixed RAM cells** at compile time; **unbounded recursion** is out of scope. See [swiver-whitepaper.md](../../swiver-whitepaper.md) §2.3.1.
 
 ## Supported (v0.1)
 

@@ -1,6 +1,6 @@
 # Calling convention v0.1
 
-**Related:** [plover-asm.md](plover-asm.md) · [microcode-spec.md](../hardware/microcode-spec.md)
+**Related:** [swiver-asm.md](swiver-asm.md) · [microcode-spec.md](../hardware/microcode-spec.md)
 
 ## Registers (v1.0)
 

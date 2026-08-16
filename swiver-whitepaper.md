@@ -19,7 +19,7 @@ Swiver는 **74HC 디스크리트 로직으로 만드는 8비트 CPU** 프로젝�
 | ALU           | §4     | [alu-opcodes-timing.md](reference/hardware/alu-opcodes-timing.md)                                                                 |
 | 컴퓨터 구조 (조직)   | §5     | [cpld-system-controller.md](reference/hardware/cpld-system-controller.md) · [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md) |
 | 컴퓨터 아키텍처      | §6     | [microcode-spec.md](reference/hardware/microcode-spec.md) · [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md)                 |
-| 어셈블러          | §7     | [plover-asm.md](reference/software/plover-asm.md)                                                                                 |
+| 어셈블러          | §7     | [swiver-asm.md](reference/software/swiver-asm.md)                                                                                 |
 | 인터프리터         | §8     | [forth-system.md](reference/software/forth-system.md)                                                                             |
 | OS            | §9     | [software-roadmap.md](reference/software/software-roadmap.md)                                                                     |
 | 검증 (bring-up) | §10    | [hw-bringup/README.md](reference/hw-bringup/README.md)                                                                            |
@@ -363,7 +363,7 @@ TTL CPU ↔ RP2350 경계는 **Mailbox MMIO** (`$FF00–$FFFB`, 폴링)입니다
 | **마일스톤** | S1                                                |
 | **역할**   | ISA 1:1 니모닉 → 기계어; 라벨·`.ORG`                      |
 | **출력**   | `.hex` / 시나리오용 바이너리                               |
-| **정본**   | [plover-asm.md](reference/software/plover-asm.md) |
+| **정본**   | [swiver-asm.md](reference/software/swiver-asm.md) |
 
 
 ### 7.2 교육적 위치

@@ -72,7 +72,7 @@ Bare-metal smoke ([baremetal-gpio-smoke.md](baremetal-gpio-smoke.md)) with no OS
 
 ## 4. ISA and encoding
 
-`JMP` is macro opcode **`0x05`**, 16-bit **absolute** target, **little-endian** operand ([plover-asm.md](plover-asm.md), [microcode-spec.md](microcode-spec.md) § JMP).
+`JMP` is macro opcode **`0x05`**, 16-bit **absolute** target, **little-endian** operand ([swiver-asm.md](swiver-asm.md), [microcode-spec.md](microcode-spec.md) § JMP).
 
 | Mnemonic | Bytes (hex) | PC after |
 |----------|-------------|----------|

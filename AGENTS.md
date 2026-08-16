@@ -36,7 +36,7 @@ On Windows this repo’s Hangul markdown is repeatedly corrupted by partial edit
 **Do not** use the `StrReplace` tool on:
 
 - `reference/**/*.md`
-- `plover-whitepaper.md`
+- `swiver-whitepaper.md`
 - `AGENTS.md` when the edit touches Hangul
 - any other tracked `.md` that contains Korean
 
@@ -120,13 +120,13 @@ When answering **hardware architecture**, **bring-up**, or **decode/CPLD/ALU** q
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [plover-whitepaper.md](plover-whitepaper.md) §6 | ISA / FSM narrative |
+| **Root** | [swiver-whitepaper.md](swiver-whitepaper.md) §6 | ISA / FSM narrative |
 | **Reference** | `reference/**` | Normative detail, bring-up, frozen fixtures |
 | **Machine** | `simulators/cyclesim/data/isa.py`, `fsm_table.py` | Executable golden |
 | **CPLD** | `cpld/tools/` — WinCUPL, OpenOCD, JTAG probe | Toolchain (active); HDL archived |
 | **Archive** | `archive/*.tar.gz` (+ [MANIFEST.md](archive/MANIFEST.md)) | Historical — **do not** cite for SoC unless user asks |
 
-**Anchor docs:** [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md), [control-and-decode.md](reference/hardware/control-and-decode.md), [system-architecture.md](reference/hardware/system-architecture.md), [plover-whitepaper.md](plover-whitepaper.md).
+**Anchor docs:** [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md), [control-and-decode.md](reference/hardware/control-and-decode.md), [system-architecture.md](reference/hardware/system-architecture.md), [swiver-whitepaper.md](swiver-whitepaper.md).
 
 **Active hardware truth:** whitepaper root → reference cascade → machine code → CPLD artifacts. **v1.0 normative = P12** (IF\|EX pipe CU, PROG∥DATA intent, R0/AC + MBR→ALU B, TFR removed, G-IC 1-wire, no idle). **Gi1** (idx5 multiphase) is archived — `archive/gi1-v1.0-normative.tar.gz`. **rev G** (3-GPR·TFR) is archived — `archive/rev-g-dual-3gpr.tar.gz`. Restore guide: [archive/MANIFEST.md](archive/MANIFEST.md).
 

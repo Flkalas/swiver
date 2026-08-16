@@ -93,7 +93,7 @@ No dedicated RP register. **CPLD-CU** performs push/pop in **STACK_EX** using `M
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [plover-whitepaper.md](../../plover-whitepaper.md) §6 | ISA / pipe narrative |
+| **Root** | [swiver-whitepaper.md](../../swiver-whitepaper.md) §6 | ISA / pipe narrative |
 | **Reference** | `reference/**` | Normative detail; **CU = cpld-pipe-cu** |
 | **Machine** | cyclesim golden | Executable golden (pipe rewrite in progress) |
 | **CPLD** | pipe CU PLD | **Design fits pending** |

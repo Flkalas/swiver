@@ -18,7 +18,7 @@ Swiver v0.1 software milestones **S0–S7** on logic VM (developer), then hardwa
 | ID | Deliverable | Doc | Test gate |
 |----|-------------|-----|-----------|
 | S0 | Roadmap, layout, regression script | this file | baseline regression |
-| S1 | `plover_asm` | [plover-asm.md](plover-asm.md) | milestone checklist |
+| S1 | `plover_asm` | [swiver-asm.md](swiver-asm.md) | milestone checklist |
 | S2 | CALL/RET ISA (pipe CU) | [calling-convention-v0.1.md](calling-convention-v0.1.md) | pipe CU CALL/RET smoke |
 | S3 | Forth core | [forth-system.md](forth-system.md) | milestone checklist, `forth_boot.yaml` |
 | S3c | Normative asm Forth | forth-system §normative | `breadboard ISA` |
@@ -26,7 +26,7 @@ Swiver v0.1 software milestones **S0–S7** on logic VM (developer), then hardwa
 | S5 | `plover_cc` | **Static-allocation Subset C** — [subset-c.md](subset-c.md) | milestone checklist |
 | S6 | C kernel | **Cooperative / polling microkernel** — [os-kernel.md](os-kernel.md) | milestone checklist, `os_boot.yaml` |
 | S7a | vFDD driver | [virtual-fdd.md](virtual-fdd.md) | milestone checklist |
-| S7b | PLFS | [plover-fat.md](plover-fat.md) | milestone checklist |
+| S7b | PLFS | [swiver-fat.md](swiver-fat.md) | milestone checklist |
 | S7c | `.PLR` loader | [program-loader.md](program-loader.md) | milestone checklist |
 | S7d | PL-DOS shell | [dos-shell.md](dos-shell.md), [pl-dos-roadmap.md](pl-dos-roadmap.md) | `dos_boot.yaml` |
 
@@ -44,8 +44,8 @@ Each milestone: add tests → cumulative `regression tests/` PASS → git commit
 
 ### S5 — Subset C philosophy
 
-v1.0 hardware has **no stack-pointer register** and **no frame-pointer datapath**. **S5 Subset C** targets a restricted dialect: **no unbounded recursion**, and all locals/parameters are **statically allocated** in fixed RAM cells ([subset-c.md](subset-c.md), [plover-whitepaper.md](../../plover-whitepaper.md) §2.3.1).
+v1.0 hardware has **no stack-pointer register** and **no frame-pointer datapath**. **S5 Subset C** targets a restricted dialect: **no unbounded recursion**, and all locals/parameters are **statically allocated** in fixed RAM cells ([subset-c.md](subset-c.md), [swiver-whitepaper.md](../../swiver-whitepaper.md) §2.3.1).
 
 ### S6 — Microkernel philosophy
 
-**S6** adopts a **cooperative** scheduling model and **polling-only I/O** — no preemptive multitasking and no IRQ drivers on the normative breadboard ([os-kernel.md](os-kernel.md), [plover-whitepaper.md](../../plover-whitepaper.md) §9.1).
+**S6** adopts a **cooperative** scheduling model and **polling-only I/O** — no preemptive multitasking and no IRQ drivers on the normative breadboard ([os-kernel.md](os-kernel.md), [swiver-whitepaper.md](../../swiver-whitepaper.md) §9.1).

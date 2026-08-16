@@ -4,7 +4,7 @@
 
 | Start | Document |
 |-------|----------|
-| **Overview** | [plover-whitepaper.md](plover-whitepaper.md) |
+| **Overview** | [swiver-whitepaper.md](swiver-whitepaper.md) |
 | **Naming** | [reference/project/naming.md](reference/project/naming.md) |
 | **Specs + L0→L10 ladder** | [reference/README.md](reference/README.md) |
 | **Bring-up** | [reference/hw-bringup/README.md](reference/hw-bringup/README.md) |

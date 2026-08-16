@@ -1,7 +1,7 @@
 # Archive manifest
 
 **Frozen:** 2026-07-04  
-**Active tree:** `plover-whitepaper.md` + `reference/**` only — no `docs/` folder.
+**Active tree:** `swiver-whitepaper.md` + `reference/**` only — no `docs/` folder.
 
 **Layout:** searchable prose under `archive/` is **`MANIFEST.md` only**. Historical trees and code live in `archive/*.tar.gz` (not indexed as loose files).
 
@@ -13,7 +13,7 @@ Restore: `tar -xzf archive/NAME.tar.gz -C .` from repository root (unless noted)
 
 | Path | Role |
 |------|------|
-| [plover-whitepaper.md](../plover-whitepaper.md) | Project main document (**v1.0 P12**) |
+| [swiver-whitepaper.md](../swiver-whitepaper.md) | Project main document (**v1.0 P12**) |
 | [reference/](../reference/) | v1.0 P12 specifications, bring-up, fixtures |
 | [reference/hardware/cpld-pipe-cu.md](../reference/hardware/cpld-pipe-cu.md) | **Active pipe CU** |
 | [reference/project/BOM.md](../reference/project/BOM.md) | Breadboard BOM |
@@ -27,7 +27,7 @@ Restore: `tar -xzf archive/NAME.tar.gz -C .` from repository root (unless noted)
 |------|----------|
 | `hwsim.tar.gz` | Electrical timing simulator |
 | `cyclesim.tar.gz` | Micro-phase structural sim |
-| `plover_vm.tar.gz` | Python logic VM |
+| `swiver_vm.tar.gz` | Python logic VM |
 | `rust_vm.tar.gz` | Rust workspace (`crates/`, `Cargo.toml`, `.cargo/`) |
 | `tools.tar.gz` | Generators, verify scripts |
 | `hw.tar.gz` | Netlists, fixtures, YAML tests |
@@ -56,8 +56,8 @@ Restore: `tar -xzf archive/NAME.tar.gz -C .` from repository root (unless noted)
 | Old path | Current |
 |----------|---------|
 | `docs/normative/**` | `reference/**` |
-| `docs/normative/project/plover-whitepaper.md` | `plover-whitepaper.md` |
-| `docs/project/plover-whitepaper.md` | `plover-whitepaper.md` |
+| `docs/normative/project/plover-whitepaper.md` | `swiver-whitepaper.md` |
+| `docs/project/plover-whitepaper.md` | `swiver-whitepaper.md` |
 | `docs/hardware/system-architecture.md` | `reference/hardware/system-architecture.md` |
 | `docs/hw-bringup/**` | `reference/hw-bringup/**` |
 | `docs/developer/**` | `developer_docs.tar.gz` |
@@ -82,7 +82,7 @@ Restore: `tar -xzf archive/NAME.tar.gz -C .` from repository root (unless noted)
 
 For **architecture**, **bring-up**, **timing**, or **decode**:
 
-1. Cite **`reference/**` and `plover-whitepaper.md` only** — not restored tarball content.
+1. Cite **`reference/**` and `swiver-whitepaper.md` only** — not restored tarball content.
 2. Do **not** run or quote sim/code from `archive/*.tar.gz` unless the user explicitly asks for historical comparison.
 3. **Forbidden as v1.0 SoC truth:** `alu8_decode` on breadboard, Flash `$4000` CW burn, `cpu_cw_direct`, pareto MC reports.
 4. Research and developer docs exist only in tarballs — exploration history, not current spec. **No `research/` folder in the active tree** — restore `gpr4-regfile-research.tar.gz` or `p12-era-research.tar.gz` only when comparing history.

@@ -8,7 +8,7 @@
 
 | Document | Description |
 |----------|-------------|
-| [plover-whitepaper.md](../plover-whitepaper.md) | **Root** — project overview, ISA, pipe narrative |
+| [swiver-whitepaper.md](../swiver-whitepaper.md) | **Root** — project overview, ISA, pipe narrative |
 | [hw-bringup/README.md](hw-bringup/README.md) | M1–M5 breadboard bring-up |
 | [project/naming.md](project/naming.md) | Brand name — reason, process, conclusion |
 
@@ -16,7 +16,7 @@
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [plover-whitepaper.md](../plover-whitepaper.md) | ISA / pipe narrative |
+| **Root** | [swiver-whitepaper.md](../swiver-whitepaper.md) | ISA / pipe narrative |
 | **Reference** | `reference/**` (this tree) | Normative detail; **CU = cpld-pipe-cu** |
 | **Machine** | `simulators/cyclesim/` | Pipe golden TBD |
 | **CPLD** | pipe CU `.pld` | **Design fits pending** |
@@ -40,12 +40,12 @@ Read bottom-up. One theme per rung.
 | **L6** | ISA | Opcodes, stack, SYS sheet | [microcode-spec.md](hardware/microcode-spec.md) |
 | **L7** | CPLD boardcraft | Routing + JTAG | [cpld-dual-routing.md](hardware/cpld-dual-routing.md) → [cpld-dual-jtag.md](hardware/cpld-dual-jtag.md) → M2a / Design fits |
 | **L8** | Boot | Vectors, fixtures, M4 | [bootloader.md](boot/bootloader.md) → [fixtures](fixtures/) → [M4b](hw-bringup/M4b-boot-hardware.md) |
-| **L9** | Software | Asm → ABI → roadmap | [software-roadmap.md](software/software-roadmap.md) → [plover-asm](software/plover-asm.md) / ABI |
+| **L9** | Software | Asm → ABI → roadmap | [software-roadmap.md](software/software-roadmap.md) → [swiver-asm](software/swiver-asm.md) / ABI |
 | **L10** | Copro | Mailbox / MMIO | [mailbox-protocol.md](copro/mailbox-protocol.md) → remaining `copro/` |
 
 ```mermaid
 flowchart TB
-  WP[plover-whitepaper]
+  WP[swiver-whitepaper]
   L0[L0 Parts]
   L1[L1 ALU]
   L2[L2 Datapath]

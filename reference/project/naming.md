@@ -37,6 +37,6 @@
 | **대외·문서 브랜드** | **Swiver** |
 | **GitHub 레포/원격 이름** | [Flkalas/swiver](https://github.com/Flkalas/swiver) |
 | **패키지·도구·포맷** (`plover_asm`, `plover_cc`, `.PLR`, `PL-DOS` 등) | **점진 이전** — 해당 패키지를 손대는 작업 단위에서 `swiver_*` 등으로 함께 변경 ([AGENTS.md](../../AGENTS.md)) |
-| **문서 파일 경로** (`plover-whitepaper.md`, `plover-asm.md` 등) | 패키지 이전과 맞춰 나중에; 이번 리브랜드에서는 **경로 유지** |
+| **문서 파일 경로** (`swiver-whitepaper.md`, `swiver-asm.md` 등) | 활성 문서 파일명은 `swiver-*.md`; 패키지 디렉터리명은 점진 이전 |
 
-문서 본문의 프로젝트 호칭은 Swiver로 쓰고, 코드 식별자·파일명은 마이그레이션 전까지 `plover_*` / `plover-*.md`를 그대로 둡니다.
+문서 본문의 프로젝트 호칭과 활성 문서 파일명은 Swiver로 쓰고, 코드·패키지 식별자는 마이그레이션 전까지 `plover_*`를 그대로 둡니다.

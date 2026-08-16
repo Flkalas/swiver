@@ -129,7 +129,7 @@ vSP in zero page            RP in RAM @ $0F00          HW S → page $01
 | **Orthogonal multi-GPR / UNIBUS-class ISA baseline** | **PDP-11** |
 | **FSM-in-CPLD + frozen idx5 golden + copro OS path** | **Swiver Gi1** |
 
-Swiver intentionally keeps **IRQ, MMU, multi-GPR, and ISA emulation** off the v1.0 normative path ([plover-whitepaper.md](../../plover-whitepaper.md) §2.3) while still providing **native CALL/RET** for functions, Forth, and Subset C bring-up.
+Swiver intentionally keeps **IRQ, MMU, multi-GPR, and ISA emulation** off the v1.0 normative path ([swiver-whitepaper.md](../../swiver-whitepaper.md) §2.3) while still providing **native CALL/RET** for functions, Forth, and Subset C bring-up.
 
 ---
 
