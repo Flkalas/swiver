@@ -3,7 +3,7 @@
 **Status:** Normative brand note  
 **Audience:** 기여자, 외부 검토자, 에이전트
 
-대외 브랜드명은 **Swiver**입니다. GitHub 원격 레포명과 `plover_*` 패키지·포맷 식별자는 당분간 유지합니다 — [AGENTS.md](../../AGENTS.md) § Brand / package rename.
+대외 브랜드명은 **Swiver**입니다. GitHub 원격은 [Flkalas/swiver](https://github.com/Flkalas/swiver)입니다. `plover_*` 패키지·포맷 식별자는 당분간 유지합니다 — [AGENTS.md](../../AGENTS.md) § Brand / package rename.
 
 ---
 
@@ -35,7 +35,7 @@
 | 항목 | 결정 |
 |------|------|
 | **대외·문서 브랜드** | **Swiver** |
-| **GitHub 레포/원격 이름** | 당분간 변경하지 않음 (명시 요청 시) |
+| **GitHub 레포/원격 이름** | [Flkalas/swiver](https://github.com/Flkalas/swiver) |
 | **패키지·도구·포맷** (`plover_asm`, `plover_cc`, `.PLR`, `PL-DOS` 등) | **점진 이전** — 해당 패키지를 손대는 작업 단위에서 `swiver_*` 등으로 함께 변경 ([AGENTS.md](../../AGENTS.md)) |
 | **문서 파일 경로** (`plover-whitepaper.md`, `plover-asm.md` 등) | 패키지 이전과 맞춰 나중에; 이번 리브랜드에서는 **경로 유지** |
 

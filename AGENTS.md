@@ -80,7 +80,7 @@ When implementing a **Cursor plan**, commit in-session per **Plan execution (aut
 - **Document brand:** **Swiver** — see [reference/project/naming.md](reference/project/naming.md).
 - **Do not** bulk-rename `plover_*` packages, modules, or format magics (`.PLR`, `PL-DOS`, etc.) in one shot.
 - When you **actually edit** a still-`plover_*` package or module, migrate that unit to `swiver_*` (or the agreed prefix) **in the same work unit**, and update related docs/identifiers/links with it.
-- **Do not** rename the GitHub repository or remote until the user explicitly asks.
+- **GitHub remote:** [Flkalas/swiver](https://github.com/Flkalas/swiver). Do not change the remote again until the user explicitly asks.
 - Keep existing Hangul / UTF-8 markdown rules above.
 
 ## Test timeouts (cyclesim and new pytest suites)
