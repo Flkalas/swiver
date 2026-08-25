@@ -9,6 +9,7 @@
 | [purchase-2026-06-01-followup.md](purchase-2026-06-01-followup.md) | 디바이스마트 **2·3차** · AliExpress 6월 (아카이브 복원) |
 | [purchase-2026-07-aliexpress.md](purchase-2026-07-aliexpress.md) | AliExpress **2026-07** 추가 (SIP·PLCC·MicroSD·LVC125) |
 | [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md) | 디바이스마트 **4차** D–G (ATF1504·SIP·소켓·MB-102·OSC·74HC138) |
+| [purchase-2026-08-devicesmart.md](purchase-2026-08-devicesmart.md) | 디바이스마트 **5차** H (ATF1504×1 여분 · mixed cart) |
 | Shopping list (Active) | [reference/project/BOM.md](../reference/project/BOM.md) |
 | PCB 3.3 V shopping | [reference/project/BOM-3v3.md](../reference/project/BOM-3v3.md) |
 
@@ -28,7 +29,7 @@
 | 74HC08 | 2 | 2 | 0 | ✓ |
 | 74HC32 | 2 | 2 | 0 | ✓ |
 | 74HC161 | 3 | 4 | +1 | ✓ 여유 |
-| ATF1504AS-10JU44 | **2** | **2** | 0 | ✓ |
+| ATF1504AS-10JU44 | **2** | **3** | +1 | ✓ 여유 |
 | PLCC-44↔DIP adapter | **2** | **2** | 0 | ✓ |
 | 74HC245 | 1 | 2 | +1 | ✓ 여유 |
 | SST39SF010A-70-4C-PHE | 1 | 2 | +1 | ✓ 여유 |
@@ -57,6 +58,8 @@ PLCC-44↔DIP: 2026-06 Sinstar ×1 + 2026-07-06 Upmall ×1 (`1121526644275950`) 
 
 ATF1504 dual: DS 4차 D (`2026070621281618712`) · E MB-102×5 · F OSC 3.6864M · **G 74HC138×1** (`2026071307030217559`, 550원) — D–G **30,530원** — [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md).
 
+ATF1504 여분: DS 5차 H (`2026081318371118368`, 2026-08-13, VAT별 7,340원) — thumb-handle mixed cart · Swiver만 반영 — [purchase-2026-08-devicesmart.md](purchase-2026-08-devicesmart.md).
+
 ### 부족 요약 (발주 후보)
 
 코어 BOM 대비 **수량 부족 없음** (발주 누적).
@@ -77,4 +80,4 @@ ATF1504 dual: DS 4차 D (`2026070621281618712`) · E MB-102×5 · F OSC 3.6864M 
 | 74HC74 | 1 | 분주 등 |
 | 74HC02N | 10 | Ali · 실험 |
 
-대조 기준일: **2026-07-13** (발주 문서 누적 vs 현행 BOM · 7월 DS·Ali 포함).
+대조 기준일: **2026-08-25** (발주 문서 누적 vs 현행 BOM · 8월 DS 5차 H 포함).

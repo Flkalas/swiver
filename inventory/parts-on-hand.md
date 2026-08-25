@@ -5,7 +5,7 @@
 
 본 문서는 **물리 패키지, 어댑터, 보유 수량**만 기록한다. 발주·쇼핑 Qty는 BOM을 따른다.
 
-**발주 이력:** [purchase-devicesmart.md](purchase-devicesmart.md) (1차) · [purchase-2026-06-01-followup.md](purchase-2026-06-01-followup.md) (2·3차 + Ali 6월) · [purchase-2026-07-aliexpress.md](purchase-2026-07-aliexpress.md) (Ali 7월) · [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md) (DS 7/6)
+**발주 이력:** [purchase-devicesmart.md](purchase-devicesmart.md) (1차) · [purchase-2026-06-01-followup.md](purchase-2026-06-01-followup.md) (2·3차 + Ali 6월) · [purchase-2026-07-aliexpress.md](purchase-2026-07-aliexpress.md) (Ali 7월) · [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md) (DS 7월) · [purchase-2026-08-devicesmart.md](purchase-2026-08-devicesmart.md) (DS 8/13)
 
 ---
 
@@ -26,8 +26,9 @@ CPLD **2×** `ATF1504AS-10JU44` + **2×** PLCC→DIP (#13); Flash PDIP 직결; S
 | **AliExpress** | 2026-06-01 | 다수 | PLCC×1, SOP28×10, 0.1 µF×100, FT232H, 74HC02×10 등 |
 | **AliExpress** | 2026-07-01·03·06 | 다수 | SIP 33R×30, MicroSD, LVC125×5, PLCC×1 — [purchase-2026-07-aliexpress.md](purchase-2026-07-aliexpress.md) |
 | **4차 D·E·F·G** | 2026-07-06·08·13 | 디바이스마트 | ATF1504×1, SIP, 소켓, MB-102×5, OSC 3.6864M, **74HC138×1** — [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md) |
+| **5차 H** | 2026-08-13 | 디바이스마트 | ATF1504×1 (thumb-handle mixed cart) — [purchase-2026-08-devicesmart.md](purchase-2026-08-devicesmart.md) |
 
-누적: **ATF1504 ×2** · **PLCC ×2** · **74HC138 ×2** — 코어 BOM 수량 충족.
+누적: **ATF1504 ×3** · **PLCC ×2** · **74HC138 ×2** — 코어 BOM 수량 충족 (ATF 여유 1).
 
 ---
 
@@ -47,7 +48,7 @@ Flash (#16)는 **PDIP-32** — 빵판에 **직결** (SIC-DIP-32 보유).
 
 | BOM # | MPN | Package | Qty | 역할 / 비고 |
 |-------|-----|---------|-----|-------------|
-| 12 | ATF1504AS-10JU44 | PLCC-44 | **2** | 2차 A + DS 4차 `2026070621281618712` |
+| 12 | ATF1504AS-10JU44 | PLCC-44 | **3** | 2차 A + DS 4차 D + DS 5차 H `2026081318371118368` (여유 1) |
 | 13 | PLCC-44→DIP 어댑터 | — | **2** | Sinstar + Upmall `1121526644275950` |
 | 16 | SST39SF010A-70-4C-PHE | PDIP-32 | **2** | 부트·program ROM (1차; BOM 1 · 여유 1) |
 | 17 | IS62C256AL-45ULI-TR | SOP | **2** | 64 KB RAM (1차 1 + 2차 B 1) |
@@ -112,3 +113,4 @@ See [cpld-dual-jtag.md](../reference/hardware/cpld-dual-jtag.md).
 | 2026-07-13 | DS 4차 E `2026070822324319438` (묶음) — MB-102×5 |
 | 2026-07-13 | DS 4차 F `2026071304421517554` (묶음) — OSC 3.6864M |
 | 2026-07-13 | DS 4차 G `2026071307030217559` (묶음) — 74HC138×1 |
+| 2026-08-25 | DS 5차 H `2026081318371118368` — ATF1504×1 (여분, mixed cart) |
