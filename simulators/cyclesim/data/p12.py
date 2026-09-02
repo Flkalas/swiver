@@ -88,3 +88,15 @@ class SysTrace:
     bubble: bool = False
     stretched: bool = False
     fallback: bool = False
+
+    @property
+    def reg_we(self) -> bool:
+        return "REG_WE" in self.strobes
+
+    @property
+    def flg_we(self) -> bool:
+        return "FLG_WE" in self.strobes
+
+    @property
+    def pc_load_en(self) -> bool:
+        return "PC_LOAD_EN" in self.strobes
