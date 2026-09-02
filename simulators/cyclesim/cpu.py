@@ -174,6 +174,7 @@ class CpuM3b:
             else:
                 self.abs16_hi.hi = val
             self._operand_byte += 1
+            self._trace_fetch = {"net_fetch": 1, "pc_inc_count": 1, "net_mbr_load" if self._operand_byte == 1 else "net_abs16_hi_load": True}
             self._stage = "execute" if self._operand_byte >= self._operand_len else "operand"
             load_strobe = "MBR_LOAD" if self._operand_byte == 1 else "ABS16_HI_LOAD"
             ctl = control_for(self.current_op)
@@ -185,7 +186,7 @@ class CpuM3b:
                 strobes, read, write = self._execute()
                 state = P12State.STACK_EX if ctl.stack else (P12State.MEM_STALL if ctl.memory else P12State.IF_EX)
                 self.state = state
-                self.fetch_pending = True
+                self.fetch_pending = not ctl.redirect
                 self._emit(state, before, StageActivity(True, addr, True, self.current_op), strobes | {"IF", load_strobe, "PC_INC"}, read, write, retired=not self.halted, stalled=ctl.memory)
                 if self.halted:
                     return
@@ -200,7 +201,7 @@ class CpuM3b:
         ctl = control_for(self.current_op)
         state = P12State.STACK_EX if ctl.stack else (P12State.MEM_STALL if ctl.memory else P12State.IF_EX)
         self.state = state
-        self.fetch_pending = True
+        self.fetch_pending = not ctl.redirect
         self._emit(state, before, StageActivity(not ctl.memory, self.pc.pc if not ctl.memory else None, True, self.current_op), strobes, read, write, retired=not self.halted, stalled=ctl.memory)
         if self.halted:
             return
@@ -222,6 +223,7 @@ class CpuM3b:
         self._emit(state, before, StageActivity(), strobes, bubble=ctl.redirect)
         if not self._stack_ticks:
             self._stage = "fetch"
+            self.fetch_pending = True
 
     def run(self, max_steps: int = 500, *, wall_s: float = 10.0) -> int:
         import time

@@ -45,7 +45,7 @@ def test_taken_branch_has_visible_bubble() -> None:
 def test_reserved_0c_is_one_byte_trap() -> None:
     runner = run_bytes(bytes([0x0C, OP_HALT]))
     runner.run_until_halt()
-    assert runner.halted and runner.pc == 2
+    assert runner.halted and runner.pc == 1
     assert control_for(0x0C).name == "TRAP"
 
 
