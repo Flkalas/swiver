@@ -1,44 +1,18 @@
-"""M3b CPU — dual CPLD idx5 FSM + ALU + net-faithful fetch/execute."""
+"""M3b behavioral CPU using the active P12 IF|EX SYS schedule."""
 
 from __future__ import annotations
 
-from simulators.cyclesim.blocks.alu8_block import Alu8Block
-from simulators.cyclesim.blocks.cpld import BranchAnd, CpldCu, CpldDp
-from simulators.cyclesim.blocks.fetch import (
-    Abs16HiReg,
-    AddrMux,
-    FlgReg,
-    IrReg,
-    MbrReg,
-    MemArray,
-    PcInMux,
-    PcReg,
-    YBusMux,
-)
+from simulators.cyclesim.blocks.cpld import CpldDp
+from simulators.cyclesim.blocks.fetch import Abs16HiReg, FlgReg, IrReg, MbrReg, MemArray, PcReg
 from simulators.cyclesim.blocks.return_stack import ReturnStack, StackError
-from simulators.cyclesim.data.fsm_table import Template, lookup_row
-from simulators.cyclesim.data.isa import (
-    OP_CALL,
-    OP_HALT,
-    OP_LDIO,
-    OP_RET,
-    OP_STA16,
-    OP_STIO,
-    insn_length,
-    phase_count,
-)
-from simulators.cyclesim.blocks.fsm import Idx5Decoder, PhaseCounter
-from simulators.cyclesim.blocks.cpld.gic import NET_REG_WE_LUT
-from simulators.cyclesim.engine import SimContext
-from simulators.cyclesim.values import H, L
+from simulators.cyclesim.data.isa import OP_ADD, OP_BEQ, OP_CALL, OP_CMP, OP_HALT, OP_JMP, OP_LDA, OP_LDIO, OP_RET, OP_STA, OP_STA16, OP_STIO
+from simulators.cyclesim.data.p12 import P12State, StageActivity, SysTrace, control_for
 
 
 class CpuM3b:
-    """Functional-block CPU for M3b fetch + execute (Gi1 dual CPLD)."""
+    """R0-only M3b model. ``step`` advances exactly one counted SYS tick."""
 
     def __init__(self) -> None:
-        self.ctx = SimContext()
-        self.cpld_dp = CpldDp()
         self.pc = PcReg()
         self.ir = IrReg()
         self.mbr = MbrReg()
@@ -46,316 +20,213 @@ class CpuM3b:
         self.flg = FlgReg()
         self.mem = MemArray()
         self.return_stack = ReturnStack(self.mem)
-        self.phase = PhaseCounter()
-        self.cpld_cu = CpldCu()
-        self.alu_blk = Alu8Block()
-        self.addr_mux = AddrMux()
-        self.pc_in_mux = PcInMux()
-        self.y_bus = YBusMux()
-        self.branch = BranchAnd()
-
-        for blk in (
-            self.pc,
-            self.ir,
-            self.mbr,
-            self.abs16_hi,
-            self.flg,
-            self.mem,
-            self.addr_mux,
-            self.pc_in_mux,
-            self.cpld_dp,
-            self.phase,
-            self.cpld_cu,
-            Idx5Decoder(),
-            self.y_bus,
-            self.alu_blk,
-            self.branch,
-        ):
-            self.ctx.add_block(blk)
-
+        self.cpld_dp = CpldDp()
+        self.gpr = self.cpld_dp
         self.halted = False
+        self.sys_index = 0
+        self.state = P12State.FILL
+        self.trace: list[SysTrace] = []
+        self.last_trace: SysTrace | None = None
         self.fetch_pending = True
-        self._fetch_byte = 0
-        self._fetch_ilen = 0
         self.current_op = 0
-        self._bus_data = 0
-
+        self._stage = "fetch"
+        self._operand_byte = 0
+        self._operand_len = 0
+        self._stack_ticks = 0
+        self._bubble = False
+        self._stretch_next = False
+        self._fallback_next = False
         self._trace_fetch: dict[str, int | bool] = {}
-
-    @property
-    def gpr(self) -> CpldDp:
-        """GPR datapath alias (CPLD-DP)."""
-        return self.cpld_dp
 
     def reset(self, pc: int | None = None, *, from_vector: bool = False) -> None:
         if from_vector or pc is None:
-            if self.mem.sys.rom.get(0xFFFC) is not None or self.mem.sys.rom.get(0xFFFD) is not None:
-                pc = self.mem.sys.reset_vector()
-            else:
-                pc = 0
+            pc = self.mem.sys.reset_vector() if (self.mem.sys.rom.get(0xFFFC) is not None or self.mem.sys.rom.get(0xFFFD) is not None) else 0
         self.pc.pc = pc & 0xFFFF
-        self.phase.reset()
         self.halted = False
+        self.sys_index = 0
+        self.state = P12State.FILL
+        self.trace.clear()
+        self.last_trace = None
         self.fetch_pending = True
-        self._fetch_byte = 0
-        self._fetch_ilen = 0
         self.current_op = 0
-        self.cpld_dp.regs = [0, 0, 0]
-        self.flg.z = False
-        self.flg.c = False
-        self.ir.ir = 0
-        self.mbr.mbr = 0
-        self.abs16_hi.hi = 0
+        self._stage = "fetch"
+        self._operand_byte = self._operand_len = self._stack_ticks = 0
+        self._bubble = False
+        self._stretch_next = self._fallback_next = False
+        self.cpld_dp.regs = [0]
+        self.flg.z = self.flg.c = False
+        self.ir.ir = self.mbr.mbr = self.abs16_hi.hi = 0
 
-    def _default_nets(self) -> None:
-        for net in (
-            "net_fetch",
-            "net_mem_rd",
-            "net_mem_wr",
-            "net_reg_we",
-            "net_y_oe",
-            "net_y_src_a",
-            "net_ir_load",
-            "net_mbr_load",
-            "net_abs16_hi_load",
-            "net_pc_load",
-            "net_pc_inc",
-            "net_flg_we",
-            "net_macro_end",
-            "net_ldio_stio",
-            "net_abs16_addr",
-        ):
-            self.ctx.set(net, L)
-
-    def _sync_phase_nets(self) -> None:
-        self.phase.eval_comb(self.ctx)
-
-    def _sync_opcode_nets(self) -> None:
-        self.ir.eval_comb(self.ctx)
-
-    def _latch_mem_d_for_fetch(self) -> None:
-        """Hold mem_d stable through IR/MBR clock — comb fixpoint can glitch addr during tick."""
-        addr = self.pc.pc & 0xFFFF
-        val = self.mem.read(addr)
-        for i in range(8):
-            self.ctx.set(f"net_mem_d{i}", (val >> i) & 1, stuck=True)
-
-    def _fetch_tick(self) -> None:
-        self.ctx.clear_stuck()
-        self._default_nets()
-        self.ctx.set("net_fetch", H)
-        self._sync_phase_nets()
-        self.ctx.comb_fixup()
-
-        if self._fetch_byte == 0:
-            self._trace_fetch = {"net_fetch": H, "pc_inc_count": 0}
-            self.ctx.set("net_ir_load", H)
-            self._latch_mem_d_for_fetch()
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["net_ir_load"] = True
-            self.ctx.set("net_ir_load", L)
-
-            op = self.ir.ir
-            if op == OP_HALT:
-                self.halted = True
-                self.fetch_pending = False
-                return
-
-            self.ctx.set("net_pc_inc", H)
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["pc_inc_count"] = 1
-
-            self._fetch_ilen = insn_length(op)
-            self.current_op = op
-            if self._fetch_ilen == 1:
-                self._finish_fetch()
-            else:
-                self._fetch_byte = 1
-            return
-
-        if self._fetch_byte == 1:
-            self._trace_fetch = {"net_fetch": H, "pc_inc_count": 0}
-            self.ctx.set("net_mbr_load", H)
-            self._latch_mem_d_for_fetch()
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["net_mbr_load"] = True
-            self.ctx.set("net_mbr_load", L)
-
-            self.ctx.set("net_pc_inc", H)
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["pc_inc_count"] = self._trace_fetch.get("pc_inc_count", 0) + 1
-
-            if self._fetch_ilen == 2:
-                self._finish_fetch()
-            else:
-                self._fetch_byte = 2
-            return
-
-        if self._fetch_byte == 2:
-            self._trace_fetch = {"net_fetch": H, "pc_inc_count": 0}
-            self.ctx.set("net_abs16_hi_load", H)
-            self._latch_mem_d_for_fetch()
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["net_abs16_hi_load"] = True
-            self.ctx.set("net_abs16_hi_load", L)
-
-            self.ctx.set("net_pc_inc", H)
-            self.ctx.comb_fixup()
-            self.ctx.pulse_clock()
-            self._trace_fetch["pc_inc_count"] = self._trace_fetch.get("pc_inc_count", 0) + 1
-            self._finish_fetch()
-
-    def _finish_fetch(self) -> None:
-        self.phase.reset()
-        self._sync_phase_nets()
-        self.fetch_pending = False
-        self._fetch_byte = 0
-        self._fetch_ilen = 0
-
-    def _drive_d_from_qa(self) -> None:
-        val = self.cpld_dp.qa()
-        for i in range(8):
-            self.ctx.set(f"net_d{i}", (val >> i) & 1, stuck=True)
-
-    def _drive_d_from_mbr(self) -> None:
-        val = self.mbr.mbr
-        for i in range(8):
-            self.ctx.set(f"net_d{i}", (val >> i) & 1, stuck=True)
-
-    def _drive_d_from_bus(self) -> None:
-        val = self._bus_data
-        for i in range(8):
-            self.ctx.set(f"net_d{i}", (val >> i) & 1, stuck=True)
-
-    def _eff_addr(self, op: int) -> int:
+    def _eff_addr(self) -> int:
         from simulators.cyclesim.blocks.mem_decode import MAILBOX_BASE
+        if self.current_op in (OP_LDIO, OP_STIO):
+            return MAILBOX_BASE | self.mbr.mbr
+        if self.current_op == OP_STA16:
+            return self.mbr.mbr | (self.abs16_hi.hi << 8)
+        return self.mbr.mbr
 
-        if op in (OP_LDIO, OP_STIO):
-            return MAILBOX_BASE | (self.mbr.mbr & 0xFF)
-        if op == OP_STA16:
-            return (self.mbr.mbr & 0xFF) | ((self.abs16_hi.hi & 0xFF) << 8)
-        return self.mbr.mbr & 0xFFFF
+    def _fetch_record(self, before: int, addr: int, *, ir: bool = False) -> None:
+        self._trace_fetch = {"net_fetch": 1, "pc_inc_count": 1, "net_ir_load" if ir else "net_mbr_load": True}
 
-    def execute_phase(self) -> None:
+    def _execute(self) -> tuple[set[str], int | None, tuple[int, int] | None]:
         op = self.current_op
-        ph = self.phase.phase
-        row = self.cpld_cu.load_opcode_phase(op, ph)
-        self.ctx.clear_stuck()
-        self._default_nets()
-        self._sync_phase_nets()
-        self._sync_opcode_nets()
-
-        if row and row.template == Template.MEM_LD and row.mem_rd:
-            if op in (OP_LDIO, OP_STIO):
-                self.ctx.set("net_ldio_stio", H, stuck=True)
-            self.ctx.set("net_mem_rd", H, stuck=True)
-        if row and row.template == Template.MEM_ST and row.mem_wr:
-            if op in (OP_LDIO, OP_STIO):
-                self.ctx.set("net_ldio_stio", H, stuck=True)
-            elif op == OP_STA16:
-                self.ctx.set("net_abs16_addr", H, stuck=True)
-            self.ctx.set("net_mem_wr", H, stuck=True)
-            self._drive_d_from_qa()
-        if row and row.template == Template.MEM_ST and row.y_oe:
-            self.ctx.set("net_y_src_a", H, stuck=True)
-
-        self.ctx.comb_fixup()
-
-        if row and row.template == Template.MEM_LD and row.mem_rd:
-            self._bus_data = self.mem.read(self._eff_addr(op))
-        if row and row.template == Template.MEM_ST and row.mem_wr:
-            self.mem.write(self._eff_addr(op), self.cpld_dp.qa())
-        if row and row.reg_we:
-            if row.template == Template.MEM_LD:
-                self._drive_d_from_bus()
-
-        self.ctx.comb_fixup()
-        self.ctx.pulse_clock()
-        self.phase.advance()
-
-    def _drive_pc_in(self, addr: int) -> None:
-        for i in range(16):
-            self.ctx.set(f"net_pc_in{i}", (addr >> i) & 1, stuck=True)
-
-    def _macro_end_tick(self) -> None:
-        op = self.current_op
-        n = phase_count(op)
-        last_ph = max(0, n - 1)
-        row = lookup_row(op, last_ph)
-        self.cpld_cu.lut.row = None
-        self.ctx.clear_stuck()
-        self._default_nets()
-        self._sync_phase_nets()
-        self._sync_opcode_nets()
-
-        if op == OP_CALL:
+        strobes: set[str] = {"EX"}
+        read: int | None = None
+        write: tuple[int, int] | None = None
+        if op == OP_ADD:
+            result = self.gpr.qa() + self.mbr.mbr
+            self.gpr.regs[0] = result & 0xFF
+            self.flg.z, self.flg.c = (result & 0xFF) == 0, result > 0xFF
+            strobes |= {"Y_OE", "REG_WE", "FLG_WE", "ALU_ADD"}
+        elif op == OP_CMP:
+            result = (self.gpr.qa() - self.mbr.mbr) & 0x1FF
+            self.flg.z, self.flg.c = (result & 0xFF) == 0, result < 0x100
+            strobes |= {"FLG_WE", "ALU_CMP"}
+        elif op in (OP_LDA, OP_LDIO):
+            read = self.mem.read(self._eff_addr())
+            self.gpr.regs[0] = read
+            strobes |= {"MEM_RD", "REG_WE"}
+        elif op in (OP_STA, OP_STIO, OP_STA16):
+            addr, val = self._eff_addr(), self.gpr.qa()
+            self.mem.write(addr, val)
+            write = (addr, val)
+            strobes |= {"Y_OE", "MEM_WR"}
+        elif op == OP_BEQ:
+            strobes.add("PC_LOAD_EN")
+            if self.flg.z:
+                self.pc.pc = self.mbr.mbr | (self.abs16_hi.hi << 8)
+                self._bubble = True
+        elif op == OP_JMP:
+            self.pc.pc = self.mbr.mbr | (self.abs16_hi.hi << 8)
+            strobes.add("PC_LOAD_EN")
+            self._bubble = True
+        elif op == OP_CALL:
             try:
                 self.return_stack.push_return(self.pc.pc)
+                self.pc.pc = self.mbr.mbr | (self.abs16_hi.hi << 8)
+                strobes |= {"PC_LOAD_EN", "STACK_PUSH"}
+                self._bubble = True
             except StackError:
                 self.halted = True
-                return
-
-        if op == OP_RET:
+        elif op == OP_RET:
             try:
-                ret_pc = self.return_stack.pop_return()
+                self.pc.pc = self.return_stack.pop_return()
+                strobes |= {"PC_LOAD_EN", "STACK_POP"}
+                self._bubble = True
             except StackError:
                 self.halted = True
-                return
-            self._drive_pc_in(ret_pc)
+        elif op == OP_HALT:
+            self.halted = True
+        return strobes, read, write
 
-        if row:
-            self.ctx.set(
-                "net_pc_load_en",
-                H if row.pc_load_en else L,
-                stuck=True,
-            )
-            self.ctx.set(
-                "net_pc_load_flg_z",
-                H if row.pc_load_flg_z else L,
-                stuck=True,
-            )
-        self.ctx.drive(NET_REG_WE_LUT, L, "macro_end")
-        self.ctx.comb_fixup()
-        self.ctx.set("net_macro_end", H)
-        self.ctx.comb_fixup()
-        self.ctx.pulse_clock()
-        self.ctx.set("net_macro_end", L)
+    def _emit(self, state: P12State, before: int, stage: StageActivity, strobes: set[str], read: int | None = None, write: tuple[int, int] | None = None, *, retired: bool = False, stalled: bool = False, bubble: bool = False, stretched: bool = False, fallback: bool = False) -> None:
+        rec = SysTrace(self.sys_index, state, stage, before, self.pc.pc, self.ir.ir, self.mbr.mbr, self.gpr.qa(), self.flg.z, self.flg.c, read, write, frozenset(strobes), retired, stalled, bubble, stretched, fallback)
+        self.last_trace = rec
+        self.trace.append(rec)
+        self.sys_index += 1
+
+    def request_stretch(self) -> None:
+        """Add one visible SYS to the next advancement (lab qualification hook)."""
+        self._stretch_next = True
+
+    def request_fallback_fe2(self) -> None:
+        """Use the named serial fetch/execute fallback on the next advancement."""
+        self._fallback_next = True
 
     def step(self) -> None:
         if self.halted:
             return
-        if self.fetch_pending:
-            self._fetch_tick()
+        if self._stage == "extra":
+            self._extra_tick()
             return
-
-        n = phase_count(self.current_op)
-        if self.phase.phase >= n:
-            self._macro_end_tick()
-            self.fetch_pending = True
-            self.phase.reset()
+        before = self.pc.pc
+        if self._stretch_next or self._fallback_next:
+            stretch, fallback = self._stretch_next, self._fallback_next
+            self._stretch_next = self._fallback_next = False
+            state = P12State.STRETCH if stretch else P12State.FALLBACK_FE2
+            self._emit(state, before, StageActivity(), {state.value}, stretched=stretch, fallback=fallback)
             return
+        if self._stage == "fetch":
+            addr = self.pc.pc
+            self.current_op = self.mem.read(addr)
+            self.ir.ir = self.current_op
+            ctl = control_for(self.current_op)
+            if self.current_op != OP_HALT:
+                self.pc.pc = (self.pc.pc + 1) & 0xFFFF
+            self._operand_len = ctl.length - 1
+            self._operand_byte = 0
+            self.fetch_pending = False
+            self._fetch_record(before, addr, ir=True)
+            if self.current_op == OP_HALT:
+                self._execute()
+                self._emit(P12State.FILL if self.sys_index == 0 else P12State.IF_EX, before, StageActivity(True, addr, True, self.current_op), {"IF", "EX"}, retired=True)
+                return
+            self._stage = "operand" if self._operand_len else "execute"
+            self.state = P12State.FILL if self.sys_index == 0 else (P12State.OPERAND_IF if self._operand_len else P12State.IF_EX)
+            self._emit(self.state, before, StageActivity(True, addr, False, None), {"IF", "IR_LOAD", "PC_INC"})
+            return
+        if self._stage == "operand":
+            addr = self.pc.pc
+            val = self.mem.read(addr)
+            self.pc.pc = (self.pc.pc + 1) & 0xFFFF
+            if self._operand_byte == 0:
+                self.mbr.mbr = val
+            else:
+                self.abs16_hi.hi = val
+            self._operand_byte += 1
+            self._stage = "execute" if self._operand_byte >= self._operand_len else "operand"
+            load_strobe = "MBR_LOAD" if self._operand_byte == 1 else "ABS16_HI_LOAD"
+            if self._stage == "execute":
+                strobes, read, write = self._execute()
+                ctl = control_for(self.current_op)
+                state = P12State.STACK_EX if ctl.stack else (P12State.MEM_STALL if ctl.memory else P12State.IF_EX)
+                self.state = state
+                self.fetch_pending = True
+                self._emit(state, before, StageActivity(True, addr, True, self.current_op), strobes | {"IF", load_strobe, "PC_INC"}, read, write, retired=not self.halted, stalled=ctl.memory)
+                if self.halted:
+                    return
+                self._stack_ticks = 2 if ctl.stack else (1 if self._bubble else 0)
+                self._stage = "extra" if self._stack_ticks else "fetch"
+                self._bubble = False
+            else:
+                self.state = P12State.OPERAND_IF
+                self._emit(self.state, before, StageActivity(True, addr, False, None), {"IF", load_strobe, "PC_INC"})
+            return
+        strobes, read, write = self._execute()
+        ctl = control_for(self.current_op)
+        state = P12State.STACK_EX if ctl.stack else (P12State.MEM_STALL if ctl.memory else P12State.IF_EX)
+        self.state = state
+        self.fetch_pending = True
+        self._emit(state, before, StageActivity(not ctl.memory, self.pc.pc if not ctl.memory else None, True, self.current_op), strobes, read, write, retired=not self.halted, stalled=ctl.memory)
+        if self.halted:
+            return
+        if ctl.stack:
+            self._stack_ticks = 2
+        elif self._bubble:
+            self._stack_ticks = 1
+        self._stage = "extra" if self._stack_ticks else "fetch"
+        self._bubble = False
 
-        self.execute_phase()
-
-        if self.phase.phase >= n:
-            self._macro_end_tick()
-            self.fetch_pending = True
-            self.phase.reset()
+    def _extra_tick(self) -> None:
+        before = self.pc.pc
+        ctl = control_for(self.current_op)
+        if self._stack_ticks > 1:
+            state, strobes = P12State.STACK_EX, {"STACK_EX"}
+        else:
+            state, strobes = (P12State.BRANCH_BUBBLE if ctl.redirect else P12State.STACK_EX), {"BUBBLE" if ctl.redirect else "STACK_EX"}
+        self._stack_ticks -= 1
+        self._emit(state, before, StageActivity(), strobes, bubble=ctl.redirect)
+        if not self._stack_ticks:
+            self._stage = "fetch"
 
     def run(self, max_steps: int = 500, *, wall_s: float = 10.0) -> int:
         import time
-
-        deadline = time.monotonic() + wall_s
-        steps = 0
-        while not self.halted and steps < max_steps:
-            if time.monotonic() > deadline:
-                break
-            self.step()
+        deadline, steps = time.monotonic() + wall_s, 0
+        while not self.halted and steps < max_steps and time.monotonic() <= deadline:
+            if self._stage == "extra":
+                self._extra_tick()
+            else:
+                self.step()
             steps += 1
         return steps
 
@@ -365,8 +236,16 @@ class CpuM3b:
 
     @property
     def current_operand16(self) -> int:
-        return (self.mbr.mbr & 0xFF) | ((self.abs16_hi.hi & 0xFF) << 8)
+        return self.mbr.mbr | (self.abs16_hi.hi << 8)
 
     @property
     def operand16(self) -> int:
         return self.current_operand16
+
+    @property
+    def sys_ticks(self) -> int:
+        return self.sys_index
+
+    @property
+    def traces(self) -> tuple[SysTrace, ...]:
+        return tuple(self.trace)
