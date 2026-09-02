@@ -2,7 +2,15 @@
 
 from __future__ import annotations
 
-from simulators.cyclesim.data.isa import OP_ADD, OP_BEQ, OP_HALT, OP_JMP, OP_LDA, OP_RET
+from simulators.cyclesim.data.isa import (
+    OP_ADD,
+    OP_BEQ,
+    OP_CALL,
+    OP_HALT,
+    OP_JMP,
+    OP_LDA,
+    OP_RET,
+)
 from simulators.cyclesim.data.p12 import P12State, control_for
 from simulators.cyclesim.program import ProgramRunner
 
@@ -57,3 +65,30 @@ def test_explicit_degrade_hooks() -> None:
     runner.cpu.request_fallback_fe2()
     runner.cpu.step()
     assert runner.cpu.last_trace and runner.cpu.last_trace.state is P12State.FALLBACK_FE2
+
+
+def test_redirect_sys_costs_include_stack_and_bubble() -> None:
+    jmp = run_bytes(bytes([OP_JMP, 3, 0, OP_HALT]))
+    for _ in range(4):
+        jmp.cpu.step()
+    assert jmp.cpu.sys_ticks == 4
+    assert jmp.cpu.last_trace and jmp.cpu.last_trace.state is P12State.BRANCH_BUBBLE
+
+    call = run_bytes(bytes([OP_CALL, 4, 0, OP_HALT, OP_RET]))
+    call.run_until_halt(max_steps=30)
+    call_traces = call.cpu.traces
+    assert sum(t.state is P12State.STACK_EX for t in call_traces) == 2
+    assert any(t.state is P12State.BRANCH_BUBBLE for t in call_traces)
+
+    ret = run_bytes(bytes([OP_RET]))
+    # Seed a valid return address so RET reaches its redirect bubble.
+    from simulators.cyclesim.blocks.return_stack import RP_CELL, STACK_BASE
+
+    ret.load_ram(RP_CELL, (STACK_BASE + 2) & 0xFF)
+    ret.load_ram(RP_CELL + 1, ((STACK_BASE + 2) >> 8) & 0xFF)
+    ret.load_ram(STACK_BASE, OP_HALT)
+    ret.load_ram(STACK_BASE + 1, 0)
+    ret.cpu.step()
+    ret.cpu.step()
+    assert sum(t.state is P12State.STACK_EX for t in ret.cpu.traces) == 2
+    assert any(t.state is P12State.BRANCH_BUBBLE for t in ret.cpu.traces)

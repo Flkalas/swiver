@@ -190,7 +190,8 @@ class CpuM3b:
                 self._emit(state, before, StageActivity(True, addr, True, self.current_op), strobes | {"IF", load_strobe, "PC_INC"}, read, write, retired=not self.halted, stalled=ctl.memory)
                 if self.halted:
                     return
-                self._stack_ticks = 2 if ctl.stack else (1 if self._bubble else 0)
+                # CALL/RET spend two stack SYS plus one redirect bubble.
+                self._stack_ticks = 3 if ctl.stack else (1 if self._bubble else 0)
                 self._stage = "extra" if self._stack_ticks else "fetch"
                 self._bubble = False
             else:
@@ -206,7 +207,8 @@ class CpuM3b:
         if self.halted:
             return
         if ctl.stack:
-            self._stack_ticks = 2
+            # CALL/RET spend two stack SYS plus one redirect bubble.
+            self._stack_ticks = 3
         elif self._bubble:
             self._stack_ticks = 1
         self._stage = "extra" if self._stack_ticks else "fetch"
