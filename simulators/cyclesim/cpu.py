@@ -176,9 +176,13 @@ class CpuM3b:
             self._operand_byte += 1
             self._stage = "execute" if self._operand_byte >= self._operand_len else "operand"
             load_strobe = "MBR_LOAD" if self._operand_byte == 1 else "ABS16_HI_LOAD"
-            if self._stage == "execute":
+            ctl = control_for(self.current_op)
+            if self._stage == "execute" and ctl.memory:
+                self.state = P12State.OPERAND_IF
+                self._stage = "execute"
+                self._emit(self.state, before, StageActivity(True, addr, False, None), {"IF", load_strobe, "PC_INC"})
+            elif self._stage == "execute":
                 strobes, read, write = self._execute()
-                ctl = control_for(self.current_op)
                 state = P12State.STACK_EX if ctl.stack else (P12State.MEM_STALL if ctl.memory else P12State.IF_EX)
                 self.state = state
                 self.fetch_pending = True
