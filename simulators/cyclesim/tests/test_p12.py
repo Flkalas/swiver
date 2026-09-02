@@ -74,11 +74,12 @@ def test_redirect_sys_costs_include_stack_and_bubble() -> None:
     assert jmp.cpu.sys_ticks == 4
     assert jmp.cpu.last_trace and jmp.cpu.last_trace.state is P12State.BRANCH_BUBBLE
 
-    call = run_bytes(bytes([OP_CALL, 4, 0, OP_HALT, OP_RET]))
-    call.run_until_halt(max_steps=30)
+    call = run_bytes(bytes([OP_CALL, 3, 0, OP_HALT]))
+    for _ in range(6):
+        call.cpu.step()
     call_traces = call.cpu.traces
-    assert sum(t.state is P12State.STACK_EX for t in call_traces) == 2
-    assert any(t.state is P12State.BRANCH_BUBBLE for t in call_traces)
+    assert sum(t.state is P12State.STACK_EX for t in call_traces) == 3
+    assert sum(t.state is P12State.BRANCH_BUBBLE for t in call_traces) == 1
 
     ret = run_bytes(bytes([OP_RET]))
     # Seed a valid return address so RET reaches its redirect bubble.
@@ -88,7 +89,7 @@ def test_redirect_sys_costs_include_stack_and_bubble() -> None:
     ret.load_ram(RP_CELL + 1, ((STACK_BASE + 2) >> 8) & 0xFF)
     ret.load_ram(STACK_BASE, OP_HALT)
     ret.load_ram(STACK_BASE + 1, 0)
-    ret.cpu.step()
-    ret.cpu.step()
-    assert sum(t.state is P12State.STACK_EX for t in ret.cpu.traces) == 2
+    for _ in range(5):
+        ret.cpu.step()
+    assert sum(t.state is P12State.STACK_EX for t in ret.cpu.traces) == 3
     assert any(t.state is P12State.BRANCH_BUBBLE for t in ret.cpu.traces)
