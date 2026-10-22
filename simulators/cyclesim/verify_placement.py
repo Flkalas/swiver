@@ -37,8 +37,10 @@ def run():
                 expect(page.locator(".bb-chip")).to_have_count(12)
                 expect(page.locator(".bb-hole")).to_have_count(5 * 830)
                 expect(page.locator("#place-topology")).to_have_value("compact221")
+                expect(page.locator("#place-gap_mm")).to_have_value("0")
+                expect(page.locator("#place-gap_mm")).not_to_be_editable()
                 expect(page.locator("#placement-cluster-note")).to_contain_text(
-                    "10.98 mm"
+                    "4.98 mm"
                 )
                 for width, height in ((1440, 900), (1280, 800)):
                     page.set_viewport_size({"width": width, "height": height})
@@ -46,18 +48,18 @@ def run():
                         "document.documentElement.scrollWidth <= innerWidth"
                     )
                     page.screenshot(
-                        path=str(OUT / f"compact221-{width}x{height}.png"),
+                        path=str(OUT / f"compact221-zero-{width}x{height}.png"),
                         full_page=True,
                     )
                 before = page.locator("#placement-map").get_attribute("viewBox")
                 page.locator("#placement-fit-cluster").click()
                 assert page.locator("#placement-map").get_attribute("viewBox") != before
                 page.locator(".placement-content").screenshot(
-                    path=str(OUT / "compact221-detail.png")
+                    path=str(OUT / "compact221-zero-detail.png")
                 )
                 page.locator("#placement-fit").click()
                 checks.append(
-                    "default five-board 4-1 / 4-1 / 2 layout, inward adders, 10.98 mm body gap and cluster zoom"
+                    "default five-board layout: fixed zero board gap, 4.98 mm adder body gap and cluster zoom"
                 )
 
                 page.locator("#place-edge_rows").fill("2")
@@ -72,7 +74,7 @@ def run():
                     for c in compact["candidates"]
                 )
                 expect(page.locator("#placement-cluster-note")).to_contain_text(
-                    "21.14 mm"
+                    "15.14 mm"
                 )
                 page.locator("#placement-chip-picker").select_option("U_ALU_283_LO")
                 page.locator("#placement-chip-row").fill("28")
@@ -164,11 +166,20 @@ def run():
                 fields.locator('[data-axis="x"]').fill(str(far_x))
                 with page.expect_response("**/api/placement/evaluate") as response:
                     page.locator("#placement-apply-boards").click()
+                assert response.value.status == 400
+                expect(page.locator("#placement-status")).to_contain_text("0 mm")
+                # A rigid translation keeps every board joined and is allowed.
+                for b in first["boards"]:
+                    row = page.locator(f'[data-board-edit="{b["id"]}"]')
+                    row.locator('[data-axis="x"]').fill(str(b["x"] + 5))
+                    row.locator('[data-axis="y"]').fill(str(b["y"] + 7))
+                with page.expect_response("**/api/placement/evaluate") as response:
+                    page.locator("#placement-apply-boards").click()
                 custom = response.value.json()
                 assert response.value.ok
                 expect(page.locator("#place-topology")).to_have_value("custom")
                 checks.append(
-                    "invalid row and overlapping boards rejected; independent board coordinates accepted"
+                    "invalid row, overlapping and disconnected boards rejected; joined board translation accepted"
                 )
 
                 with page.expect_download() as download:
@@ -185,15 +196,15 @@ def run():
                     csv.reader(wire_file.open(encoding="utf-8-sig", newline=""))
                 )
                 assert len(rows) == len(custom["candidate"]["wires"]) + 1
-                page.locator("#place-gap_mm").fill("20")
+                page.locator("#place-seed").fill("840")
                 with page.expect_response("**/api/placement/evaluate") as response:
                     page.locator("#placement-import").set_input_files(saved)
                 imported = response.value.json()
                 assert response.value.ok
                 assert imported["candidate"]["placements"] == exported["placements"]
                 assert imported["candidate"]["boards"] == exported["boards"]
-                expect(page.locator("#place-gap_mm")).to_have_value(
-                    str(exported["settings"]["gap_mm"]).removesuffix(".0")
+                expect(page.locator("#place-seed")).to_have_value(
+                    str(exported["settings"]["seed"])
                 )
                 checks.append(
                     "JSON export/import revalidates the exact placements; signal CSV lists evaluated jumper endpoints"
@@ -214,7 +225,7 @@ def run():
                 page.wait_for_function(
                     "document.getElementById('placement-search').disabled"
                 )
-                page.locator("#place-gap_mm").fill("21")
+                page.locator("#place-seed").fill("841")
                 assert pending
                 pending[0].fulfill(
                     json={
@@ -224,7 +235,7 @@ def run():
                 )
                 expect(page.locator("#placement-search")).to_be_enabled()
                 expect(page.locator("#placement-status")).to_contain_text("설정 변경됨")
-                expect(page.locator("#place-gap_mm")).to_have_value("21")
+                expect(page.locator("#place-seed")).to_have_value("841")
                 page.unroute("**/api/placement/search")
                 checks.append(
                     "failed search retains prior layout; stale delayed response cannot replace changed settings"
@@ -232,7 +243,6 @@ def run():
 
                 page.locator("#placement-unlock").click()
                 page.locator("#place-topology").select_option("zigzag")
-                page.locator("#place-gap_mm").fill("6")
                 page.locator("#place-grouping").select_option("stages")
                 page.locator("#place-board_count").select_option("4")
                 with page.expect_response("**/api/placement/search") as response:
@@ -246,7 +256,7 @@ def run():
                         "document.documentElement.scrollWidth <= innerWidth"
                     )
                     page.screenshot(
-                        path=str(OUT / f"placement-{width}x{height}.png"),
+                        path=str(OUT / f"placement-zero-{width}x{height}.png"),
                         full_page=True,
                     )
                 checks.append(

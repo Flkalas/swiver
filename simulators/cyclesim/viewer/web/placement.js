@@ -3,7 +3,7 @@ window.SwiverPlacement = (() => {
   const $=id=>document.getElementById(id);
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const short=id=>id.replace('U_ALU_','').replace('157_YBP_','157_');
-  const defaults={board_count:5,topology:'compact221',gap_mm:6,stagger_mm:55,orientation:'0',row_gap:2,edge_rows:0,iterations:400,seed:830,priority:'balanced',grouping:'compact221',rail_split:true};
+  const defaults={board_count:5,topology:'compact221',gap_mm:0,stagger_mm:55,orientation:'0',row_gap:2,edge_rows:0,iterations:400,seed:830,priority:'balanced',grouping:'compact221',rail_split:true};
   let circuit=null,result=null,candidate=null,locks=[],customBoards=[],onNet,selectedNet='net_c_lo',selectedChip=null;
   let generation=0,requestId=0,busy=false,drag=null,camera=null,dirty=false;
   const numeric=['board_count','gap_mm','stagger_mm','row_gap','edge_rows','iterations','seed'];

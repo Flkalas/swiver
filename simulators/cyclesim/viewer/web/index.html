@@ -41,7 +41,7 @@
       <div id="placement-settings" class="placement-settings">
         <label>빵판 수<select id="place-board_count"><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option></select></label>
         <label>배열<select id="place-topology"><option value="compact221">2–2–1 · 안쪽 모음</option><option value="all">일반 배열 비교</option><option value="horizontal">가로</option><option value="vertical">세로</option><option value="grid">격자</option><option value="zigzag">지그재그</option><option value="custom">직접 지정한 배열</option></select></label>
-        <label>보드 사이 간격 mm<input id="place-gap_mm" type="number" min="0" max="50" value="6"></label>
+        <label>보드 간격 · 돌기 결합 (mm)<input id="place-gap_mm" type="number" min="0" max="0" value="0" readonly aria-readonly="true" title="보드 외곽을 맞대어 0 mm로 고정합니다. 전선 여유는 가산기 안쪽 여유 행으로 조절하세요."></label>
         <label>지그재그 오프셋 mm<input id="place-stagger_mm" type="number" min="0" max="165" value="55"></label>
         <label>보드 방향<select id="place-orientation"><option value="auto">0° / 90° 비교</option><option value="0">0° · 긴 변 세로</option><option value="90">90° · 긴 변 가로</option></select></label>
         <label>평가 우선순위<select id="place-priority"><option value="balanced">배선·가독성 절충</option><option value="short">배선 길이 우선</option><option value="readable">읽기 쉬운 배치 우선</option></select></label>
