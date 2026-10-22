@@ -128,7 +128,7 @@ flowchart LR
 
 - `net_a0..7` → 283 A  
 - **임시:** `net_b_add0..7` ← B DIP (157 없이 **B를 가산기에 직결**하는 **브링업 전용**; 이후 단계 2에서 끊고 153 mux2 경유로 전환)  
-- LO **C4** → HI **C4** (캐리 연쇄)  
+- LO **COUT** → HI **CIN** (기능 핀 이름; 캐리 연쇄)
 - `net_cin` ← GND (ADD), SUB 검증 시 단계 4에서 VCC  
 - `net_sum0..7`, `net_c_hi` 관측
 
@@ -165,15 +165,9 @@ flowchart LR
 - SUB/CMP: `bctrl=0011` → mux2 selects inverted B (no 74HC04)  
 - `net_b_add*` → **283 B** (**단계 1 B 직결 제거**)
 
-**A/B 버스 (153 공통 A/B 핀)** — 산술/논리 opcode마다 소스가 달라 **점퍼 또는 선택 157×2** 로 전환:
+**A/B 버스 (153 공통 A/B 핀)** — 모든 연산에서 `A=net_a[i]`, `B=net_b[i]`에 고정한다. 선택값은 `A_bit + 2 × B_bit`이며, `net_153_s0/s1`은 이 선택 핀을 덮어쓰지 않는다. 두 신호의 OR는 코어 밖 제어 경계에서 `net_y_mux_sel`을 만들어 157 출력 경로만 고른다.
 
-| `net_y_mux_sel` (= s0\|s1) | `net_153_a[i]` | `net_153_b[i]` |
-|----------------------------|----------------|----------------|
-| 1 (논리) | `net_a[i]` | `net_b[i]` |
-| `net_bctrl0` … `net_bctrl3` | 153 mux2 data (B_CTRL) |
-
-브링업 Phase 1: opcode 클래스별로 위 표대로 **8비트 버스 점퍼** (산술 스모크 vs 논리 스모크 전환).  
-선택 Phase 2: `U_ALU_157_AB_0/1` ×2 — 4비트씩 2:1 MUX, SEL=`net_y_mux_sel` ([alu8-phase-b.md](../hardware/alu8-phase-b.md)).
+추가 A/B 선택 157이나 opcode별 버스 점퍼는 이 12칩 코어에 없다. `1G/2G`(153), `G`(157)는 GND에 타이한다. 넷리스트의 A0..A3, CIN/COUT 등은 기능 핀 이름이며 실제 DIP 번호는 제조사 데이터시트로 확인한다.
 
 **검증 (B-path)**
 
@@ -184,13 +178,13 @@ flowchart LR
 | INC | 1 | 0000 | 12 | × | 13 |
 | DEC | 0 | 1111 | 12 | × | 11 |
 
-**검증 (logic, AB 버스 논리 모드 + YBP 미장착 시 `net_y_logic` LED)**
+**검증 (logic, A/B 고정 연결 + YBP 미장착 시 `net_y_logic` LED)**
 
 | Op | A | B | lgc | 기대 `net_y_logic` |
 |----|---|---|-----|---------------------|
-| AND | 12 | 34 | 0001 | 10 |
+| AND | 12 | 34 | 1000 | 10 |
 | XOR | 12 | 34 | 0110 | 26 |
-| NOT | 12 | 00 | 1000 | ED |
+| NOT | 12 | 34 | 0101 | ED |
 
 **Pass:** ADD/SUB/INC/DEC + AND/XOR/NOT 스모크. B DIP는 INC/DEC에서 **의미 없음**.
 
@@ -253,7 +247,7 @@ ALU 단독 Pass 후 [M1-b3-procedure.md](M1-b3-procedure.md) § B3b/B3c 진행:
 |------|---------|------|-----------|
 | 0 | — | 0 | 전원 |
 | 1 | 283×2 | 2 | ADD / 캐리 |
-| 2 | 153×8 | 10 | B_CTRL + mux1 logic, AB bus jumpers |
+| 2 | 153×8 | 10 | B_CTRL + mux1 logic, A/B 고정 연결 |
 | 3 | 157 YBP×2 | **12** | sum bypass → Y, 12 opcode |
 | 4 | (M1 optional decode) | +α | M1 bench automation only |
 | 5 | 574·클록 | 시스템 | B3b/c |

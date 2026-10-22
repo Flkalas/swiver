@@ -15,15 +15,15 @@
 
 | sel | `alu_op` | Mnemonic | 동작 | C / Z 플래그 |
 |-----|----------|----------|------|---------------|
-| 0 | `0x0` | **NOP** | Y = 0 (산술·논리 무효) | 유지 |
+| 0 | `0x0` | **NOP** | 물리 Y = A (제로 제어); CPU 상태 유지 | 유지 |
 | 1 | `0x1` | **ADD** | Y = A + B | C = carry, Z = (Y==0) |
 | 2 | `0x2` | **SUB** | Y = A + ~B + 1 (2의 보수) | C = carry, Z; borrow = ~C_hi |
 | 3 | `0x3` | **AND** | Y = A & B | Z |
 | 4 | `0x4` | **OR** | Y = A \| B | Z |
 | 5 | `0x5` | **XOR** | Y = A ^ B | Z |
 | 6 | `0x6` | **NOT** | Y = ~A (B 무시) | Z |
-| 7 | `0x7` | **PASS_A** | Y = A (`AND` + B=0xFF) | Z |
-| 8 | `0x8` | **PASS_B** | Y = B (`AND` + A=0xFF) | Z |
+| 7 | `0x7` | **PASS_A** | Y = A (B 무관, LGC=1010) | Z |
+| 8 | `0x8` | **PASS_B** | Y = B (A 무관, LGC=1100) | Z |
 | 9 | `0x9` | **INC** | Y = A + 1 (`cin=1`, `bctrl=0000` → A+0+1) | C, Z |
 | 10 | `0xA` | **DEC** | Y = A − 1 (`bctrl=1111`) | C, Z |
 | 11 | `0xB` | **CMP** | SUB와 동일 Y | C, Z — `net_cmp_z`=`Y==0`, `net_cmp_c_ge`=`net_c_hi` |
@@ -41,19 +41,23 @@
 | 0 | NOP | 0 | 0000 | 00 | 0000 |
 | 1 | ADD | 0 | 1100 | 00 | 0000 |
 | 2 | SUB | 1 | 0011 | 00 | 0000 |
-| 3 | AND | 0 | 0000 | 01 | 0001 |
-| 4 | OR | 0 | 0000 | 10 | 0111 |
+| 3 | AND | 0 | 0000 | 01 | 1000 |
+| 4 | OR | 0 | 0000 | 10 | 1110 |
 | 5 | XOR | 0 | 0000 | 11 | 0110 |
-| 6 | NOT | 0 | 0000 | 11 | 1000 |
-| 7 | PASS_A | 0 | 0000 | 01 | 0001 |
-| 8 | PASS_B | 0 | 0000 | 01 | 0001 |
+| 6 | NOT | 0 | 0000 | 11 | 0101 |
+| 7 | PASS_A | 0 | 0000 | 01 | 1010 |
+| 8 | PASS_B | 0 | 0000 | 01 | 1100 |
 | 9 | INC | 1 | 0000 | 00 | 0000 |
 | 10 | DEC | 0 | 1111 | 00 | 0000 |
 | 11 | CMP | 1 | 0011 | 00 | 0000 |
 
-`lgc3:0` → `net_lgc3..0` (153 mux1 C inputs). Logic ops: `s0|s1` → **157_YBP** selects `net_y_logic`.
+`lgc3:0` → `net_lgc3..0` (153 mux1 C3..C0). 153 선택값은 항상 `A_bit + 2 × B_bit`; `s0|s1`은 코어 밖에서 **157_YBP**의 출력 경로만 고른다. 153 `1G/2G`와 157 `G`는 GND에 타이한다.
+
+표 원본은 `simulators/cyclesim/blocks/alu8.py`의 `ALU_PRESETS`이며 `python -m simulators.cyclesim.export.alu8_controls --check`로 정합성을 검사한다. 물리 `net_c_hi`는 논리 출력 선택 중에도 가산기 carry를 유지한다. `net_cmp_z`/`net_cmp_c_ge`는 12칩 밖 관측 경계이고, CMP의 ACC 쓰기 금지와 NOP의 상태 유지는 CPU 정책이다.
 
 ---
+
+**검증 경계 (2026-10):** 아래 지연 수치는 기존 동결 타이밍 자료를 유지한다. 새 뷰어의 제로 지연 기능 검증은 이 ns 수치를 재측정하거나 보증하지 않는다. LUT 정합화 이후의 실제 지연·배선·전기적 fanout 검증은 별도 브링업 항목이다.
 
 ## 3. 조합 전파 지연 (operand → Y)
 
@@ -64,15 +68,15 @@
 <!-- TIMING_TABLE_START -->
 | sel | Op | 경로 등급 | max (ns) | slack @ max (ns) | 비고 |
 |-----|-----|-----------|----------|------------------|------|
-| 0 | NOP | adder | **108** | 392 | sum path (Y=0) |
+| 0 | NOP | adder | **108** | 392 | sum path (물리 Y=A) |
 | 1 | ADD | adder | **108** | 392 | 283 → **157_YBP** |
 | 2 | SUB | arith B-path | **136** | 364 | 153 mux2 → 283 |
 | 3 | AND | logic | **46** | 454 | `U_ALU_153_0` mux1 → 157_YBP |
 | 4 | OR | logic | **46** | 454 |  |
 | 5 | XOR | logic | **46** | 454 |  |
 | 6 | NOT | logic | **46** | 454 |  |
-| 7 | PASS_A | logic | **46** | 454 | AND pattern + B=FF |
-| 8 | PASS_B | logic | **46** | 454 | AND pattern + A=FF |
+| 7 | PASS_A | logic | **46** | 454 | 기존 측정: AND pattern + B=FF; 새 PASS LUT 재측정 아님 |
+| 8 | PASS_B | logic | **46** | 454 | 기존 측정: AND pattern + A=FF; 새 PASS LUT 재측정 아님 |
 | 9 | INC | **critical** | **153** | 347 | `net_cin` → 283 ripple |
 | 10 | DEC | adder | **108** | 392 | 283-only test path; full path = SUB class |
 | 11 | CMP | arith B-path | **136** | 364 | Y = SUB; flags §3.5 |

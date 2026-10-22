@@ -57,7 +57,7 @@ This document is the **single normative reference** for who decodes what on the 
 | `net_cin` | 283 carry in (1 for SUB/CMP/**INC**) |
 | `net_bctrl0..3` | 153 mux2 data pattern |
 | `net_lgc0..3` | 153 mux1 logic pattern |
-| `net_153_s0`, `net_153_s1` | Operand select → `y_mux_sel` |
+| `net_153_s0`, `net_153_s1` | 출력 경로 제어 → `y_mux_sel = s0 \| s1`; 153 A/B 선택 핀은 피연산자에 고정 |
 
 **Fanout at 153:** `bctrl1` ← `bctrl0`, `bctrl3` ← `bctrl2` (CU ties internally).
 

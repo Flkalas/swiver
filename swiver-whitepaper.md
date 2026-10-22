@@ -194,13 +194,13 @@ ALU는 CPU의 **순수 조합 데이터패스**입니다. 두 8비트 피연산�
 
 | Mnemonic          | 동작                  | 플래그  |
 | ----------------- | ------------------- | ---- |
-| NOP               | Y = 0               | 유지   |
+| NOP               | 물리 Y = A (제로 제어), CPU 상태 유지 | 유지   |
 | ADD               | Y = A + B           | C, Z |
 | SUB               | Y = A − B (2의 보수)   | C, Z |
 | AND, OR, XOR, NOT | 비트 논리               | Z    |
 | PASS_A, PASS_B    | 버스 통과               | Z    |
 | INC, DEC          | A ± 1               | C, Z |
-| CMP               | SUB와 동일 (결과 버스 미구동) | C, Z |
+| CMP               | 물리 Y = SUB; CPU ACC 쓰기·버스 OE 억제 | C, Z |
 
 
 정본: [alu-opcodes-timing.md](reference/hardware/alu-opcodes-timing.md) · 실기 치트시트: [b3-opcode.md](reference/hw-bringup/b3-opcode.md).

@@ -43,24 +43,24 @@ All opcodes: `A = net_a[i]`, `B = net_b[i]`.
 | sel | A | B | Result |
 |-----|---|---|--------|
 | 0 | 0 | 0 | C0 |
-| 1 | 0 | 1 | C1 |
-| 2 | 1 | 0 | C2 |
+| 1 | 1 | 0 | C1 |
+| 2 | 0 | 1 | C2 |
 | 3 | 1 | 1 | C3 |
 
 ### Opcode → C0..C3 (`net_lgc0..3`, shared 8-bit)
 
 | Op | lgc0 | lgc1 | lgc2 | lgc3 | Notes |
 |----|------|------|------|------|-------|
-| NOP | 0 | 0 | 0 | 0 | Y=0 |
+| NOP | 0 | 0 | 0 | 0 | logic=0; sum 선택이므로 물리 Y=A, CPU hold |
 | AND | 0 | 0 | 0 | 1 | A&B |
 | OR | 0 | 1 | 1 | 1 | A\|B |
 | XOR | 0 | 1 | 1 | 0 | A^B |
-| NOT | 1 | 0 | 0 | 0 | ~A (B=0 in tests) |
-| PASS_A | 0 | 0 | 0 | 1 | A&FF → use B=all 1 in stimulus |
-| PASS_B | 0 | 0 | 0 | 1 | FF&B → use A=all 1 in stimulus |
+| NOT | 1 | 0 | 1 | 0 | ~A, B 무관 |
+| PASS_A | 0 | 1 | 0 | 1 | A, B 무관 |
+| PASS_B | 0 | 0 | 1 | 1 | B, A 무관 |
 | ADD/SUB/INC/DEC/CMP | * | * | * | * | Unused; `157_YBP` selects **sum** |
 
-Golden vectors: [b3-opcode.md](../hw-bringup/b3-opcode.md) — all 12 opcodes frozen 2026-07-04.
+제어 프리셋의 Python 원본: `simulators/cyclesim/blocks/alu8.py`. [b3-opcode.md](../hw-bringup/b3-opcode.md)는 현재 LUT 비트 순서로 정합화한 벤치 표다. 2026-07-04 벡터는 일부 입력만 검사한 과거 기준이며 전 입력 검증을 대신하지 않는다.
 
 ## B_CTRL mux2 (`net_bctrl3..0` → `2C3..2C0`)
 
