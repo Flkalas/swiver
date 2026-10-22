@@ -2,3 +2,6 @@
 .gate-internal{fill:none;stroke:#aebfba;stroke-width:1;opacity:.5}.gate-internal.enabled{stroke:#078c89;stroke-width:3;opacity:1}.gate-control{fill:none;stroke:#547b93;stroke-width:2;stroke-dasharray:5 3}.dip-pin.connected .dip-function{paint-order:stroke;stroke:#fff;stroke-width:3;stroke-linejoin:round}
 
 #gates-view.stale .gate-scroll{opacity:.45}#gates-view.stale .gate-state::before{content:"연결 오류 / 입력 미반영 — 이전 관측값입니다. ";color:#a74422;font-weight:bold}
+
+/* Match the diagram column count without CSP-blocked inline styles. */
+.dip-diagram.dip-single{min-width:360px}.dip-diagram.dip-many{min-width:700px}
