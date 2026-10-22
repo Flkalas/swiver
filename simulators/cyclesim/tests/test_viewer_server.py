@@ -21,14 +21,14 @@ def server():
         assert not thread.is_alive()
 
 
-def call(server, path, payload=None, *, raw=None, headers=None):
+def call(server, path, payload=None, *, raw=None, headers=None, timeout=3):
     data = raw if raw is not None else (json.dumps(payload).encode() if payload is not None else None)
     request = urllib.request.Request(
         f"http://127.0.0.1:{server.server_port}{path}", data=data,
         headers=headers or ({"Content-Type": "application/json"} if data is not None else {}),
     )
     try:
-        response = urllib.request.urlopen(request, timeout=3)
+        response = urllib.request.urlopen(request, timeout=timeout)
     except urllib.error.HTTPError as exc:
         response = exc
     with response:
@@ -98,7 +98,9 @@ def test_placement_api_does_not_mutate_simulator(server):
     _, before = call(server, "/api/snapshot")
     status, profile = call(server, "/api/placement/profile")
     assert status == 200 and profile["profile"]["rows"] == 63
-    status, result = call(server, "/api/placement/search", {"request_id": 2, "settings": {"iterations": 40}})
+    # Collision-aware routing of up to eight candidates takes about 9 s.
+    # Retain the suite's 30 s wall cap and the 3 s budget for ordinary APIs.
+    status, result = call(server, "/api/placement/search", {"request_id": 2, "settings": {"iterations": 40}}, timeout=20)
     assert status == 200 and result["request_id"] == 2
     candidate = result["candidates"][0]
     payload = {"request_id": 3, "settings": result["settings"], "boards": candidate["boards"], "placements": candidate["placements"]}

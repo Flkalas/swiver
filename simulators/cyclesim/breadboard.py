@@ -16,6 +16,7 @@ import random
 import time
 
 from simulators.cyclesim.viewer_model import circuit_definition
+from simulators.cyclesim.wire_router import Router, audit
 
 VERSION = "bb830-search-v1"
 PITCH = 2.54
@@ -600,57 +601,11 @@ def segment_clear(a, b, rects):
     return True
 
 
-def route(a, b, rects):
-    candidates = [[a, [b[0], a[1]], b], [a, [a[0], b[1]], b]]
-    for x in sorted(
-        {round(r[i] + delta, 3) for r in rects for i, delta in ((0, -2.54), (2, 2.54))}
-    ):
-        candidates.append([a, [x, a[1]], [x, b[1]], b])
-    for y in sorted(
-        {round(r[i] + delta, 3) for r in rects for i, delta in ((1, -2.54), (3, 2.54))}
-    ):
-        candidates.append([a, [a[0], y], [b[0], y], b])
-    best = None
-    length = math.inf
-    for path in candidates:
-        d = sum(manhattan(x, y) for x, y in zip(path, path[1:]))
-        if d >= length:
-            continue
-        if all(segment_clear(x, y, rects) for x, y in zip(path, path[1:])):
-            best = [path[0]] + [v for u, v in zip(path, path[1:]) if v != u]
-            length = d
-    return best, round(length, 2) if best else None
-
-
-def crossing_count(wires):
-    count = 0
-    for i, a in enumerate(wires):
-        for b in wires[i + 1 :]:
-            if a["net"] == b["net"]:
-                continue
-            for p, q in zip(a["path"], a["path"][1:]):
-                for r, s in zip(b["path"], b["path"][1:]):
-                    if (
-                        p[1] == q[1]
-                        and r[0] == s[0]
-                        and min(p[0], q[0]) < r[0] < max(p[0], q[0])
-                        and min(r[1], s[1]) < p[1] < max(r[1], s[1])
-                    ):
-                        count += 1
-                    elif (
-                        p[0] == q[0]
-                        and r[1] == s[1]
-                        and min(p[1], q[1]) < r[1] < max(p[1], q[1])
-                        and min(r[0], s[0]) < p[0] < max(r[0], s[0])
-                    ):
-                        count += 1
-    return count
-
-
 def detailed(placements, boards):
     pins, rects = contacts(placements, boards)
     used = set()
     wires = []
+    planned = []
     diagnostics = []
 
     def contact(pin):
@@ -673,20 +628,31 @@ def detailed(placements, boards):
             if aa is None or bb is None:
                 diagnostics.append(f"{net['id']}: 점퍼용 접점 부족")
                 continue
-            path, length = route(aa["xy"], bb["xy"], rects)
-            if path is None:
-                diagnostics.append(f"{net['id']}: 칩 몸체를 피하는 경로 미발견")
-                continue
-            wires.append(
+            planned.append(
                 {
+                    "id": f"J{len(planned) + 1:03d}",
                     "net": net["id"],
                     "kind": net["kind"],
                     "from": aa,
                     "to": bb,
-                    "path": path,
-                    "length_mm": length,
                 }
             )
+    router = Router(
+        rects,
+        [p["xy"] for p in pins.values()]
+        + [e["xy"] for w in planned for e in (w["from"], w["to"])],
+    )
+    for wire in sorted(
+        planned, key=lambda w: (manhattan(w["from"]["xy"], w["to"]["xy"]), w["id"])
+    ):
+        path, length = router.route(wire["from"]["xy"], wire["to"]["xy"])
+        if path is None:
+            diagnostics.append(
+                f"{wire['id']} {wire['net']}: 전선·접점·칩 몸체를 피하는 경로 미발견"
+            )
+            continue
+        router.commit(path, wire["id"])
+        wires.append(wire | {"path": path, "length_mm": length})
     components = {p["id"]: p for p in definition()["components"]}
     external_inputs = []
     external_outputs = []
@@ -709,7 +675,7 @@ def detailed(placements, boards):
         "wires": wires,
         "routing_diagnostics": diagnostics,
         "routed_mm": round(sum(w["length_mm"] for w in wires), 2),
-        "crossings": crossing_count(wires),
+        **audit(wires),
         "external_inputs": external_inputs,
         "external_outputs": external_outputs,
     }
