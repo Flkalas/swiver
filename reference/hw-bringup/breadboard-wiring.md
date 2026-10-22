@@ -1,8 +1,8 @@
-# Breadboard v1.0 wiring reference (P12)
+# Breadboard v1.0 wiring reference (sequential)
 
-**Normative:** [system-architecture.md](../hardware/system-architecture.md) · [cpld-system-controller.md](../hardware/cpld-system-controller.md) · [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) · [cpld-dual-routing.md](../hardware/cpld-dual-routing.md)
+**Normative:** [system-architecture.md](../hardware/system-architecture.md) · [cpld-system-controller.md](../hardware/cpld-system-controller.md) · [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md) · [cpld-dual-routing.md](../hardware/cpld-dual-routing.md)
 
-Single breadboard target — **v1.0 dual CPLD / pipe CU**. **CPLD-CU** = pipe + strobes; **CPLD-DP** = **R0 + `q_a`**; **MBR 574 → ALU B**; CE/mailbox = **138×2 + glue**.
+Single breadboard target — **v1.0 dual CPLD / sequential CU**. **CPLD-CU** = sequential FSM + strobes; **CPLD-DP** = **R0 + `q_a`**; **MBR 574 → ALU B**; CE/mailbox = **138×2 + glue**.
 
 ---
 
@@ -22,9 +22,11 @@ Single breadboard target — **v1.0 dual CPLD / pipe CU**. **CPLD-CU** = pipe + 
 
 ## Control path
 
+Instructions and data share one 64 KiB address space and one address/data bus; RAM is executable. Complete the current instruction before the next fetch. Opcode/operand fetch never overlaps EX.
+
 | Source | Role |
 |--------|------|
-| **IR[4:0]** | Pipe decode on **CPLD-CU** |
+| **IR[4:0]** | Sequential decode on **CPLD-CU** |
 | **MBR 574** | Operand imm8 / abs16; **ALU B** |
 | **CPLD-CU** | Direct strobes to SoC |
 | **G-IC** | **`reg_we` only** → CPLD-DP (R0 write) |
@@ -41,7 +43,7 @@ Single breadboard target — **v1.0 dual CPLD / pipe CU**. **CPLD-CU** = pipe + 
 | MBR | Operand / abs16 low; **ALU B source** |
 | FLG | Z, C |
 
-**3× 574** base (plus pipe IR/operand latches per [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md)).
+This is a logical latch-role list, not a revised procurement count. Preserve [BOM.md](../project/BOM.md) quantities; actual PC, abs16, and return-stack latch allocation must be reconciled against the sequential CU implementation before hardware sign-off.
 
 ---
 

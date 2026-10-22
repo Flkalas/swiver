@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | **Milestone** | M2b (datapath) |
-| **Normative** | [cpld-system-controller.md](../hardware/cpld-system-controller.md) v1.0 P12 |
+| **Normative** | [cpld-system-controller.md](../hardware/cpld-system-controller.md) v1.0 sequential |
 | **Goal** | **CPLD-only R0 (AC)** + MBR→ALU B + ADD (no external 574 GPR) |
 
 ---
@@ -74,11 +74,11 @@ REG_WE=1 @ CLK↑ → R0 <= d_in
 
 **Pass:** Z/C from ALU (B from MBR).
 
-### G4 — FSM ADD ph2
+### G4 — Sequential ADD execute
 
-**작업:** R0=`0x12`, MBR=`0x34`; ph2 ADD; `Y_OE`, `REG_WE`.
+**작업:** R0=`0x12`, MBR=`0x34`; operand fetch 완료 뒤 ADD EX; `Y_OE`, `REG_WE`.
 
-**Pass:** **R0** = `0x46` (ADD writeback to AC).
+**Pass:** **R0** = `0x46` (ADD writeback to AC). opcode/operand fetch와 EX가 겹치지 않고, 다음 명령 fetch는 이 명령 완료 뒤 시작한다 ([순차 CU](../hardware/cpld-sequential-cu.md)).
 
 ---
 

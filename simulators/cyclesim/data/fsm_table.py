@@ -1,6 +1,6 @@
-"""idx5 FSM control table — LEGACY Gi1 multiphase golden (not Active v1.0 P12).
+"""idx5 FSM control table — LEGACY Gi1 multiphase golden (not the Active sequential CPU).
 
-Active CU truth: reference/hardware/cpld-pipe-cu.md
+Active CU truth: reference/hardware/cpld-sequential-cu.md
 """
 
 from __future__ import annotations

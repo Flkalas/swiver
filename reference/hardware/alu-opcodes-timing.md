@@ -2,7 +2,7 @@
 
 **버전:** 1.5 · **기준일:** 2026-07-13  
 **블록:** [`hw/netlist/blocks/alu8.yaml`](../../hw/netlist/blocks/alu8.yaml)  
-**디코드:** **M1** — DIP / [b3-opcode.md](../hw-bringup/b3-opcode.md) · **SoC** — CPLD pipe CU ([control-and-decode.md](control-and-decode.md), [cpld-pipe-cu.md](cpld-pipe-cu.md))
+**디코드:** **M1** — DIP / [b3-opcode.md](../hw-bringup/b3-opcode.md) · **SoC** — CPLD sequential CU ([control-and-decode.md](control-and-decode.md), [cpld-sequential-cu.md](cpld-sequential-cu.md))
 
 12개 `alu_sel[3:0]` 연산의 동작·제어·**조합 전파 지연**을 한 표로 정리합니다.  
 지연 값은 pre-flight sim [`74hc.yaml`](../../hw/timing/74hc.yaml) **datasheet typ/max** 합산(배선 지연 0)이며, **2.0 MHz** `CLK_SYS` 전주기 **500 ns** 대비 slack을 함께 기록합니다.
@@ -61,7 +61,7 @@
 
 ## 3. 조합 전파 지연 (operand → Y)
 
-예산: **500 ns** = 2.0 MHz `CLK_SYS` 전주기 ([cpld-pipe-cu.md](cpld-pipe-cu.md) §7).
+비교 기준: **500 ns** = 명목 2.0 MHz `CLK_SYS` 전주기. 아래 ALU 단독 동결 수치는 유지하며, 새 순차 CU 전체 경로의 타이밍 합격은 [cpld-sequential-cu.md](cpld-sequential-cu.md)의 별도 실기 게이트다.
 
 ### 3.1 opcode별 지연 · slack
 
@@ -123,9 +123,9 @@ pre-flight sim [`alu8_cmp_sub`](../../hw/tests/alu8_cmp_sub.yaml) — 플래그 
 
 실기: `net_cmp_z` / `net_cmp_c_ge` → FLG 574 또는 CPLD; Execute 말 샘플 ([`alu8.md`](../../hw/netlist/blocks/alu8.md)).
 
-### 3.4 CPLD pipe CU E2E (v1.0 SoC)
+### 3.4 CPLD datapath 구성요소 (동결 참고치)
 
-v1.0 CPU uses the **pipe CU** ([control-and-decode.md](control-and-decode.md)). ALU comb path matches M1; Execute budget adds **CPLD async GPR read** (~10–15 ns typ) in series.
+현재 CPU 제어는 **순차 CU** ([cpld-sequential-cu.md](cpld-sequential-cu.md))다. 아래는 기존 설계의 구성요소별 동결 참고치이며 새 순차 스케줄의 E2E 실측이나 타이밍 합격이 아니다. ALU 경로에는 CPLD `q_a`와 래치 경로가 추가되므로 별도 setup/hold·부하·배선 검증이 필요하다.
 
 | 구간 | typ (ns) | max (ns) | 비고 |
 |------|----------|----------|------|
@@ -153,24 +153,28 @@ v1.0 CPU uses the **pipe CU** ([control-and-decode.md](control-and-decode.md)). 
 
 ## 5. CPU 맥락 — 명령 “지연” (macro-cycle)
 
-ALU 블록 자체는 **순수 조합**입니다. ISA 수준 지연은 pipe CU SYS / EX에 따릅니다.
+ALU 블록 자체는 **순수 조합**입니다. ISA 수준 지연은 [순차 CU](cpld-sequential-cu.md)의 fetch → execute → retire SYS 스케줄에 따릅니다. opcode/operand fetch와 EX는 겹치지 않습니다.
 
-| 계층 | 지연 | 설명 |
-|------|------|------|
-| ALU comb | **≤ 153 ns** | 위 §3 — `CLK_SYS` 전주기 500 ns **내** (worst INC) |
-| Execute | **pipe EX** (≤ 500 ns) | CPLD-CU + regfile + ALU + ACC latch |
-| ALU-only µop (예: `ADD TMP`) | **packed EX** | fetch overlap — [microcode-spec.md](microcode-spec.md) |
-| Fetch+Execute 명령 | pipe SYS tax | [cpld-pipe-cu.md](cpld-pipe-cu.md) |
-| 시스템 클록 | **2.0 MHz** | **500 ns** `CLK_SYS` period |
+| 계층 | 지연 / 횟수 | 설명 |
+|------|-------------|------|
+| ALU comb | **≤ 153 ns** | 위 §3의 ALU 단독 동결 참고치 (worst INC) |
+| ADD/CMP/LDA/STA/LDIO/STIO | **3 SYS** | 기본 성공 경로; fetch와 EX 직렬화 |
+| BEQ (양쪽 결과)/JMP/STA16 | **4 SYS** | 3-byte fetch 후 실행 |
+| HALT/TRAP | **2 SYS** | opcode fetch 후 실행 |
+| CALL / RET | **9 / 7 SYS** | 각각 3 / 1 fetch + 6 stack byte accesses |
+| WAIT | **추가 SYS** | 지연된 접근을 trace에 노출 |
+| 시스템 클록 | **명목 2.0 MHz** | **500 ns** period; 전체 CPU 실기 합격 별도 |
 
-CPU E2E (Flash program fetch + CPLD-CU + CPLD-DP `q` + ALU) — ALU Y 상한 **INC 153 ns**, **SUB 136 ns**; logic **46 ns**.
+CALL/RET는 RP low/high 읽기 → return-PC low/high 접근 → RP low/high 쓰기를 직렬화하고 redirect를 마지막에 커밋한다. reset-vector helper는 SYS 횟수 밖의 추상 초기화다.
 
-### Dual-CPLD / pipe paths (desk, 2 MHz)
+### 이전 pipeline 경로 예산 (역사적 참고)
+
+아래 합산치는 이전 [P12 pipe CU](cpld-pipe-cu.md)의 desk 참고치로 보존한다. 현재 순차 CU의 클록 한계나 실기 타이밍을 입증하지 않는다. 제로 지연 CPU 기능 테스트 역시 전파 지연·글리치·setup/hold 검증이 아니다.
 
 | Path | ns | Note |
 |------|---:|------|
-| Branch BEQ | **212** | **288 ns** slack @ 500 ns |
-| Operand path | **~133** | MBR→B + `q_a`; [cpld-pipe-cu.md](cpld-pipe-cu.md) §7.1 |
+| Branch BEQ | **212** | 이전 pipe desk: **288 ns** slack @ 500 ns |
+| Operand path | **~133** | 이전 pipe desk: MBR→B + `q_a` |
 
 ---
 

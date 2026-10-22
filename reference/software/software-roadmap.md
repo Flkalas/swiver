@@ -19,7 +19,7 @@ Swiver v0.1 software milestones **S0–S7** on logic VM (developer), then hardwa
 |----|-------------|-----|-----------|
 | S0 | Roadmap, layout, regression script | this file | baseline regression |
 | S1 | `plover_asm` | [swiver-asm.md](swiver-asm.md) | milestone checklist |
-| S2 | CALL/RET ISA (pipe CU) | [calling-convention-v0.1.md](calling-convention-v0.1.md) | pipe CU CALL/RET smoke |
+| S2 | CALL/RET ISA (sequential CU) | [calling-convention-v0.1.md](calling-convention-v0.1.md) | sequential CALL/RET smoke (9 / 7 SYS before WAIT) |
 | S3 | Forth core | [forth-system.md](forth-system.md) | milestone checklist, `forth_boot.yaml` |
 | S3c | Normative asm Forth | forth-system §normative | `breadboard ISA` |
 | S4 | Forth OS services | [forth-os-services.md](forth-os-services.md) | milestone checklist |
@@ -34,7 +34,7 @@ Swiver v0.1 software milestones **S0–S7** on logic VM (developer), then hardwa
 
 | Software | Hardware |
 |----------|----------|
-| S2 CALL/RET | M3a + [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) §5.1 desk |
+| S2 CALL/RET | M3a + [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md); sequential CU Design fits pending |
 | S7 vFDD | [mailbox-protocol.md](../copro/mailbox-protocol.md), [rp2350-coprocessor.md](../copro/rp2350-coprocessor.md) |
 | Boot / PL-DOS | [bootloader.md](../boot/bootloader.md) |
 

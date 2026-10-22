@@ -2,7 +2,7 @@
 
 **Related:** [system-architecture.md](system-architecture.md) · [memory-map.md](memory-map.md) · [microcode-spec.md](microcode-spec.md)
 
-ROM is the **code of law** for the system: deterministic rules for boot, datapath control, and fixed assets.
+Flash supplies boot code and fixed assets within the **unified 64 KiB memory map**. Instruction and data accesses share one bus; RAM code is executable. Datapath control comes from the sequential CPLD CU.
 
 ---
 
@@ -10,7 +10,7 @@ ROM is the **code of law** for the system: deterministic rules for boot, datapat
 
 | Segment | Purpose | CPU visibility |
 |---------|---------|----------------|
-| **Control** | **CPLD pipe CU** | Pipe / EX strobes in ATF1504 |
+| **Control** | **CPLD sequential CU** | Sequential phase / execute strobes in ATF1504 |
 | **Boot** | POST, bootloader, reset vector | Mode A: `$0000–$07FF`, `$FFFC` |
 | **Utility** | Fonts, LUTs, fixed routines | ROM in Mode A; shadowed to RAM `$0800+` |
 
@@ -34,13 +34,13 @@ ROM is the **code of law** for the system: deterministic rules for boot, datapat
 | `$0800–$4FFF` | Utility (fonts, tables) | Copy source |
 | `$FFFC–$FFFF` | Reset vector image | `$FFFC` enclave |
 
-Control is entirely in the CPLD pipe CU ([microcode-spec.md](microcode-spec.md), [cpld-pipe-cu.md](cpld-pipe-cu.md)).
+Control is entirely in the CPLD sequential CU ([microcode-spec.md](microcode-spec.md), [cpld-sequential-cu.md](cpld-sequential-cu.md)).
 
 ---
 
-## 3. Control (CPLD pipe CU — normative v1.0)
+## 3. Control (CPLD sequential CU — normative v1.0)
 
-Strobes come from the **ATF1504 pipe CU** — see [cpld-system-controller.md](cpld-system-controller.md) and [cpld-pipe-cu.md](cpld-pipe-cu.md).
+Strobes come from the **ATF1504 sequential CU** — see [cpld-system-controller.md](cpld-system-controller.md) and [cpld-sequential-cu.md](cpld-sequential-cu.md).
 
 ISA / SYS sheet: [microcode-spec.md](microcode-spec.md).
 
@@ -68,4 +68,4 @@ ISA / SYS sheet: [microcode-spec.md](microcode-spec.md).
 ## 5. Utility segment
 
 - Fixed assets in Flash; bootloader **shadows** to RAM (no software bank switch).
-- Runtime may execute from RAM copies after Mode B + RESET.
+- Runtime instruction fetch uses the current memory map and can execute RAM copies, including the bootloader handoff `JMP $0800`; Mode B + RESET selects the RAM reset vector and removes the boot ROM overlay. Code/data are not separate ports.

@@ -1,12 +1,12 @@
-# CPLD System Controller v1.0 P12
+# CPLD System Controller v1.0 sequential
 
 **Devices:** 2× **ATF1504AS-10JU44** (PLCC-44)  
-**Roles:** **CPLD-CU** — **pipe FSM** (see [cpld-pipe-cu.md](cpld-pipe-cu.md)) + direct strobes + branch · **CPLD-DP** — **R0 (AC) only** + `q_a`  
+**Roles:** **CPLD-CU** — **sequential FSM** (see [cpld-sequential-cu.md](cpld-sequential-cu.md)) + direct strobes + branch · **CPLD-DP** — **R0 (AC) only** + `q_a`<br>
 **CE tree:** 74HC138×2 + 08/32/04 (off-chip)
 
 **Related:** [control-and-decode.md](control-and-decode.md) · [cpld-dual-routing.md](cpld-dual-routing.md) · [cpld-dual-jtag.md](cpld-dual-jtag.md) · [microcode-spec.md](microcode-spec.md)
 
-**Bitstream:** Pipe CU **Design fits pending**. DP is **R0-only** PLD (`q_a`).
+**Bitstream:** Sequential CU **Design fits pending**. DP is **R0-only** PLD (`q_a`).
 
 ---
 
@@ -15,10 +15,10 @@
 1. **ALU A:** `q_a` ← **R0** only (CPLD-DP).
 2. **ALU B:** **`net_mbr[7:0]`** (MBR / oper latch) → `net_b[7:0]`.
 3. **Write target:** **`reg_we` → R0** only (G-IC is one wire).
-4. **Pipe FSM** on CPLD-CU — [cpld-pipe-cu.md](cpld-pipe-cu.md).
+4. **Sequential FSM** on CPLD-CU — [cpld-sequential-cu.md](cpld-sequential-cu.md).
 5. **Strobes:** CU drives memory/ALU/PC nets directly to SoC.
-6. **Branch:** `PC_LOAD_EN` with taken **BRANCH_BUBBLE** (no prediction).
-7. **Return stack assist:** CALL/RET in **STACK_EX** — RP `$0F00`, stack RAM via `MEM_RD`/`MEM_WR` ([microcode-spec.md](microcode-spec.md) §2.3 · [cpld-pipe-cu.md](cpld-pipe-cu.md) §5.1).
+6. **Branch:** `PC_LOAD_EN` commits an accepted redirect after the current instruction completes.
+7. **Return stack assist:** CALL/RET serialize RP low/high reads, return-PC low/high access, then RP low/high writes; redirect commits last. RP `$0F00`, stack RAM via `MEM_RD`/`MEM_WR` ([microcode-spec.md](microcode-spec.md) §2.3 · [cpld-sequential-cu.md](cpld-sequential-cu.md)).
 8. **Opcodes `0x10–0x1F`:** reserved / trap.
 9. **Mailbox, MAP, `/CE`** — outside CPLD.
 
@@ -30,10 +30,10 @@
 
 | Signal | Source | Role |
 |--------|--------|------|
-| `OPC[4:0]` | IR latch | Pipe decode |
+| `OPC[4:0]` | IR latch | Sequential decode |
 | `FLG_Z` | FLG574 | BEQ |
-| `CLK` | 2 MHz `CLK_SYS` | Pipe FSM |
-| Stall / port sense | glue or CU | MEM_STALL / FALLBACK |
+| `CLK` | 2 MHz `CLK_SYS` | Sequential FSM |
+| WAIT / ready (hardware design pending) | Functional `request_wait()` hook today | Extend the pending phase; physical ready/timeout sensing is unimplemented |
 
 ### Outputs — SoC
 
@@ -44,7 +44,7 @@
 | `FLG_WE` | Flag latch write |
 | `PC_LOAD_EN` | Branch / redirect commit |
 | `cin`, `bctrl0`, `bctrl2`, `lgc0..3`, `s0`, `s1` | ALU controls |
-| PROG / IF enables | Program-port isolation |
+| Fetch / data selects | One shared address/data bus; mutually exclusive accesses |
 
 `bctrl1`/`bctrl3` fan out at 153 from `bctrl0`/`bctrl2`.
 
@@ -54,7 +54,7 @@
 |--------|----------|
 | `reg_we` | GPR write (→ R0) |
 
-Full state machine, SYS tax, timing: **[cpld-pipe-cu.md](cpld-pipe-cu.md)**.
+Full state machine, counted SYS schedule, validation boundary: **[cpld-sequential-cu.md](cpld-sequential-cu.md)**.
 
 ---
 
@@ -105,9 +105,11 @@ TCK/TMS paralleled. See [cpld-dual-jtag.md](cpld-dual-jtag.md).
 
 ---
 
-## 7. EX policy (P12 pipe)
+## 7. Sequential execution policy
 
-ADD/CMP use **packed EX**. MBR/oper hold during ALU EX. MEM ops use **MEM_STALL**. Detail: [cpld-pipe-cu.md](cpld-pipe-cu.md).
+Fetch the opcode and all operands, execute, then retire before fetching the next instruction. Opcode fetch, operand fetch, and EX never overlap. The unified 64 KiB instruction/data space supports RAM execution on one shared bus. MBR/operand latches hold throughout ADD/CMP EX. The functional `request_wait()` hook adds visible counted WAIT ticks to the pending phase; physical ready/timeout sensing and WAIT generation remain pending. Detail: [cpld-sequential-cu.md](cpld-sequential-cu.md).
+
+Default successful SYS counts: ADD/CMP/LDA/STA/LDIO/STIO **3**; BEQ (both outcomes)/JMP/STA16 **4**; HALT/TRAP **2**; CALL **9** (3 fetch + 6 stack byte accesses); RET **7** (1 fetch + 6 stack byte accesses). Reset-vector loading remains explicitly abstract initialization, outside these counts.
 
 ### PC load path
 
@@ -122,7 +124,7 @@ ADD/CMP use **packed EX**. MBR/oper hold during ALU EX. MEM ops use **MEM_STALL*
 
 | Chip | Gate |
 |------|------|
-| CPLD-CU (pipe) | WinCUPL **Design fits** when `.pld` exists |
+| CPLD-CU (sequential) | WinCUPL **Design fits** when `.pld` exists |
 | CPLD-DP | WinCUPL Design fits |
 
 Do not record fitter used-MC counts as normative BOM gates.

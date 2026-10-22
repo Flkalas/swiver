@@ -1,7 +1,7 @@
-# Microcode Specification v1.0 P12
+# Microcode Specification v1.0 sequential
 
-**Normative:** v1.0 breadboard intent — **P12** pipe CU (PE1 machine + P12 discipline)  
-**Related:** [cpld-pipe-cu.md](cpld-pipe-cu.md) · [rom-architecture.md](rom-architecture.md) · [cpld-system-controller.md](cpld-system-controller.md)
+**Normative:** v1.0 breadboard intent — **non-pipelined in-order** CU, unified 64 KiB/shared instruction-data bus, RAM execution
+**Related:** [cpld-sequential-cu.md](cpld-sequential-cu.md) · [rom-architecture.md](rom-architecture.md) · [cpld-system-controller.md](cpld-system-controller.md)
 
 ---
 
@@ -10,16 +10,16 @@
 | Axis | Choice | Rationale |
 |------|--------|-----------|
 | Opcode | Core `0x01–0x0F`; **`0x10–0x1F` reserved** | 5-bit opcode field `[4:0]` |
-| Control | **Pipe CU** | IF\|EX / stall / stretch — [cpld-pipe-cu.md](cpld-pipe-cu.md) |
-| Decode | **Pipe FSM** | Decode and strobes in CPLD-CU |
-| CPLD | Dual ATF1504 | **CU:** pipe · **DP:** **R0 (AC) only**; **ALU B from MBR 574** |
-| Control store | **CPLD FSM** | Strobes from pipe CU outputs |
+| Control | **Sequential CU** | FETCH_OPCODE / FETCH_OPERAND / EXECUTE / stack / WAIT — [cpld-sequential-cu.md](cpld-sequential-cu.md) |
+| Decode | **Sequential FSM** | Decode and strobes in CPLD-CU |
+| CPLD | Dual ATF1504 | **CU:** sequential · **DP:** **R0 (AC) only**; **ALU B from MBR 574** |
+| Control store | **CPLD FSM** | Strobes from sequential CU outputs |
 
-Control lives in the CPLD pipe CU ([rom-architecture.md](rom-architecture.md) Flash map).
+Control lives in the CPLD sequential CU ([rom-architecture.md](rom-architecture.md) Flash map).
 
-### 1.1 Pipe schedule
+### 1.1 Sequential schedule
 
-Active schedule = pipe states and SYS tax in [cpld-pipe-cu.md](cpld-pipe-cu.md). Every counted SYS does IF work, EX work, a documented stall/bubble, or stretch.
+Active schedule = sequential phases and SYS costs in [cpld-sequential-cu.md](cpld-sequential-cu.md). Finish all opcode/operand fetch and execute/stack phases of the current instruction before fetching the next opcode. Operand fetch and execute are separate SYS ticks. Each tick performs one phase or a visible WAIT (the functional `request_wait()` hook; physical WAIT generation remains pending); no prefetch, overlap, branch bubble or pipe fallback.
 
 ### 1.2 Operand datapath
 
@@ -65,25 +65,23 @@ Opcode field: **bits `[4:0]`** of the first instruction byte. Bits `[7:5]` are *
 | `0x0D` | CMP | R0 − imm; flags only |
 | `0x0F` | STA16 | Store abs16 (boot) |
 
-### 2.2 Pipe SYS costs (optimistic)
+### 2.2 Sequential SYS costs
 
-Normative tax table: [cpld-pipe-cu.md](cpld-pipe-cu.md) §4. Summary:
+Normative default successful-access schedule: [cpld-sequential-cu.md](cpld-sequential-cu.md) §4. Counts exclude WAIT; these are logical SYS counts, not measured hardware timing.
 
-| Op | Typical SYS (optimistic) |
-|----|-------------------------:|
-| ADD/CMP stream | **1** |
-| ADD/CMP cold | **2** |
-| LDA/STA/LDIO/STIO | **3** |
-| BEQ taken / JMP | **4** |
-| CALL | **6** |
-| RET | **4** |
-| HALT | **1** |
+| Op | SYS | Breakdown |
+|----|----:|-----------|
+| ADD/CMP/LDA/STA/LDIO/STIO | **3** | opcode + operand + execute |
+| BEQ taken or not / JMP / STA16 | **4** | opcode + two operands + execute |
+| HALT / reserved-op trap | **2** | opcode + execute (HALT stops; reserved trap retires as no-op) |
+| CALL | **9** | three instruction bytes + six stack byte accesses |
+| RET | **7** | one instruction byte + six stack byte accesses |
 
-**P12:** lab fail → stretch (+1 visible). ADD/CMP use packed EX.
+There is no warm-stream discount or taken-branch tax. Additional WAIT ticks are counted separately. HALT retains PC at its opcode and stops after retirement. Reserved-op trap preserves the existing no-op retirement policy and advances to the next byte.
 
 ### 2.3 Return stack (CU-assisted)
 
-No hardware RP register. CALL/RET push/pop is performed by **CPLD-CU** in **STACK_EX** using implicit `MEM_RD`/`MEM_WR`.
+No hardware RP register. CALL/RET push/pop is performed by **CPLD-CU** using six sequential `MEM_RD`/`MEM_WR` byte accesses: RP low/high reads, return-PC low/high accesses, RP low/high writes. The final successful RP-high write completes the instruction and commits its PC redirect.
 
 | Item | Normative value |
 |------|-----------------|
@@ -92,35 +90,35 @@ No hardware RP register. CALL/RET push/pop is performed by **CPLD-CU** in **STAC
 | Boot initial RP | `$F600` ([boot-jmp-handoff.md](../boot/boot-jmp-handoff.md)) |
 | CALL | `return_pc` after 3-byte insn; push; `PC←abs16` |
 | RET | pop → `PC`; **`PC_in` ≠ MBR** |
-| Overflow / underflow | execution **stops** |
+| Overflow / underflow / invalid RP | execution **stops** after RP validation, before stack writes |
 
 ---
 
-## 3. Control (pipe CU)
+## 3. Control (sequential CU)
 
 | Mechanism | Source |
 |-----------|--------|
 | GPR write | G-IC **`reg_we`** only — DP hardwires **R0** |
 | `PC_LOAD_EN` | Opcode + `FLG_Z` on redirect EX |
-| Operand imm8 | **MBR / oper latch** from IF |
-| ALU / bus strobes | **CPLD-CU** pipe outputs |
+| Operand imm8 | **MBR / oper latch** from FETCH_OPERAND |
+| ALU / bus strobes | **CPLD-CU** sequential outputs |
 
-Verify: [cpld-pipe-cu.md](cpld-pipe-cu.md).
+Verify: [cpld-sequential-cu.md](cpld-sequential-cu.md).
 
 ---
 
-## 4. Per-op strobes (pipe EX)
+## 4. Per-op strobes (separate execute phase)
 
-See [cpld-pipe-cu.md](cpld-pipe-cu.md) §5.
+See [cpld-sequential-cu.md](cpld-sequential-cu.md) §5.
 
 | Class | Key EX strobes |
 |-------|----------------|
-| ADD | `Y_OE`, `REG_WE`→R0, `FLG_WE`, ALU ADD (single EX when packed) |
+| ADD | `Y_OE`, `REG_WE`→R0, `FLG_WE`, ALU ADD in separate execute SYS |
 | CMP | `FLG_WE`, ALU CMP; B from MBR/oper |
-| MEM_LD | `MEM_RD` + `REG_WE` (optimistic one EX) |
-| MEM_ST | `Y_OE` + `MEM_WR` (optimistic one EX) |
-| BEQ | flags path; `PC_LOAD_EN` if Z; bubble if taken |
-| JMP / CALL / RET | `PC_LOAD_EN`; CALL/RET + stack EX |
+| MEM_LD | `MEM_RD` + `REG_WE` (one default execute SYS) |
+| MEM_ST | `Y_OE` + `MEM_WR` (one default execute SYS) |
+| BEQ | flags path; `PC_LOAD_EN` if Z; no bubble |
+| JMP / CALL / RET | `PC_LOAD_EN`; CALL/RET use six ordered stack accesses |
 
 Bus and ALU strobes are **direct CPLD-CU outputs**. `REG_WE` reaches CPLD-DP via **G-IC**.
 
@@ -152,7 +150,7 @@ G-IC is a single wire: `reg_we`.
 
 CPLD drives `cin`, `bctrl0..3`, `lgc3:0`, `y_mux_sel` ([control-and-decode.md](control-and-decode.md)). M1 bench may use DIP decode separately.
 
-**2 MHz desk:** EX ADD path ≈ **148 ns** in pipe budget ([cpld-pipe-cu.md](cpld-pipe-cu.md) §7); comb Y ≈ **133 ns** ([alu-opcodes-timing.md](alu-opcodes-timing.md)).
+**Timing boundary:** the earlier P12 pipe EX ADD estimate (148 ns) is superseded historical evidence in [cpld-pipe-cu.md](cpld-pipe-cu.md) §7. ALU-only combinational figures in [alu-opcodes-timing.md](alu-opcodes-timing.md) do not validate sequential shared-bus timing. The 2 MHz target, sequential timing and WinCUPL Design fits remain pending.
 
 ---
 

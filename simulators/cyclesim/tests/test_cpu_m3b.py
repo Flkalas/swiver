@@ -24,7 +24,8 @@ def _run_fetch_opcode(runner: ProgramRunner) -> None:
     """Advance until first instruction opcode is latched in IR."""
     runner.reset(pc=0)
     runner.cpu.step()
-    assert runner.ir != 0 or runner.cpu._fetch_byte > 0
+    assert runner.cpu.last_trace is not None
+    assert runner.cpu.last_trace.stage.fetch_active
 
 
 def test_fetch_ir_mbr() -> None:
@@ -63,7 +64,6 @@ def test_mbr_before_mem_rd() -> None:
     runner.cpu.step()
     runner.cpu.step()
     assert runner.mbr == 0x42
-    runner.cpu.step()
     runner.cpu.step()
     assert runner.gpr[0] == 0x99
 

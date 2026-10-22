@@ -1,8 +1,8 @@
-# Control and decode (v1.0 P12)
+# Control and decode (v1.0 sequential)
 
-**Related:** [system-architecture.md](system-architecture.md) · [cpld-pipe-cu.md](cpld-pipe-cu.md) · [microcode-spec.md](microcode-spec.md) · [cpld-system-controller.md](cpld-system-controller.md) · [rom-architecture.md](rom-architecture.md)
+**Related:** [system-architecture.md](system-architecture.md) · [cpld-sequential-cu.md](cpld-sequential-cu.md) · [microcode-spec.md](microcode-spec.md) · [cpld-system-controller.md](cpld-system-controller.md) · [rom-architecture.md](rom-architecture.md)
 
-This document is the **single normative reference** for who decodes what on the v1.0 P12 CPU.
+This document is the **single normative reference** for who decodes what on the v1.0 sequential CPU.
 
 ---
 
@@ -10,23 +10,25 @@ This document is the **single normative reference** for who decodes what on the 
 
 | Layer | Block | Input | Output / effect | On v1.0 SoC? |
 |-------|-------|-------|-----------------|--------------|
-| **Program store (PROG)** | SST39 Flash + IF path | PC / offset | Instruction bytes | Yes |
-| **Macro sequencer** | **CPLD-CU pipe** | IR, flags, stall sense | Direct strobes + G-IC `reg_we`; stack EX | Yes |
+| **Instruction fetch** | Mapped Flash/RAM + shared bus | PC | Instruction bytes | Yes |
+| **Macro sequencer** | **CPLD-CU sequential** | IR, flags, phase/wait control | Direct strobes + G-IC `reg_we`; serialized stack accesses | Yes |
 | **GPR datapath** | **CPLD-DP** | `d_in`, `reg_we` | `q_a` ← R0; write R0 | Yes |
-| **Operand B** | MBR / oper latch | IF | `net_mbr` → ALU B | Yes |
-| **ALU control** | Pipe EX constants on CU | CU outputs | `net_cin`, `net_bctrl0..3`, `net_lgc0..3`, `net_153_s0/s1` | Yes |
+| **Operand B** | MBR / oper latch | FETCH_OPERAND | `net_mbr` → ALU B | Yes |
+| **ALU control** | EXECUTE constants on CU | CU outputs | `net_cin`, `net_bctrl0..3`, `net_lgc0..3`, `net_153_s0/s1` | Yes |
 | **ALU execute** | alu8 (12 DIP) | A, B, control nets | `net_y*`, `net_c_hi` | Yes |
-| **Memory CE (DATA)** | 74HC138×2 + glue | `A[15:0]`, MAP, mailbox | `/CE` to SRAM×2 + Flash | Yes (off CPLD) |
+| **Shared memory CE** | 74HC138×2 + glue | `A[15:0]`, MAP, mailbox | `/CE` to SRAM×2 + Flash | Yes (off CPLD) |
 | **12-opcode comb decode** | DIP / tie or bench block | `alu_sel[3:0]` | Control nets | **M1 bench only** |
 
 ```text
-  PROG Flash ──► IF latch ──► CPLD-CU pipe FSM ──► strobes ──► alu8 / DATA / PC
-  boot, vector                 reg_we ───────────► R0, q_a ──► alu8 A
+  Mapped Flash/RAM ──► shared bus ──► IR / operand latch ──► CPLD-CU sequential FSM
+  shared SRAM/MMIO ◄──── memory strobes; reg_we ───────────► R0, q_a ──► alu8 A
                                oper/MBR ─────────────────────► alu8 B
   A[15:0] ──────────────────────────────────────────────► 138×2 ──► /CE
 ```
 
-**CU detail:** [cpld-pipe-cu.md](cpld-pipe-cu.md).
+**Memory/execution contract:** instruction fetch, operand fetch, data and stack accesses share the same mapped 64 KiB and bus. RAM code is executable. Finish the current instruction before the next opcode fetch; fetch and execute never share a SYS.
+
+**CU detail:** [cpld-sequential-cu.md](cpld-sequential-cu.md).
 
 ---
 
@@ -36,14 +38,14 @@ This document is the **single normative reference** for who decodes what on the 
 
 | Region | Role |
 |--------|------|
-| `$0000+` | Program, bootloader, utility tables (**PROG**) |
+| `$0000+` | Bootloader, utility tables and mapped Flash instruction bytes |
 | `$FFFC` | Reset vector image |
 
-### CPLD pair (P12)
+### CPLD pair (sequential)
 
 | Chip | Function |
 |------|----------|
-| **CPLD-CU** | Pipe / stall / stretch / fallback FSM; branch `PC_LOAD_EN`; CALL/RET **STACK_EX**; direct strobes |
+| **CPLD-CU** | Sequential opcode/operand fetch, execute and WAIT FSM; final branch `PC_LOAD_EN`; CALL/RET byte accesses; direct strobes |
 | **CPLD-DP** | **R0 (8 FF)**; async `q_a`; `reg_we` → R0 from `d_in` |
 
 **Not in CPLD:** memory `/CE`, mailbox MAP, **ALU B operand wire** (MBR/oper). See [memory-map.md](memory-map.md).
@@ -65,7 +67,7 @@ This document is the **single normative reference** for who decodes what on the 
 
 ### CALL / RET (software return stack)
 
-No dedicated RP register. **CPLD-CU** performs push/pop in **STACK_EX** using `MEM_RD`/`MEM_WR` — RP cell `$0F00`, stack body `$F600+` ([microcode-spec.md](microcode-spec.md) §2.3). RET loads PC from the popped word, not from MBR.
+No dedicated RP register. **CPLD-CU** performs push/pop as **six serialized byte accesses** using `MEM_RD`/`MEM_WR` — RP cell `$0F00`, stack body `$F600+` ([microcode-spec.md](microcode-spec.md) §2.3). RET loads PC from the popped word, not from MBR.
 
 ---
 
@@ -74,7 +76,7 @@ No dedicated RP register. **CPLD-CU** performs push/pop in **STACK_EX** using `M
 | Context | Who drives ALU control? |
 |---------|-------------------------|
 | **M1 ALU bring-up** | Manual DIP / [b3-opcode.md](../hw-bringup/b3-opcode.md) |
-| **Integrated CPU** | **CPLD-CU** pipe outputs only |
+| **Integrated CPU** | **CPLD-CU** sequential outputs only |
 
 ---
 
@@ -82,18 +84,18 @@ No dedicated RP register. **CPLD-CU** performs push/pop in **STACK_EX** using `M
 
 | Topic | Document |
 |-------|----------|
-| Pipe CU states / SYS tax | [cpld-pipe-cu.md](cpld-pipe-cu.md) |
+| Sequential CU states / SYS costs | [cpld-sequential-cu.md](cpld-sequential-cu.md) |
 | ISA opcodes | [microcode-spec.md](microcode-spec.md) |
 | Dual CPLD ports, G-IC | [cpld-system-controller.md](cpld-system-controller.md) |
 | Routing, JTAG | [cpld-dual-routing.md](cpld-dual-routing.md), [cpld-dual-jtag.md](cpld-dual-jtag.md) |
-| Pipe timing / CALL-RET fit | [cpld-pipe-cu.md](cpld-pipe-cu.md) §7 / §5.1 |
+| Sequential timing / CALL-RET fit | [cpld-sequential-cu.md](cpld-sequential-cu.md) §7 |
 | Flash layout | [rom-architecture.md](rom-architecture.md) |
 
 ### Truth cascade (edit order)
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [swiver-whitepaper.md](../../swiver-whitepaper.md) §6 | ISA / pipe narrative |
-| **Reference** | `reference/**` | Normative detail; **CU = cpld-pipe-cu** |
-| **Machine** | cyclesim golden | Executable golden (pipe rewrite in progress) |
-| **CPLD** | pipe CU PLD | **Design fits pending** |
+| **Root** | [swiver-whitepaper.md](../../swiver-whitepaper.md) §6 | ISA / sequential narrative |
+| **Reference** | `reference/**` | Normative detail; **CU = cpld-sequential-cu** |
+| **Machine** | cyclesim golden | Executable sequential model; no physical timing claim |
+| **CPLD** | sequential CU PLD | **Design fits pending** |

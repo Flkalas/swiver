@@ -1,9 +1,9 @@
 # TTL homebrew CPU comparison (reference)
 
-**Audience:** learners and external reviewers positioning **Swiver v1.0 P12** against other well-known discrete-logic machines (plus commercial / minicomputer baselines).  
-**Status:** Archived background (Illustrative) — not Active implementer spec. Active = **P12 pipe**.  
+**Audience:** learners and external reviewers positioning the historical **Swiver v1.0 P12** against other well-known discrete-logic machines (plus commercial / minicomputer baselines).<br>
+**Status:** Archived background (Illustrative) — not Active implementer spec. Active = **non-pipelined sequential CPU**; P12 pipe is superseded.<br>
 **Related (peers):** [cu-dp-comparison.md](cu-dp-comparison.md) · [rom-comparison.md](rom-comparison.md) · [clock-comparison.md](clock-comparison.md)  
-**Active:** [system-architecture.md](../../../reference/hardware/system-architecture.md) · [cpld-pipe-cu.md](../../../reference/hardware/cpld-pipe-cu.md) · [microcode-spec.md](../../../reference/hardware/microcode-spec.md) · [calling-convention-v0.1.md](../../../reference/software/calling-convention-v0.1.md)
+**Active:** [system-architecture.md](../../reference/hardware/system-architecture.md) · [cpld-sequential-cu.md](../../reference/hardware/cpld-sequential-cu.md) · [microcode-spec.md](../../reference/hardware/microcode-spec.md) · [calling-convention-v0.1.md](../../reference/software/calling-convention-v0.1.md)
 
 ---
 

@@ -3,6 +3,8 @@
 **대상:** Swiver v1.0 breadboard CPU + software v0.1 macro ISA  
 **목적:** 실물 하드웨어에서 구동되는 컴파일러(`plover_cc` 등) 구현 전, 시스템 구현자가 확인할 항목에 대한 **현행 스펙 기준 답변**  
 **기준일:** 2026-06-24  
+**현행 실행 계약:** [순차 CU](../hardware/cpld-sequential-cu.md) — unified 64 KiB instruction/data/shared bus, RAM 실행, 명령 완료 뒤 다음 fetch. ISA encoding·R0/MBR·flag·MMIO 의미는 유지한다. CPU 제로 지연 기능 검증은 실기 타이밍·CU fit 합격이 아니며, 아래 ISA 지원 판정과 물리 sign-off를 구분한다. CALL/RET 기본 성공 경로는 9/7 SYS이고 WAIT는 추가된다.
+
 **관련:** [microcode-spec.md](../hardware/microcode-spec.md) · [calling-convention-v0.1.md](calling-convention-v0.1.md) · [software-roadmap.md](software-roadmap.md)
 
 ---
@@ -11,7 +13,7 @@
 
 | 기호 | 의미 |
 |------|------|
-| **예** | v1.0 하드웨어 + 패킹된 마이크로코드/매크로 ISA로 **실물에서** 직접 사용 가능 |
+| **예** | v1.0 하드웨어의 매크로 ISA가 지원하는 기능 (실기 fit·전기 검증은 별도) |
 | **부분** | 하드웨어 자원은 있으나 ISA·데이터 경로가 불완전, 또는 소프트웨어 관례로만 대체 |
 | **아니오** | v1.0 normative 경로에 없음 |
 | **비실기(미패킹)** | opcode·시나리오에만 존재 — **빵판 실기와 별도** |
@@ -42,7 +44,7 @@
 
 | 평가 범주 | 시스템 구현자 대상 질문 | 컴파일러 구현 시 요구 근거 | v1.0 답변 | 근거·비고 |
 |-----------|-------------------------|---------------------------|-----------|-----------|
-| 스택 | **16비트 하드웨어 SP**와 **PUSH/POP**, **CALL/RET** 명령이 구현되어 있습니까? | 복귀 주소 저장, 인자 전달, 호출 규약·컨텍스트 스위칭 | **부분** | **SP:** RAM 셀 **`$0E00`** (16-bit LE), Boot ROM이 초기값 기록 — **하드웨어 SP 레지스터 없음** ([software-memory-layout.md](software-memory-layout.md), [boot-jmp-handoff.md](../boot/boot-jmp-handoff.md)). **PUSH/POP:** 전용 opcode 없음. **CALL/RET:** CU return-stack assist ([microcode-spec.md](../hardware/microcode-spec.md) §2.3). **RP** @ `$0F00`; stack body `$F600+` ([calling-convention-v0.1.md](calling-convention-v0.1.md)). CU fit desk: [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) §5.1. |
+| 스택 | **16비트 하드웨어 SP**와 **PUSH/POP**, **CALL/RET** 명령이 구현되어 있습니까? | 복귀 주소 저장, 인자 전달, 호출 규약·컨텍스트 스위칭 | **부분** | **SP:** RAM 셀 **`$0E00`** (16-bit LE), Boot ROM이 초기값 기록 — **하드웨어 SP 레지스터 없음** ([software-memory-layout.md](software-memory-layout.md), [boot-jmp-handoff.md](../boot/boot-jmp-handoff.md)). **PUSH/POP:** 전용 opcode 없음. **CALL/RET:** CU return-stack assist ([microcode-spec.md](../hardware/microcode-spec.md) §2.3). **RP** @ `$0F00`; stack body `$F600+` ([calling-convention-v0.1.md](calling-convention-v0.1.md)). CU sequential fit pending: [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md). |
 | 스택 | **SP 값**을 범용 레지스터로 복사하거나 **산술 연산**할 데이터 경로가 있습니까? | 프레임 포인터 설정, `SP+offset` 지역 변수 주소 | **부분** | `LDA`/`STA`로 **`$0E00`/`$0E01`** 읽기·쓰기 가능. **단일 명령 `ADD SP, imm`** 없음. 16비트 SP 증감은 **8비트 ALU 다중 스텝** 소프트웨어 다중 스텝으로 처리. FP = SP 복사본을 GPR·RAM에 유지하는 **소프트웨어 관례**로만 가능. |
 
 ---
@@ -60,7 +62,7 @@
 
 | 평가 범주 | 시스템 구현자 대상 질문 | 컴파일러 구현 시 요구 근거 | v1.0 답변 | 근거·비고 |
 |-----------|-------------------------|---------------------------|-----------|-----------|
-| 제어 | **Zero, Carry, Sign, Overflow** 개별 플래그 조건 분기가 완전히 지원됩니까? | `if`/`while`/`for` 등을 조건부 점프로 번역 | **부분** | **하드웨어 플래그:** **Z, C** 만 — **574 FLG** 래치 ([microcode-spec.md](../hardware/microcode-spec.md)). **Sign(N)·Overflow(V) 없음.** **조건 분기:** **`BEQ`** (Z) — 마이크로코드 패킹됨. **`BCS`** (C, unsigned ≥) — opcode·미패킹 상태. **`BNE`/`BLT`/`BGT` 등 없음** — `CMP`+`BEQ`/`JMP` 조합으로 일부 대체. 부호 있는 비교는 **추가 런타임 루틴** 필요. |
+| 제어 | **Zero, Carry, Sign, Overflow** 개별 플래그 조건 분기가 완전히 지원됩니까? | `if`/`while`/`for` 등을 조건부 점프로 번역 | **부분** | **하드웨어 플래그:** **Z, C** 만 — **574 FLG** 래치 ([microcode-spec.md](../hardware/microcode-spec.md)). **Sign(N)·Overflow(V) 없음.** **조건 분기:** **`BEQ`** (Z) — 순차 CU 지원, 이전에 래치한 FLG_Z를 검사. **`BCS`** (C, unsigned ≥) — opcode·미패킹 상태. **`BNE`/`BLT`/`BGT` 등 없음** — `CMP`+`BEQ`/`JMP` 조합으로 일부 대체. 부호 있는 비교는 **추가 런타임 루틴** 필요. |
 
 ---
 
@@ -72,7 +74,7 @@
 | Register Indirect | 예 | **아니오** | `*p` 역참조 불편 |
 | 16비트 포인터 레지 | 예 | **부분** (PC/MBR 전용) | 포인터는 RAM·다중 명령 |
 | GPR 4개 (할당 가능) | 예 | **부분** (R0 HW + RAM) | 고정 호출 규약·RAM temps |
-| HW SP + PUSH/POP/CALL/RET | 예 | **부분** (CALL/RET packed; no PUSH/POP) |
+| HW SP + PUSH/POP/CALL/RET | 예 | **부분** (CALL/RET CU assist; no PUSH/POP) |
 | SP 산술 데이터 경로 | 예 | **부분** | FP·동적 프레임 = 소프트웨어 시퀀스 |
 | ADC/SBC | 예 | **아니오** | 16/32비트 정수 = 긴 헬퍼 |
 | Shift/Rotate | 예 | **아니오** | 인덱스 스케일링 = 루프 |
@@ -98,7 +100,7 @@
 
 | 순위 | 항목 | 효과 |
 |------|------|------|
-| 1 | `CALL`/`RET` — **문서 완료**; pipe CU fit → breadboard burn | 함수 호출 실물 경로 |
+| 1 | `CALL`/`RET` — **문서 완료**; sequential CU Design fits → breadboard burn | 함수 호출 실물 경로 |
 | 2 | `LDA16` / `LDA [abs16]` (간접 로드) | 포인터 역참조 |
 | 3 | `LDA [R+imm8]` 또는 인덱스 레지 1개 | 배열·오프셋 |
 | 4 | `PUSH R` / `POP R` (SP=RAM 셀 또는 HW SP) | 프롤로그 단순화 |

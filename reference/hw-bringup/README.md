@@ -1,6 +1,6 @@
 # Swiver hardware bring-up index
 
-> **Normative v1.0 P12:** pipe CU — [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) · [system-architecture.md](../hardware/system-architecture.md).  
+> **Normative v1.0:** sequential CU — [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md) · [system-architecture.md](../hardware/system-architecture.md).
 > **Wiring:** [breadboard-wiring.md](breadboard-wiring.md).
 > Reading ladder: [reference/README.md](../README.md) (L0–L10).
 
@@ -14,7 +14,7 @@
 flowchart LR
   M1[M1 ALU] --> M2a[M2a Dual CPLD]
   M2a --> M2b[M2b Datapath plus memory]
-  M2b --> M3a[M3a Pipe CU verify]
+  M2b --> M3a[M3a Sequential CU verify]
   M3a --> M3b[M3b Fetch Execute]
   M3b --> M4[M4 boot]
   M4 --> M5[M5 E2E]
@@ -25,8 +25,8 @@ flowchart LR
 | 1 | ALU 납땜 + Y LED | [M1-alu.md](M1-alu.md) → [M1-b3-procedure.md](M1-b3-procedure.md) |
 | 2 | Dual CPLD JED (WinCUPL + Design fits) | [M2a-cpld-decode.md](M2a-cpld-decode.md) |
 | 3 | R0/MBR datapath · SRAM/NOR | [M2b-gpr-memory.md](M2b-gpr-memory.md) · [breadboard-wiring.md](breadboard-wiring.md) |
-| 4 | Pipe CU verify | [M3a-control-store.md](M3a-control-store.md) |
-| 5 | PROG fetch + pipe execute | [M3b-fetch-execute.md](M3b-fetch-execute.md) |
+| 4 | Sequential CU verify | [M3a-control-store.md](M3a-control-store.md) |
+| 5 | Shared-bus fetch → execute → retire | [M3b-fetch-execute.md](M3b-fetch-execute.md) |
 | 6 | (PC) 부트 sim | [M4a-boot-sim.md](M4a-boot-sim.md) |
 | 7 | 부트 실기 | [M4b-boot-hardware.md](M4b-boot-hardware.md) |
 | 8 | netlist 고정 | [M5-cpu-e2e.md](M5-cpu-e2e.md) |
@@ -52,14 +52,14 @@ flowchart LR
 | [M2b-gpr-memory.md](M2b-gpr-memory.md) | M2b 개요 (datapath + memory) |
 | [M2b-gpr-datapath.md](M2b-gpr-datapath.md) | R0 + MBR→ALU B |
 | [M2b-memory.md](M2b-memory.md) | SRAM·NOR·MAP_MODE |
-| [breadboard-wiring.md](breadboard-wiring.md) | 138×2 · dual CPLD / pipe CU |
+| [breadboard-wiring.md](breadboard-wiring.md) | 138×2 · dual CPLD / sequential CU |
 
 ### M3 — Control / fetch
 
 | 문서 | 내용 |
 |------|------|
-| [M3a-control-store.md](M3a-control-store.md) | Pipe CU verify |
-| [M3b-fetch-execute.md](M3b-fetch-execute.md) | PC · pipe · 첫 ROM 프로그램 |
+| [M3a-control-store.md](M3a-control-store.md) | Sequential CU verify |
+| [M3b-fetch-execute.md](M3b-fetch-execute.md) | PC · 순차 실행 · 첫 ROM/RAM 프로그램 |
 
 ### M4 / M5
 
@@ -73,4 +73,4 @@ flowchart LR
 
 ## 사전 검증
 
-Use frozen fixtures in [fixtures](../fixtures/) before breadboard burn.
+Use frozen fixtures in [fixtures](../fixtures/) before breadboard burn. Their legacy schedule evidence does not validate the sequential CU. The zero-delay CPU model checks functional state and counted SYS behavior; electrical timing, shared-bus arbitration, setup/hold, and WinCUPL **Design fits** remain hardware gates.

@@ -4,7 +4,7 @@
 |-------|-------|
 | **Milestone** | M4a |
 | **Goal** | JMP handoff: boot ROM → RAM `$0800` → **`JMP $0800`** |
-| **Status** | Logic verified 2026-06-08 (boot JMP handoff checklist) |
+| **Status** | Historical logic handoff verified 2026-06-08; sequential CU timing/electrical sign-off pending |
 | **Normative** | [boot-jmp-handoff.md](../boot/boot-jmp-handoff.md) |
 
 ---
@@ -29,7 +29,7 @@ Before breadboard (M4b), the boot chain was checked against the JMP handoff chec
 | Reset vector `$FFFC` | [boot-vector.md](../fixtures/boot-vector.md) |
 | Kernel smoke `$0800` | [add_imm-sram.md](../fixtures/add_imm-sram.md) (or kernel stub in boot-rom tail) |
 
-v1.0 breadboard control: **pipe CU** ([cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md)).
+v1.0 breadboard control: **sequential CU** ([cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md)). The historical image/handoff check does not prove this schedule or hardware timing. RAM execution uses the unified 64 KiB shared-bus space; reset-vector loading in the CPU helper remains abstract, uncounted initialization.
 
 ---
 

@@ -1,17 +1,40 @@
-# cyclesim — executable P12 model
+# cyclesim — executable sequential CPU model
 
-**Active normative hardware:** **v1.0 P12** pipe CU — [reference/hardware/cpld-pipe-cu.md](../../reference/hardware/cpld-pipe-cu.md).
+**Active normative hardware:** **v1.0 sequential CU** — [reference/hardware/cpld-sequential-cu.md](../../reference/hardware/cpld-sequential-cu.md).
 
 `CpuM3b.step()` advances one counted `CLK_SYS` tick and emits an immutable
-`SysTrace`. The executable path models the P12 states `FILL`, `IF_EX`,
-`OPERAND_IF`, `MEM_STALL`, `BRANCH_BUBBLE`, `STACK_EX`, `STRETCH`, and
-`FALLBACK_FE2`. Functional effects are retained for the active M3b ISA,
-including R0/MBR ALU operands, memory/MMIO, redirects, and return-stack errors.
+`SysTrace`. The functional model completes one instruction before fetching the
+next. Opcode fetch, operand fetch, and EX never overlap. Instructions and data
+use one unified 64 KiB address space and one shared bus; RAM is executable.
+R0/MBR ALU operands, ISA encoding, flags, memory/MMIO effects, redirects, and
+return-stack error semantics are retained.
+
+Sequential states are `FETCH_OPCODE`, `FETCH_OPERAND`, `EXECUTE`, `MEM_READ`,
+`MEM_WRITE`, `STACK_RP_LO`, `STACK_RP_HI`, `STACK_DATA_LO`, `STACK_DATA_HI`,
+`STACK_WRITE_RP_LO`, `STACK_WRITE_RP_HI`, and `WAIT`. `Cpu.state` names the
+next pending state; `last_trace.state` names the emitted tick. Each memory SYS
+reports exactly one `BusAccess(kind, address, value)`; WAIT has no bus access.
+
+Default successful SYS counts before visible WAIT: ADD/CMP/LDA/STA/LDIO/STIO
+**3**; BEQ (both outcomes)/JMP/STA16 **4**; HALT/TRAP **2**; CALL **9**
+(3 fetch + 6 stack byte accesses); RET **7** (1 fetch + 6 stack byte accesses).
+CALL/RET serialize RP low/high reads, return-PC low/high access, and RP low/high
+writes, then commit the redirect last. `request_wait()` inserts counted WAIT
+ticks without advancing the pending phase; physical ready/timeout sensing and
+a hardware WAIT generator remain pending. There are no pipeline fill, bubbles, stalls, or fallback modes.
+Reset-vector loading remains abstract, uncounted initialization. Stack errors
+after RP-high validation halt without a successful retire or stack writes. BEQ
+uses the previously latched FLG_Z and leaves flags unchanged. HALT retires and
+stops with PC at its opcode; reserved-op TRAP retires as the existing no-op
+policy and continues after advancing PC by one byte.
 
 The idx5 table and tests under `tests/legacy/` are historical fixtures only.
-This model is an executable P12 abstraction, not physical breadboard validation;
-use [cpld-pipe-cu.md](../../reference/hardware/cpld-pipe-cu.md) §4 for the
-normative timing desk.
+The superseded [P12 pipe CU](../../reference/hardware/cpld-pipe-cu.md) is
+historical design evidence. This CPU model is **zero-delay functional
+simulation**, not full electrical CPU validation: memory response, fanout, bus
+contention, glitches, setup/hold, and sequential-CU **Design fits** require
+separate hardware checks. Frozen standalone ALU ns evidence is retained and is
+not revalidated by functional CPU tests.
 
 
 ## 실시간 ALU 뷰어
@@ -74,9 +97,9 @@ CPU 플래그 쓰기도 분리한다. `net_c_hi`는 논리 연산 선택 중에�
 
 ## 범위와 검증
 
-이번 모델은 **제로 지연 기능 시뮬레이션**이다. 기존 P12 ISA/FSM은
-변경하지 않는다. CPU는 기존 실행 경로를 유지하며 실시간 뷰어와 연결된
-CPU 세션은 아직 없다. 데이터패스, 제어 FSM, 전체 CPU의 공통 세션 연결,
+이번 모델은 **제로 지연 기능 시뮬레이션**이다. CPU는 ISA 의미를 유지하며
+fetch → execute → retire를 직렬화한 순차 FSM을 사용한다. 실시간 ALU
+뷰어와 연결된 CPU 세션은 아직 없다. 데이터패스, 제어 FSM, 전체 CPU의 공통 세션 연결,
 전파 지연·글리치·setup/hold는 후속 단계다. 기존 문서의 동결 ns 수치는
 이번 기능 테스트로 재검증되지 않는다. 실기 배선·부하·타이밍 합격을
 의미하지 않는다.

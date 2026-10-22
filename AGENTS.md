@@ -120,19 +120,19 @@ When answering **hardware architecture**, **bring-up**, or **decode/CPLD/ALU** q
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [swiver-whitepaper.md](swiver-whitepaper.md) §6 | ISA / FSM narrative |
+| **Root** | [swiver-whitepaper.md](swiver-whitepaper.md) §6 | ISA / sequential FSM narrative |
 | **Reference** | `reference/**` | Normative detail, bring-up, frozen fixtures |
-| **Machine** | `simulators/cyclesim/data/isa.py`, `fsm_table.py` | Executable golden |
+| **Machine** | `simulators/cyclesim/data/isa.py`, `sequential.py`, `cpu.py` | Executable sequential model; `fsm_table.py` is legacy |
 | **CPLD** | `cpld/tools/` — WinCUPL, OpenOCD, JTAG probe | Toolchain (active); HDL archived |
 | **Archive** | `archive/*.tar.gz` (+ [MANIFEST.md](archive/MANIFEST.md)) | Historical — **do not** cite for SoC unless user asks |
 
-**Anchor docs:** [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md), [control-and-decode.md](reference/hardware/control-and-decode.md), [system-architecture.md](reference/hardware/system-architecture.md), [swiver-whitepaper.md](swiver-whitepaper.md).
+**Anchor docs:** [cpld-sequential-cu.md](reference/hardware/cpld-sequential-cu.md), [control-and-decode.md](reference/hardware/control-and-decode.md), [system-architecture.md](reference/hardware/system-architecture.md), [swiver-whitepaper.md](swiver-whitepaper.md).
 
-**Active hardware truth:** whitepaper root → reference cascade → machine code → CPLD artifacts. **v1.0 normative = P12** (IF\|EX pipe CU, PROG∥DATA intent, R0/AC + MBR→ALU B, TFR removed, G-IC 1-wire, no idle). **Gi1** (idx5 multiphase) is archived — `archive/gi1-v1.0-normative.tar.gz`. **rev G** (3-GPR·TFR) is archived — `archive/rev-g-dual-3gpr.tar.gz`. Restore guide: [archive/MANIFEST.md](archive/MANIFEST.md).
+**Active hardware truth:** whitepaper root → reference cascade → machine code → CPLD artifacts. **v1.0 normative = non-pipelined sequential CPU** (unified instruction/data memory and shared bus, RAM execution, one instruction completes before the next opcode fetch; R0/AC + MBR→ALU B, TFR removed, G-IC `reg_we`). Read [cpld-sequential-cu.md](reference/hardware/cpld-sequential-cu.md). Former P12 IF\|EX / PROG∥DATA is superseded; [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md) is a preserved design record, not an Active schedule. **Gi1** (idx5 multiphase) is archived — `archive/gi1-v1.0-normative.tar.gz`. **rev G** (3-GPR·TFR) is archived — `archive/rev-g-dual-3gpr.tar.gz`. Restore guide: [archive/MANIFEST.md](archive/MANIFEST.md).
 
-**Strobe layers:** LUT/csim tests may still use Gi1-era `reg_we_lut` / multiphase tables — treat as **legacy golden lag**. Bench merged pin `net_reg_we`. Active reference tables describe **P12 pipe** behavior ([cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md)).
+**Strobe layers:** LUT/csim tests may still use Gi1-era `reg_we_lut` / multiphase tables — treat as **legacy golden lag**. Bench merged pin `net_reg_we`. Active reference tables describe **non-overlapped sequential** behavior ([cpld-sequential-cu.md](reference/hardware/cpld-sequential-cu.md)).
 
-**MC policy:** ATF1504 **64 macrocell** is a BOM chip rating only. Bring-up gate = WinCUPL **Design fits** — do not record fitter used-MC counts in normative prose. Pipe CU PLD is **Design fits pending**.
+**MC policy:** ATF1504 **64 macrocell** is a BOM chip rating only. Bring-up gate = WinCUPL **Design fits** — do not record fitter used-MC counts in normative prose. Sequential CU PLD is **Design fits pending**; simulation is not fitter evidence.
 
 **Forbidden for SoC / bring-up answers** (unless user asks for history):
 
@@ -141,8 +141,10 @@ When answering **hardware architecture**, **bring-up**, or **decode/CPLD/ALU** q
 - Flash **`$4000`** control-word burn, **`cpu_cw_direct`**, pareto MC as v1.0 gates
 - Treating **Gi1 idx5 idle phases** as Active v1.0 schedule
 
-**No feasibility from archived sim** — timing and fit use reference frozen numbers ([alu-opcodes-timing.md](reference/hardware/alu-opcodes-timing.md), [cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md) §7) and lab checklists.
+**No feasibility from archived sim** — standalone ALU frozen numbers remain in [alu-opcodes-timing.md](reference/hardware/alu-opcodes-timing.md). Former P12 aggregate timings do not qualify the sequential CPU; qualify each sequential path, vendor Design fits, and lab checklists per [cpld-sequential-cu.md](reference/hardware/cpld-sequential-cu.md).
 
 **Do not** implement bring-up or reference edits based on archived tarball content unless the user explicitly requests historical comparison.
 
-**Stale terms** (after 2026-07 P12 adoption): Gi1 **idx5 multiphase idle** as Active, `inc_en`, `INC_B_SEL`, `INC_2C2`, `14 IC` for ALU BOM, `b_sel`/`b_const_sel` as SoC signal names (use `net_bctrl0..3`), **`cpld_3fixed` / rev G normative**, **`tfr_valid` / TFR opcodes** as v1.0 (reserved `0x10–0x1F`).
+**Superseded CPU schedule:** P12 IF\|EX overlap, PROG∥DATA separation, branch bubbles and `FALLBACK_FE2` are not Active. Do not describe an executable sequential abstraction as physical wiring/timing acceptance.
+
+**Stale terms** (after removal of earlier Gi1 / rev G contracts): Gi1 **idx5 multiphase idle** as Active, `inc_en`, `INC_B_SEL`, `INC_2C2`, `14 IC` for ALU BOM, `b_sel`/`b_const_sel` as SoC signal names (use `net_bctrl0..3`), **`cpld_3fixed` / rev G normative**, **`tfr_valid` / TFR opcodes** as v1.0 (reserved `0x10–0x1F`).

@@ -2,13 +2,13 @@
 
 **Audience:** learners, external reviewers, breadboard builders.
 
-**v1.0 P12** confirmed facts — hardware specs, bring-up, software stack, boot, copro MMIO. No simulators, CI commands, or research history.
+**v1.0 sequential CPU** reference — hardware specs, bring-up, software stack, boot, copro MMIO. No simulators, CI commands, or research history.
 
 ## Start here
 
 | Document | Description |
 |----------|-------------|
-| [swiver-whitepaper.md](../swiver-whitepaper.md) | **Root** — project overview, ISA, pipe narrative |
+| [swiver-whitepaper.md](../swiver-whitepaper.md) | **Root** — project overview, ISA, sequential execution narrative |
 | [hw-bringup/README.md](hw-bringup/README.md) | M1–M5 breadboard bring-up |
 | [project/naming.md](project/naming.md) | Brand name — reason, process, conclusion |
 
@@ -16,12 +16,12 @@
 
 | Tier | Path | Role |
 |------|------|------|
-| **Root** | [swiver-whitepaper.md](../swiver-whitepaper.md) | ISA / pipe narrative |
-| **Reference** | `reference/**` (this tree) | Normative detail; **CU = cpld-pipe-cu** |
-| **Machine** | `simulators/cyclesim/` | Pipe golden TBD |
-| **CPLD** | pipe CU `.pld` | **Design fits pending** |
+| **Root** | [swiver-whitepaper.md](../swiver-whitepaper.md) | ISA / sequential execution narrative |
+| **Reference** | `reference/**` (this tree) | Normative detail; **CU = cpld-sequential-cu** |
+| **Machine** | `simulators/cyclesim/` | Sequential functional golden (zero delay) |
+| **CPLD** | sequential CU `.pld` | **Design fits pending** |
 
-ISA or pipe CU changes: **whitepaper first** → reference → machine code → CPLD regen.
+ISA or sequential CU changes: **whitepaper first** → reference → machine code → CPLD regen.
 
 ---
 
@@ -36,7 +36,7 @@ Read bottom-up. One theme per rung.
 | **L2** | Datapath | R0, MBR→B, `reg_we`, D-bus | [cpld-system-controller.md](hardware/cpld-system-controller.md) (DP) → [M2b-gpr-datapath](hw-bringup/M2b-gpr-datapath.md) |
 | **L3** | Memory fabric | Map, /CE, SRAM×2, Flash | [memory-map.md](hardware/memory-map.md) → [rom-architecture.md](hardware/rom-architecture.md) → [M2b-memory](hw-bringup/M2b-memory.md) |
 | **L4** | Decode ownership | Who drives which nets | [control-and-decode.md](hardware/control-and-decode.md) |
-| **L5** | Pipe CU | IF\|EX schedule, bubbles, stretch | **[cpld-pipe-cu.md](hardware/cpld-pipe-cu.md)** |
+| **L5** | Sequential CU | Fetch bytes → execute → retire; visible WAIT | **[cpld-sequential-cu.md](hardware/cpld-sequential-cu.md)** |
 | **L6** | ISA | Opcodes, stack, SYS sheet | [microcode-spec.md](hardware/microcode-spec.md) |
 | **L7** | CPLD boardcraft | Routing + JTAG | [cpld-dual-routing.md](hardware/cpld-dual-routing.md) → [cpld-dual-jtag.md](hardware/cpld-dual-jtag.md) → M2a / Design fits |
 | **L8** | Boot | Vectors, fixtures, M4 | [bootloader.md](boot/bootloader.md) → [fixtures](fixtures/) → [M4b](hw-bringup/M4b-boot-hardware.md) |
@@ -51,7 +51,7 @@ flowchart TB
   L2[L2 Datapath]
   L3[L3 Memory]
   L4[L4 Decode]
-  L5[L5 Pipe CU]
+  L5[L5 Sequential CU]
   L6[L6 ISA]
   L7[L7 CPLD board]
   L8[L8 Boot]
@@ -62,12 +62,13 @@ flowchart TB
 
 ---
 
-## Hardware (v1.0 P12)
+## Hardware (v1.0 sequential CPU)
 
 | Document | Description |
 |----------|-------------|
-| [hardware/cpld-pipe-cu.md](hardware/cpld-pipe-cu.md) | **Pipe CU** — states, bubbles, stretch, timing, CALL/RET fit |
-| [hardware/microcode-spec.md](hardware/microcode-spec.md) | ISA + pipe SYS sheet |
+| [hardware/cpld-sequential-cu.md](hardware/cpld-sequential-cu.md) | **Sequential CU** — shared bus, SYS schedule, CALL/RET byte accesses; fit pending |
+| [hardware/cpld-pipe-cu.md](hardware/cpld-pipe-cu.md) | Superseded P12 pipeline design; historical comparison only |
+| [hardware/microcode-spec.md](hardware/microcode-spec.md) | ISA + sequential SYS sheet |
 | [hardware/control-and-decode.md](hardware/control-and-decode.md) | CPLD vs Flash vs ALU decode |
 | [hardware/cpld-system-controller.md](hardware/cpld-system-controller.md) | Dual CPLD CU/DP ports |
 | [hardware/memory-map.md](hardware/memory-map.md) | Address map |

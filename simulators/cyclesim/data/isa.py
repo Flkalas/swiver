@@ -20,11 +20,13 @@ WIDE_ABS16_OPS = frozenset({OP_BEQ, OP_JMP, OP_CALL, OP_STA16})
 
 
 def is_reserved_opcode(opcode: int) -> bool:
-    """P12 reserved space: 0x0C and 0x10-0x1F."""
+    """Unchanged reserved space: 0x0C and 0x10-0x1F."""
     op = opcode & 0xFF
     return op == 0x0C or (op & 0x10 == 0x10)
 
 
+# Legacy Gi1 LUT phase counts, not active sequential SYS costs.
+# Active costs are defined in data/sequential.py.
 PHASE_COUNT: dict[int, int] = {
     OP_ADD: 3,
     OP_LDA: 2,

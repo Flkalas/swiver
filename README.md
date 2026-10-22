@@ -1,6 +1,6 @@
 # Swiver
 
-74HC discrete-logic 8-bit breadboard CPU — **v1.0 P12** (IF|EX pipe CU, R0 + MBR→ALU B, 12-DIP alu8).
+74HC discrete-logic 8-bit breadboard CPU — **v1.0 sequential** (non-pipelined in-order CU, unified 64 KiB memory/shared instruction-data bus, RAM execution, R0 + MBR→ALU B, 12-DIP alu8).
 
 | Start | Document |
 |-------|----------|
@@ -8,7 +8,7 @@
 | **Naming** | [reference/project/naming.md](reference/project/naming.md) |
 | **Specs + L0→L10 ladder** | [reference/README.md](reference/README.md) |
 | **Bring-up** | [reference/hw-bringup/README.md](reference/hw-bringup/README.md) |
-| **Active CU** | [reference/hardware/cpld-pipe-cu.md](reference/hardware/cpld-pipe-cu.md) |
+| **Active CU** | [reference/hardware/cpld-sequential-cu.md](reference/hardware/cpld-sequential-cu.md) |
 
 ## 실행 방법 (Windows PowerShell)
 

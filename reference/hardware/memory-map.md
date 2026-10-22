@@ -6,6 +6,8 @@
 
 ## 1. CPU address space (16-bit)
 
+One unified **64 KiB instruction/data address space** uses one shared address/data bus. Instructions execute from RAM wherever the selected map exposes RAM. Each instruction completes before the next opcode fetch; instruction/operand fetch and data execution do not overlap ([cpld-sequential-cu.md](cpld-sequential-cu.md)).
+
 | Range | Mode A (Boot) | Mode B (Run) | Notes |
 |-------|---------------|--------------|-------|
 | `$0000–$07FF` | **Boot ROM** (2 KB) | RAM | SST39 low window |
@@ -55,4 +57,4 @@ No automatic map switch from software — operator toggles DIP, then **RESET**.
 | Instruction fetch (Mode A boot) | PC → decode glue |
 | Utility read | PC or boot copy loops |
 
-Flash physical layout: [rom-architecture.md](rom-architecture.md). Control strobes come from the CPLD-CU pipe FSM.
+Flash physical layout: [rom-architecture.md](rom-architecture.md). Control strobes come from the CPLD-CU sequential FSM; Flash and RAM share the CPU access path.

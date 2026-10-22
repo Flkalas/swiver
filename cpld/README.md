@@ -1,6 +1,6 @@
 # CPLD — toolchain (active)
 
-WinCUPL unpack, OpenOCD, FT232H JTAG probe. **Active CU specification:** pipe FSM — [reference/hardware/cpld-pipe-cu.md](../reference/hardware/cpld-pipe-cu.md). Pipe CU `.pld` **Design fits pending**.
+WinCUPL unpack, OpenOCD, FT232H JTAG probe. **Active CU specification:** sequential FSM — [reference/hardware/cpld-sequential-cu.md](../reference/hardware/cpld-sequential-cu.md). Sequential CU `.pld` **Design fits pending**.
 
 | Path | Role |
 |------|------|

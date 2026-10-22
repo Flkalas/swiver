@@ -1,9 +1,9 @@
-# Swiver v1.0 P12 — System clock comparison (peer set)
+# Swiver — System clock comparison (peer set)
 
 **Audience:** learners comparing **what “MHz” means** on Swiver versus peer machines — master clock, micro-step, ISA throughput, and what limits Fmax.  
-**Status:** Archived background (Illustrative for peers) — not Active implementer spec. Swiver timing: Active pipe CU.  
+**Status:** Archived background (Illustrative for peers) — not Active implementer spec. Active Swiver baseline: non-pipelined sequential CPU; former P12 aggregate timing is historical.<br>
 **Related (peers):** [rom-comparison.md](rom-comparison.md) · [cu-dp-comparison.md](cu-dp-comparison.md) · [ttl-computer-comparison.md](ttl-computer-comparison.md)  
-**Active:** [cpld-pipe-cu.md](../../../reference/hardware/cpld-pipe-cu.md) · [cpld-dual-timing.md](../../../reference/hardware/cpld-dual-timing.md) · [alu-opcodes-timing.md](../../../reference/hardware/alu-opcodes-timing.md)
+**Active:** [cpld-sequential-cu.md](../../reference/hardware/cpld-sequential-cu.md) · [alu-opcodes-timing.md](../../reference/hardware/alu-opcodes-timing.md)
 
 ---
 

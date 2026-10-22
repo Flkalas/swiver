@@ -3,6 +3,8 @@
 **1세트 부품 명세** · 단일 **3.3 V** · **PCB SMD**  
 5 V 빵판 구매 목록: [BOM.md](BOM.md) (**중복 주문 금지**)
 
+**설계 검증:** [순차 CU](../hardware/cpld-sequential-cu.md)의 fit·전기적 검증은 별도 pending이며 아래 기존 구매 Qty는 유지한다.
+
 **범위:** [BOM.md](BOM.md)와 동일 — 브링업 CPU 코어. 메일박스 레벨 시프트·Flash 비트뱅·코프로는 **선택/별도**.
 
 | # | 구분 | MPN | Description | Pkg | Qty | 역할 · 목적 | 비고 |
@@ -21,7 +23,7 @@
 | 9 | CPU | SN74LVC08APWR / SN74LVC32APWR | AND / OR | TSSOP-14 | 2 each | CE glue + MAP + BEQ | ↔ #9 |
 | 10 | CPU | SN74LVC161APWR | 4-bit counter | TSSOP-16 | 3 | PC 하위 | ↔ #10 |
 | 11 | CPU | SN74LVC157APWR | Quad 2-to-1 mux | TSSOP-16 | 2 | 주소 하위 | ↔ #11 · #6과 합산 4 |
-| 12 | CPLD | ATF1504AS-10JU44 | CPLD, 64 MC | PLCC-44 | **2** | pipe CU + DP | ↔ #12 |
+| 12 | CPLD | ATF1504AS-10JU44 | CPLD, 64 MC | PLCC-44 | **2** | sequential CU + DP | ↔ #12 |
 | 13 | CPLD | *(JTAG 2×5, 1.27 mm)* | Pin header | TH | 1 | 구성 포트 | |
 | 14 | CPLD | *(SMD slide or tact)* | MAP switch | SMD | 1 | Boot/Run MAP | ↔ #14 |
 | 15 | 메모리 | SN74LVC245APWR | Octal transceiver | TSSOP-20 | 1 | SRAM ↔ CPU | ↔ #15 |

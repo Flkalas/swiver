@@ -1,3 +1,7 @@
+> **SUPERSEDED — historical P12 design (2026-10-23).** This complete prior document is retained as historical design evidence, including its original status labels, estimates and pending gates. None of its Active/normative labels applies to the current CPU. The current normative CU is [cpld-sequential-cu.md](cpld-sequential-cu.md): unified 64 KiB/shared instruction-data bus, RAM execution, non-pipelined in-order execution. P12 overlap, bubble/stretch/fallback schedules, timing and fit projections do not validate the sequential design.
+
+---
+
 # CPLD Pipe CU — v1.0 P12 (Active)
 
 **Status:** Active normative CU specification (**v1.0 P12**)  

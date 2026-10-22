@@ -1,4 +1,6 @@
-# Dual CPLD breadboard routing (v1.0 P12)
+# Dual CPLD breadboard routing (v1.0 sequential)
+
+**Schedule:** [cpld-sequential-cu.md](cpld-sequential-cu.md) — unified 64 KiB, one shared bus, one complete instruction before the next fetch.
 
 **Pins:** [cpld-system-controller.md](cpld-system-controller.md) · **Bring-up:** [breadboard-wiring.md](../hw-bringup/breadboard-wiring.md)
 

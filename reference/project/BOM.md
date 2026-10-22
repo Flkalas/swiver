@@ -1,8 +1,10 @@
 # Swiver — 구매 목록 (v1.0 breadboard, 1세트)
 
 **Normative:** [../hardware/system-architecture.md](../hardware/system-architecture.md) v1.0  
-**1세트 부품 명세** · 5 V · 74HC DIP 빵판 · **dual CPLD** + **pipe CU**  
+**1세트 부품 명세** · 5 V · 74HC DIP 빵판 · **dual CPLD** + **sequential CU**<br>
 PCB 3.3 V 대응 목록: [BOM-3v3.md](BOM-3v3.md) (**중복 주문 금지**)
+
+**설계 검증:** [순차 CU](../hardware/cpld-sequential-cu.md)의 WinCUPL **Design fits**와 latch/배선 대조는 pending이다. 아래 Qty는 기존 구매 목록을 보존하며 새 CU의 물리 합격이나 충분한 부품 수를 보증하지 않는다.
 
 **범위:** M1–M4 빵판 브링업(ALU → CPLD → CPU → Flash/RAM). 메일박스 레벨 시프트·코프로는 본 목록에 **없음**.
 
@@ -16,13 +18,13 @@ PCB 3.3 V 대응 목록: [BOM-3v3.md](BOM-3v3.md) (**중복 주문 금지**)
 | 74HC08 | 2 | CPU | Quad AND | CE glue + MAP |  |
 | 74HC32 | 2 | CPU | Quad OR | CE glue + BEQ |  |
 | 74HC161 | 3 | CPU | 4-bit sync counter | PC 하위 |  |
-| ATF1504AS-10JU44 | **2** | CPLD | CPLD, 64 MC, PLCC-44 | **CPLD-CU** pipe + **CPLD-DP** GPR |  |
+| ATF1504AS-10JU44 | **2** | CPLD | CPLD, 64 MC, PLCC-44 | **CPLD-CU** sequential + **CPLD-DP** GPR |  |
 | PLCC-44↔DIP adapter | **2** | CPLD | PLCC-44 → 2.54 mm DIP | ATF1504×2 빵판 장착 |  |
 | 74HC245 | 1 | 메모리 | Octal bus transceiver | SRAM ↔ CPU 데이터 버스 |  |
 | SST39SF010A-70-4C-PHE | 1 | 메모리 | 128K×8 parallel NOR Flash, PDIP-32 | 부트·유틸리티 |  |
 | IS62C256AL-45ULI-TR | 2 | 메모리 | 32K×8 SRAM, SOP | 실행 RAM 64 KB (adapter 필요) |  |
 | SOP28↔DIP adapter | 2 | 메모리 | SOP28 → DIP | SRAM 빵판 장착 |  |
-| 2.000 MHz oscillator | 1 | 클록 | — | **`CLK_SYS`** 단일 소스 (`IF\|EX`) |  |
+| 2.000 MHz oscillator | 1 | 클록 | — | **`CLK_SYS`** 단일 소스 (fetch → execute 순차 실행) |  |
 | 74HC14 | 1 | 클록 | Hex Schmitt inverter | `CLK_SYS` 배포·정형 |  |
 | Breadboard power supply | 1 | 전원 | — | 전원 공급 |  |
 | Breadboard | — | 인프라 | — | CPU·ALU·메모리·CPLD 작업 면 |  |

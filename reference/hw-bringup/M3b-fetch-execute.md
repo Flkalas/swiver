@@ -1,11 +1,11 @@
-# M3b — Fetch path and macro execution (v1.0 P12)
+# M3b — Fetch path and macro execution (v1.0 sequential)
 
 | Field | Value |
 |-------|-------|
 | **Milestone** | M3b |
-| **Goal** | ROM/PROG fetch → **pipe CU** → operand via MBR → 첫 프로그램 HALT |
-| **선행** | [M2b G4](M2b-gpr-datapath.md#g4--fsm-add-ph2), [M3a](M3a-control-store.md) |
-| **Normative** | [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) · [cpld-system-controller.md](../hardware/cpld-system-controller.md) |
+| **Goal** | Unified ROM/RAM fetch → **sequential CU** → operand via MBR → 첫 프로그램 HALT |
+| **선행** | [M2b G4](M2b-gpr-datapath.md#g4--sequential-add-execute), [M3a](M3a-control-store.md) |
+| **Normative** | [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md) · [cpld-system-controller.md](../hardware/cpld-system-controller.md) |
 
 ---
 
@@ -17,7 +17,7 @@
 | **IR** | 574 | `net_ir0..7` | opcode byte → CPLD `OPC[4:0]` |
 | **MBR** | 574 | `net_mbr0..7` | operand imm8 / abs16 lo; **ALU B** |
 | **MBR hi** | 574 or PC+2 path | — | abs16 high byte (BEQ/JMP/CALL) |
-| **Pipe CU** | CPLD-CU | IF\|EX states | [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) |
+| **Sequential CU** | CPLD-CU | fetch → execute → retire | [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md) |
 | **FLG** | 574 | Z, C | BEQ / flags |
 | **PC+1** | 283 (low) | — | sequential fetch |
 
@@ -27,28 +27,30 @@ Datapath: ALU A ← R0 (`q_a`); ALU B ← MBR.
 
 ## 2. 주소 MUX · 오퍼랜드 데이터 경로
 
-| 모드 | `FETCH` / PROG | A 버스 소스 | 데이터 → |
-|------|----------------|-------------|----------|
-| **Insn fetch (IF)** | PROG | PC → Flash | IR (byte0), MBR (byte1+) |
-| **Data access (EX)** | DATA | MBR (or abs16 latch) | MEM_RD / MEM_WR |
+One **64 KiB instruction/data address space** uses one shared address/data bus. RAM is executable. Opcode fetch, operand fetch, data access, and ALU EX are sequential; no operand fetch overlaps a previous EX.
+
+| 모드 | A 버스 소스 | 데이터 → |
+|------|-------------|----------|
+| Opcode / operand fetch | PC → mapped Flash or RAM | IR (byte0), MBR / abs16 latch (byte1+) |
+| Data execution | MBR / abs16 latch / stack address | MEM_RD / MEM_WR, ALU, or MMIO |
 
 ### 오퍼랜드 취득
 
-| 명령 | Fetch bytes | MBR / latch | Pipe intent |
-|------|-------------|-------------|-------------|
-| LDA `02 imm` | PC, PC+1 | imm8 → MBR (address) | MEM_STALL + REG_WE |
-| STA `03 imm` | PC, PC+1 | imm8 → MBR | MEM_STALL + MEM_WR |
-| LDIO/STIO | 2-byte | imm8 → MBR | MMIO + MEM_STALL |
-| BEQ/JMP/CALL | 3-byte | abs16 LE → MBR+hi | BRANCH_BUBBLE / STACK_EX |
-| RET | 1-byte | — | STACK_EX + PC_LOAD_EN |
-| ADD `01 imm` | PC, PC+1 | imm8 → **MBR (held → ALU B)** | packed EX → **R0** |
-| `0x10–0x1F` | — | — | **trap / invalid** |
+| 명령 | Fetch bytes | MBR / latch | Sequential execute |
+|------|-------------|-------------|--------------------|
+| LDA `02 imm` | PC, PC+1 | imm8 → MBR (address) | MEM_RD + REG_WE |
+| STA `03 imm` | PC, PC+1 | imm8 → MBR | MEM_WR |
+| LDIO/STIO | 2-byte | imm8 → MBR | MMIO access; visible WAIT if required |
+| BEQ/JMP/CALL | 3-byte | abs16 LE → MBR+hi | Execute after all operand bytes are latched |
+| RET | 1-byte | — | Serialized stack reads/writes, redirect last |
+| ADD `01 imm` | PC, PC+1 | imm8 → **MBR (held → ALU B)** | EX → **R0** after both fetches |
+| `0x10–0x1F` | opcode | — | **trap / invalid** after fetch |
 
 ### MBR hold (ALU EX)
 
 During ADD/CMP EX: **do not reload MBR** — operand imm8 must remain on `net_mbr` for ALU B.
 
-RESET: **74HC157** → `$FFFC` → PC `$0000` (Boot).
+RESET vector: `$FFFC/$FFFD` → PC `$0000` (Boot). CPU functional helper treats this as abstract, uncounted initialization; hardware vector sequencing requires separate validation.
 
 ---
 
@@ -56,57 +58,33 @@ RESET: **74HC157** → `$FFFC` → PC `$0000` (Boot).
 
 | 단계 | 동작 |
 |------|------|
-| BEQ EX | ALU SUB (or prior CMP) → **FLG 574** ← Z |
-| BEQ taken | CPLD `PC_LOAD_EN <= FLG_Z`; **BRANCH_BUBBLE**; PC ← abs16 |
-| JMP | `PC_LOAD_EN`; **BRANCH_BUBBLE**; PC ← abs16 |
-| CALL | **STACK_EX** push return PC; `PC_LOAD_EN`; PC ← abs16 |
-| RET | **STACK_EX** pop → **PC_in**; `PC_LOAD_EN` |
-| Non-branch retire | `PC_LOAD_EN=0`; PC advances with IF stream |
+| CMP EX | FLG 574에 Z/C 커밋; R0 유지 |
+| BEQ EX | 이미 래치된 FLG_Z만 검사; taken이면 `PC_LOAD_EN`, PC ← abs16 |
+| JMP | `PC_LOAD_EN`; PC ← abs16 |
+| CALL | RP low/high 읽기 → return-PC low/high 쓰기 → RP low/high 쓰기 → redirect |
+| RET | RP low/high 읽기 → return-PC low/high 읽기 → RP low/high 쓰기 → redirect |
+| Non-branch retire | fetch 동안 증가한 PC를 유지; 다음 opcode는 retire 뒤 fetch |
 
-**관측:** 스코프 on `FLG_Z`, `PC_LOAD_EN`, PC transition.
+**관측:** 스코프 on `FLG_Z`, `PC_LOAD_EN`, PC transition. BEQ는 플래그를 갱신하지 않는다. PC redirect는 현재 명령의 마지막에만 커밋한다.
 
 ---
 
-## 4. 매크로 타임라인 (@ 2 MHz)
+## 4. 매크로 타임라인 (@ nominal 2 MHz)
 
-Active SYS tax: [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) §4. Do **not** verify idle padding phases.
+Active SYS schedule: [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md). Every counted tick belongs to fetch, execute, a serialized stack byte access, or visible WAIT. There are no pipeline fill, bubbles, stalls, or fallback modes.
 
-### ADD (`0x01`)
+| 명령 | 기본 성공 경로 | SYS |
+|------|----------------|-----|
+| ADD / CMP | opcode fetch → imm8 fetch → ALU EX | **3** |
+| LDA / STA / LDIO / STIO | opcode fetch → imm8 fetch → data/MMIO EX | **3** |
+| BEQ (taken / not taken) / JMP / STA16 | opcode → low byte → high byte → EX | **4** |
+| HALT / TRAP | opcode fetch → EX | **2** |
+| CALL | 3 fetch + 6 serialized stack byte accesses | **9** |
+| RET | 1 fetch + 6 serialized stack byte accesses | **7** |
 
-| Intent | 동작 |
-|--------|------|
-| IF | Fetch opcode / imm on PROG (imm may shadow prior EX) |
-| EX | R0←R0+imm; `Y_OE`; `REG_WE`→R0; FLG_WE; **MBR hold** |
+ADD writes R0 and flags; CMP writes flags only. HALT retires and stops with PC at its opcode; reserved-op TRAP follows the existing no-op retirement policy and continues at the next byte. MBR holds throughout ALU EX. CALL/RET access each RP and return-PC byte separately; no multi-byte access is hidden in one tick. The functional `request_wait()` hook inserts visible WAIT ticks without repeating committed effects or starting a later instruction. Physical ready/timeout sensing and WAIT generation remain pending; the hook does not qualify a hardware handshake. Return-stack errors retain the ISA error policy ([microcode-spec.md](../hardware/microcode-spec.md) §2.3).
 
-Typical SYS: **2** (stream → **1**).
-
-### CMP (`0x0D`)
-
-| Intent | 동작 |
-|--------|------|
-| IF | Fetch opcode / imm |
-| EX | FLG_WE only; B from MBR |
-
-### CALL (`0x06`)
-
-| Intent | 동작 |
-|--------|------|
-| IF | Abs16 |
-| EX | **STACK_EX** push; `PC_LOAD_EN`; bubble as needed |
-
-### RET (`0x07`)
-
-| Intent | 동작 |
-|--------|------|
-| EX | **STACK_EX** pop → **PC_in**; `PC_LOAD_EN`; bubble |
-
-Return stack semantics: [microcode-spec.md](../hardware/microcode-spec.md) §2.3.
-
-### LDA (`0x02`)
-
-| Intent | 동작 |
-|--------|------|
-| EX | MEM_RD @ MBR; REG_WE → R0; **MEM_STALL** |
+The CPU simulator is a zero-delay functional model of this schedule. These counts do not validate memory response times, bus drive, glitches, or setup/hold. Reset-vector initialization is abstract and excluded from the counts.
 
 ---
 
@@ -114,7 +92,7 @@ Return stack semantics: [microcode-spec.md](../hardware/microcode-spec.md) §2.3
 
 ### F0 — RESET → PC
 
-`MAP_MODE=0`, RESET → fetch `$FFFC` → **`$0000`**.
+`MAP_MODE=0`, RESET vector `$FFFC/$FFFD` → **`$0000`**. Validate hardware vector loading separately from the simulator’s abstract reset helper.
 
 ### F1 — Instruction fetch
 
@@ -128,15 +106,15 @@ Return stack semantics: [microcode-spec.md](../hardware/microcode-spec.md) §2.3
 
 **Pass:** IR = `0x02`; after 2nd fetch MBR = `0x42`.
 
-### F2 — Pipe CU → datapath
+### F2 — Sequential CU → datapath
 
 1. IR=`0x02` → MEM load path.
-2. EX: `MEM_RD` @ MBR=`$42` (**MEM_STALL** as needed).
+2. EX: `MEM_RD` @ MBR=`$42` (visible WAIT as needed).
 3. `REG_WE` → R0.
 
 ### F3 — PC advance
 
-LDA: PC advances with IF stream after retire.
+LDA: PC advances through its two fetch bytes, then holds through data EX. Next opcode fetch follows retire.
 
 ### F4 — Full mini-program
 
@@ -144,14 +122,14 @@ LDA → ADD → HALT. **Pass:** R0 holds final sum.
 
 ### F5 — BEQ smoke (optional)
 
-ROM: CMP + BEQ; verify `PC_LOAD_EN` only when Z=1; taken → **BRANCH_BUBBLE**.
+ROM: CMP + BEQ; verify `PC_LOAD_EN` only when Z=1; both outcomes cost 4 SYS before visible WAIT; taken redirect commits at instruction completion.
 
 ---
 
 ## 6. M3b sign-off
 
 - [ ] F0–F4 Pass on **breadboard**
-- [ ] Align with [cpld-pipe-cu.md](../hardware/cpld-pipe-cu.md) SYS sheet
+- [ ] Align with [cpld-sequential-cu.md](../hardware/cpld-sequential-cu.md) SYS sheet
 - [ ] MBR hold during ADD/CMP EX
 - [ ] BEQ: FLG_Z gates `PC_LOAD_EN`
 
