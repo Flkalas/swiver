@@ -3,10 +3,10 @@ window.SwiverPlacement = (() => {
   const $=id=>document.getElementById(id);
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const short=id=>id.replace('U_ALU_','').replace('157_YBP_','157_');
-  const defaults={board_count:4,topology:'all',gap_mm:6,stagger_mm:55,orientation:'auto',row_gap:2,iterations:400,seed:830,priority:'balanced',grouping:'stages',rail_split:true};
+  const defaults={board_count:5,topology:'compact221',gap_mm:6,stagger_mm:55,orientation:'0',row_gap:2,edge_rows:0,iterations:400,seed:830,priority:'balanced',grouping:'compact221',rail_split:true};
   let circuit=null,result=null,candidate=null,locks=[],customBoards=[],onNet,selectedNet='net_c_lo',selectedChip=null;
   let generation=0,requestId=0,busy=false,drag=null,camera=null,dirty=false;
-  const numeric=['board_count','gap_mm','stagger_mm','row_gap','iterations','seed'];
+  const numeric=['board_count','gap_mm','stagger_mm','row_gap','edge_rows','iterations','seed'];
   function status(text,error=false){$('placement-status').textContent=text;$('placement-status').classList.toggle('error',error);}
   function readSettings(){
     const s={};
@@ -15,7 +15,7 @@ window.SwiverPlacement = (() => {
     return {...s,locks:structuredClone(locks),custom_boards:structuredClone(customBoards)};
   }
   function writeSettings(s){
-    for(const key of Object.keys(defaults))if(key==='rail_split')$('place-'+key).checked=s[key];else $('place-'+key).value=String(s[key]);
+    for(const key of Object.keys(defaults))if(key==='rail_split')$('place-'+key).checked=s[key];else $('place-'+key).value=String(s[key]??defaults[key]);
     locks=structuredClone(s.locks||[]);customBoards=structuredClone(s.custom_boards||[]);lockSummary();
   }
   function lockSummary(){$('placement-locks').textContent=locks.length?`${locks.length}개 칩 고정: ${locks.map(p=>short(p.id)).join(', ')}`:'고정한 칩 없음 · 칩을 선택해 위치를 편집하거나 고정하세요.';}
@@ -52,6 +52,8 @@ window.SwiverPlacement = (() => {
     $('placement-metrics').innerHTML=`<span>칩 간 예상 <b>${(c.metrics.estimated_mm/1000).toFixed(2)} m</b></span><span>경로 후보 합 <b>${(c.routed_mm/1000).toFixed(2)} m</b></span><span>보드 간 <b>${c.metrics.interboard}</b></span><span>교차 지점 <b>${c.crossings}</b></span><span>가독성 벌점 <b>${c.metrics.readability_penalty}</b></span>`;
     $('placement-route-status').textContent=c.routing_diagnostics.length?`미해결 경로 ${c.routing_diagnostics.length}개: ${c.routing_diagnostics.join(' / ')}`:`${c.wires.length}개 신호 점퍼 경로 후보 · 칩 몸체 회피 확인 · 전원/외부 배선 제외`;
     $('placement-route-status').classList.toggle('error',!!c.routing_diagnostics.length);
+    $('placement-cluster-note').textContent=c.cluster?`B1·B2: 153 4개씩 → B3·B4: 283 1개씩 → B5: 157 2개. 가산기 몸체 사이 ${c.cluster.adder_body_gap_mm.toFixed(2)} mm · 출력 MUX 사이 ${c.cluster.output_body_gap_mm.toFixed(2)} mm (모델 치수).`:'칩을 선택해 위치를 편집하거나 고정할 수 있습니다.';
+    $('placement-fit-cluster').disabled=!c.cluster;
     $('placement-export').disabled=false;$('placement-csv').disabled=false;
   }
   function transform(b){const [x,y,r]=[b.x,b.y,b.rotation];return r===90?`translate(${x+165} ${y}) rotate(90)`:r===180?`translate(${x+55} ${y+165}) rotate(180)`:r===270?`translate(${x} ${y+55}) rotate(270)`:`translate(${x} ${y})`;}
@@ -124,6 +126,16 @@ window.SwiverPlacement = (() => {
   function selectNet(net){selectedNet=net;if(candidate){renderMap();renderWireTable();}}
   $('placement-search').addEventListener('click',run);
   $('placement-settings').addEventListener('input',invalidate);
+  $('place-topology').addEventListener('change',()=>{
+    if($('place-topology').value==='compact221'){$('place-board_count').value='5';$('place-grouping').value='compact221';}
+    else if($('place-topology').value!=='custom'&&$('place-grouping').value==='compact221')$('place-grouping').value='stages';
+    invalidate();
+  });
+  $('place-grouping').addEventListener('change',()=>{
+    if($('place-grouping').value==='compact221'){$('place-board_count').value='5';if($('place-topology').value!=='custom')$('place-topology').value='compact221';}
+    else if($('place-topology').value==='compact221'&&candidate){customBoards=structuredClone(candidate.boards);$('place-topology').value='custom';}
+    invalidate();
+  });
   $('placement-candidates').addEventListener('click',e=>{const el=e.target.closest('[data-candidate]');if(el)selectCandidate(result.candidates.find(c=>c.id===el.dataset.candidate));});
   $('placement-net').addEventListener('change',e=>{selectedNet=e.target.value;onNet(selectedNet);renderMap();renderWireTable();});
   $('placement-all-wires').addEventListener('change',renderMap);
@@ -136,6 +148,7 @@ window.SwiverPlacement = (() => {
   $('placement-map').addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.15:.87);},{passive:false});
   $('placement-chip-picker').addEventListener('change',e=>{selectedChip=e.target.value;renderMap();renderInspector();});
   $('placement-fit-chip').addEventListener('click',()=>{if(!candidate||!selectedChip)return;const i=candidate.placements.findIndex(p=>p.id===selectedChip),r=candidate.chip_rects[i];camera={x:r[0]-15,y:r[1]-12,w:r[2]-r[0]+30,h:r[3]-r[1]+24};updateCamera();});
+  $('placement-fit-cluster').addEventListener('click',()=>{if(!candidate?.cluster)return;const r=candidate.cluster.bounds;camera={x:r[0]-15,y:r[1]-15,w:r[2]-r[0]+30,h:r[3]-r[1]+30};updateCamera();});
   $('placement-fit').addEventListener('click',fit);$('placement-zoom-in').addEventListener('click',()=>zoom(.8));$('placement-zoom-out').addEventListener('click',()=>zoom(1.25));
   $('placement-apply-chip').addEventListener('click',()=>{
     if(!selectedChip||!candidate)return;

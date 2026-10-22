@@ -35,12 +35,68 @@ def run():
                 data = response.value.json()
                 assert response.value.ok
                 expect(page.locator(".bb-chip")).to_have_count(12)
+                expect(page.locator(".bb-hole")).to_have_count(5 * 830)
+                expect(page.locator("#place-topology")).to_have_value("compact221")
+                expect(page.locator("#placement-cluster-note")).to_contain_text(
+                    "10.98 mm"
+                )
+                for width, height in ((1440, 900), (1280, 800)):
+                    page.set_viewport_size({"width": width, "height": height})
+                    assert page.evaluate(
+                        "document.documentElement.scrollWidth <= innerWidth"
+                    )
+                    page.screenshot(
+                        path=str(OUT / f"compact221-{width}x{height}.png"),
+                        full_page=True,
+                    )
+                before = page.locator("#placement-map").get_attribute("viewBox")
+                page.locator("#placement-fit-cluster").click()
+                assert page.locator("#placement-map").get_attribute("viewBox") != before
+                page.locator(".placement-content").screenshot(
+                    path=str(OUT / "compact221-detail.png")
+                )
+                page.locator("#placement-fit").click()
+                checks.append(
+                    "default five-board 4-1 / 4-1 / 2 layout, inward adders, 10.98 mm body gap and cluster zoom"
+                )
+
+                page.locator("#place-edge_rows").fill("2")
+                page.locator("#place-orientation").select_option("90")
+                with page.expect_response("**/api/placement/search") as response:
+                    page.locator("#placement-search").click()
+                compact = response.value.json()
+                assert response.value.ok
+                assert all(
+                    next(p for p in c["placements"] if p["id"] == "U_ALU_283_LO")["row"]
+                    == 54
+                    for c in compact["candidates"]
+                )
+                expect(page.locator("#placement-cluster-note")).to_contain_text(
+                    "21.14 mm"
+                )
+                page.locator("#placement-chip-picker").select_option("U_ALU_283_LO")
+                page.locator("#placement-chip-row").fill("28")
+                with page.expect_response("**/api/placement/evaluate") as response:
+                    page.locator("#placement-apply-chip").click()
+                assert response.value.status == 400
+                expect(page.locator("#placement-status")).to_contain_text("안쪽 모음")
+                checks.append(
+                    "clearance and rigid 90 degree rotation work; manual adder central drift rejected"
+                )
+
+                page.locator("#place-topology").select_option("all")
+                page.locator("#place-board_count").select_option("4")
+                page.locator("#place-orientation").select_option("auto")
+                with page.expect_response("**/api/placement/search") as response:
+                    page.locator("#placement-search").click()
+                data = response.value.json()
+                assert response.value.ok
                 expect(page.locator(".bb-hole")).to_have_count(4 * 830)
                 assert len(data["candidates"]) >= 4
                 expect(page.locator("#placement-wire-list")).to_contain_text("9번 COUT")
                 expect(page.locator("#placement-wire-list")).to_contain_text("7번 CIN")
                 checks.append(
-                    "default 8-2-2 search: four array families, 12 chips, 3320 holes and carry contacts"
+                    "generic 8-2-2 search: four array families, 12 chips, 3320 holes and carry contacts"
                 )
 
                 page.locator("#placement-candidates button").nth(-1).click()
