@@ -1,0 +1,2212 @@
+{
+  "circuit": {
+    "model_version": "alu12-v1",
+    "title": "Swiver ALU · 12 physical packages",
+    "components": [
+      {
+        "id": "U_ALU_153_0",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a0",
+          "B": "net_b0",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic0",
+          "2Y": "net_b_add0"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_1",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a1",
+          "B": "net_b1",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic1",
+          "2Y": "net_b_add1"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_2",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a2",
+          "B": "net_b2",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic2",
+          "2Y": "net_b_add2"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_3",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a3",
+          "B": "net_b3",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic3",
+          "2Y": "net_b_add3"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_4",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a4",
+          "B": "net_b4",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic4",
+          "2Y": "net_b_add4"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_5",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a5",
+          "B": "net_b5",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic5",
+          "2Y": "net_b_add5"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_6",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a6",
+          "B": "net_b6",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic6",
+          "2Y": "net_b_add6"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_153_7",
+        "part": "74HC153",
+        "pins": {
+          "A": "net_a7",
+          "B": "net_b7",
+          "1G": "pwr_gnd",
+          "2G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1C0": "net_lgc0",
+          "1C1": "net_lgc1",
+          "1C2": "net_lgc2",
+          "1C3": "net_lgc3",
+          "2C0": "net_bctrl0",
+          "2C1": "net_bctrl1",
+          "2C2": "net_bctrl2",
+          "2C3": "net_bctrl3",
+          "1Y": "net_y_logic7",
+          "2Y": "net_b_add7"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_283_LO",
+        "part": "74HC283",
+        "pins": {
+          "CIN": "net_cin",
+          "COUT": "net_c_lo",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "A0": "net_a0",
+          "B0": "net_b_add0",
+          "S0": "net_sum0",
+          "A1": "net_a1",
+          "B1": "net_b_add1",
+          "S1": "net_sum1",
+          "A2": "net_a2",
+          "B2": "net_b_add2",
+          "S2": "net_sum2",
+          "A3": "net_a3",
+          "B3": "net_b_add3",
+          "S3": "net_sum3"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_283_HI",
+        "part": "74HC283",
+        "pins": {
+          "CIN": "net_c_lo",
+          "COUT": "net_c_hi",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "A0": "net_a4",
+          "B0": "net_b_add4",
+          "S0": "net_sum4",
+          "A1": "net_a5",
+          "B1": "net_b_add5",
+          "S1": "net_sum5",
+          "A2": "net_a6",
+          "B2": "net_b_add6",
+          "S2": "net_sum6",
+          "A3": "net_a7",
+          "B3": "net_b_add7",
+          "S3": "net_sum7"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_157_YBP_0",
+        "part": "74HC157",
+        "pins": {
+          "S": "net_y_mux_sel",
+          "G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1A": "net_sum0",
+          "1B": "net_y_logic0",
+          "1Y": "net_y0",
+          "2A": "net_sum1",
+          "2B": "net_y_logic1",
+          "2Y": "net_y1",
+          "3A": "net_sum2",
+          "3B": "net_y_logic2",
+          "3Y": "net_y2",
+          "4A": "net_sum3",
+          "4B": "net_y_logic3",
+          "4Y": "net_y3"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      },
+      {
+        "id": "U_ALU_157_YBP_1",
+        "part": "74HC157",
+        "pins": {
+          "S": "net_y_mux_sel",
+          "G": "pwr_gnd",
+          "VCC": "pwr_vcc",
+          "GND": "pwr_gnd",
+          "1A": "net_sum4",
+          "1B": "net_y_logic4",
+          "1Y": "net_y4",
+          "2A": "net_sum5",
+          "2B": "net_y_logic5",
+          "2Y": "net_y5",
+          "3A": "net_sum6",
+          "3B": "net_y_logic6",
+          "3Y": "net_y6",
+          "4A": "net_sum7",
+          "4B": "net_y_logic7",
+          "4Y": "net_y7"
+        },
+        "source": "simulators/cyclesim/export/alu8_netlist.py"
+      }
+    ],
+    "nets": [
+      {
+        "id": "net_a0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "A0"
+          }
+        ]
+      },
+      {
+        "id": "net_b0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_1",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "A1"
+          }
+        ]
+      },
+      {
+        "id": "net_b1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_1",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_2",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "A2"
+          }
+        ]
+      },
+      {
+        "id": "net_b2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_2",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_3",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "A3"
+          }
+        ]
+      },
+      {
+        "id": "net_b3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_3",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_4",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "A0"
+          }
+        ]
+      },
+      {
+        "id": "net_b4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_4",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_5",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "A1"
+          }
+        ]
+      },
+      {
+        "id": "net_b5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_5",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_6",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "A2"
+          }
+        ]
+      },
+      {
+        "id": "net_b6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_6",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_a7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_7",
+            "pin": "A"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "A3"
+          }
+        ]
+      },
+      {
+        "id": "net_b7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_7",
+            "pin": "B"
+          }
+        ]
+      },
+      {
+        "id": "net_cin",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "CIN"
+          }
+        ]
+      },
+      {
+        "id": "net_153_s0",
+        "kind": "control",
+        "endpoints": []
+      },
+      {
+        "id": "net_153_s1",
+        "kind": "control",
+        "endpoints": []
+      },
+      {
+        "id": "net_bctrl0",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2C0"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2C0"
+          }
+        ]
+      },
+      {
+        "id": "net_lgc0",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1C0"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1C0"
+          }
+        ]
+      },
+      {
+        "id": "net_bctrl1",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2C1"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2C1"
+          }
+        ]
+      },
+      {
+        "id": "net_lgc1",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1C1"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1C1"
+          }
+        ]
+      },
+      {
+        "id": "net_bctrl2",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2C2"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2C2"
+          }
+        ]
+      },
+      {
+        "id": "net_lgc2",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1C2"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1C2"
+          }
+        ]
+      },
+      {
+        "id": "net_bctrl3",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2C3"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2C3"
+          }
+        ]
+      },
+      {
+        "id": "net_lgc3",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1C3"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1C3"
+          }
+        ]
+      },
+      {
+        "id": "net_y_mux_sel",
+        "kind": "control",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "S"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "S"
+          }
+        ]
+      },
+      {
+        "id": "net_cmp_z",
+        "kind": "data",
+        "endpoints": []
+      },
+      {
+        "id": "net_cmp_c_ge",
+        "kind": "data",
+        "endpoints": []
+      },
+      {
+        "id": "net_b_add0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "B0"
+          }
+        ]
+      },
+      {
+        "id": "net_sum0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "S0"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "1A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "1B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "B1"
+          }
+        ]
+      },
+      {
+        "id": "net_sum1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "S1"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "2A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "2B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "B2"
+          }
+        ]
+      },
+      {
+        "id": "net_sum2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "S2"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "3A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "3B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "B3"
+          }
+        ]
+      },
+      {
+        "id": "net_sum3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "S3"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "4A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "4B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "B0"
+          }
+        ]
+      },
+      {
+        "id": "net_sum4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "S0"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "1A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "1B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "B1"
+          }
+        ]
+      },
+      {
+        "id": "net_sum5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "S1"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "2A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "2B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "B2"
+          }
+        ]
+      },
+      {
+        "id": "net_sum6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "S2"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "3A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "3B"
+          }
+        ]
+      },
+      {
+        "id": "net_b_add7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2Y"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "B3"
+          }
+        ]
+      },
+      {
+        "id": "net_sum7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "S3"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "4A"
+          }
+        ]
+      },
+      {
+        "id": "net_y_logic7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1Y"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "4B"
+          }
+        ]
+      },
+      {
+        "id": "net_y0",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "1Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y1",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "2Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y2",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "3Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y3",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "4Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y4",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "1Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y5",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "2Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y6",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "3Y"
+          }
+        ]
+      },
+      {
+        "id": "net_y7",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "4Y"
+          }
+        ]
+      },
+      {
+        "id": "net_c_lo",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "COUT"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "CIN"
+          }
+        ]
+      },
+      {
+        "id": "net_c_hi",
+        "kind": "data",
+        "endpoints": [
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "COUT"
+          }
+        ]
+      },
+      {
+        "id": "pwr_vcc",
+        "kind": "power",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "VCC"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "VCC"
+          }
+        ]
+      },
+      {
+        "id": "pwr_gnd",
+        "kind": "power",
+        "endpoints": [
+          {
+            "component": "U_ALU_153_0",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_0",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_0",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_1",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_2",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_3",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_4",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_5",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_6",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "1G"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "2G"
+          },
+          {
+            "component": "U_ALU_153_7",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_283_LO",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_283_HI",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "G"
+          },
+          {
+            "component": "U_ALU_157_YBP_0",
+            "pin": "GND"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "G"
+          },
+          {
+            "component": "U_ALU_157_YBP_1",
+            "pin": "GND"
+          }
+        ]
+      }
+    ],
+    "buses": [
+      {
+        "id": "a",
+        "label": "A",
+        "nets": [
+          "net_a0",
+          "net_a1",
+          "net_a2",
+          "net_a3",
+          "net_a4",
+          "net_a5",
+          "net_a6",
+          "net_a7"
+        ]
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "nets": [
+          "net_b0",
+          "net_b1",
+          "net_b2",
+          "net_b3",
+          "net_b4",
+          "net_b5",
+          "net_b6",
+          "net_b7"
+        ]
+      },
+      {
+        "id": "b_add",
+        "label": "B_ADD",
+        "nets": [
+          "net_b_add0",
+          "net_b_add1",
+          "net_b_add2",
+          "net_b_add3",
+          "net_b_add4",
+          "net_b_add5",
+          "net_b_add6",
+          "net_b_add7"
+        ]
+      },
+      {
+        "id": "logic",
+        "label": "LOGIC",
+        "nets": [
+          "net_y_logic0",
+          "net_y_logic1",
+          "net_y_logic2",
+          "net_y_logic3",
+          "net_y_logic4",
+          "net_y_logic5",
+          "net_y_logic6",
+          "net_y_logic7"
+        ]
+      },
+      {
+        "id": "sum",
+        "label": "SUM",
+        "nets": [
+          "net_sum0",
+          "net_sum1",
+          "net_sum2",
+          "net_sum3",
+          "net_sum4",
+          "net_sum5",
+          "net_sum6",
+          "net_sum7"
+        ]
+      },
+      {
+        "id": "y",
+        "label": "Y",
+        "nets": [
+          "net_y0",
+          "net_y1",
+          "net_y2",
+          "net_y3",
+          "net_y4",
+          "net_y5",
+          "net_y6",
+          "net_y7"
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "id": "NOP",
+        "label": "NOP",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": false,
+          "flags_write": []
+        }
+      },
+      {
+        "id": "ADD",
+        "label": "ADD",
+        "controls": {
+          "cin": 0,
+          "bctrl": 12,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "C",
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "SUB",
+        "label": "SUB",
+        "controls": {
+          "cin": 1,
+          "bctrl": 3,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "C",
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "AND",
+        "label": "AND",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 8,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "OR",
+        "label": "OR",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 14,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "XOR",
+        "label": "XOR",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 6,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "NOT",
+        "label": "NOT",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 5,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "PASS_A",
+        "label": "PASS_A",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 10,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "PASS_B",
+        "label": "PASS_B",
+        "controls": {
+          "cin": 0,
+          "bctrl": 0,
+          "lgc": 12,
+          "y_mux_sel": 1
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "INC",
+        "label": "INC",
+        "controls": {
+          "cin": 1,
+          "bctrl": 0,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "C",
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "DEC",
+        "label": "DEC",
+        "controls": {
+          "cin": 0,
+          "bctrl": 15,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": true,
+          "flags_write": [
+            "C",
+            "Z"
+          ]
+        }
+      },
+      {
+        "id": "CMP",
+        "label": "CMP",
+        "controls": {
+          "cin": 1,
+          "bctrl": 3,
+          "lgc": 0,
+          "y_mux_sel": 0
+        },
+        "cpu_policy": {
+          "acc_write": false,
+          "flags_write": [
+            "C",
+            "Z"
+          ]
+        }
+      }
+    ],
+    "boundary": [
+      {
+        "id": "controls",
+        "label": "Control inputs",
+        "description": "Preset/manual control and s0 OR s1 glue are outside the 12 packages."
+      },
+      {
+        "id": "comparison",
+        "label": "Comparison observer",
+        "description": "Independent expectations and zero/carry probes are not physical ALU chips."
+      },
+      {
+        "id": "cpu",
+        "label": "CPU policy",
+        "description": "NOP holds CPU state; CMP inhibits ACC writes. Physical Y and carry remain observable."
+      },
+      {
+        "id": "time",
+        "label": "Zero-delay simulation",
+        "description": "Settling passes are not CPU clocks or nanoseconds; pins are functional names, not DIP numbers."
+      }
+    ]
+  },
+  "snapshot": {
+    "model_version": "alu12-v1",
+    "state_id": 0,
+    "inputs": {
+      "a": 0,
+      "b": 0,
+      "mode": "preset",
+      "operation": "ADD",
+      "controls": {
+        "cin": 0,
+        "bctrl": 12,
+        "lgc": 0,
+        "y_mux_sel": 0
+      }
+    },
+    "signals": {
+      "net_a0": "0",
+      "net_b0": "0",
+      "net_a1": "0",
+      "net_b1": "0",
+      "net_a2": "0",
+      "net_b2": "0",
+      "net_a3": "0",
+      "net_b3": "0",
+      "net_a4": "0",
+      "net_b4": "0",
+      "net_a5": "0",
+      "net_b5": "0",
+      "net_a6": "0",
+      "net_b6": "0",
+      "net_a7": "0",
+      "net_b7": "0",
+      "net_cin": "0",
+      "net_153_s0": "0",
+      "net_153_s1": "0",
+      "net_bctrl0": "0",
+      "net_lgc0": "0",
+      "net_bctrl1": "0",
+      "net_lgc1": "0",
+      "net_bctrl2": "1",
+      "net_lgc2": "0",
+      "net_bctrl3": "1",
+      "net_lgc3": "0",
+      "net_y_mux_sel": "0",
+      "net_cmp_z": "1",
+      "net_cmp_c_ge": "0",
+      "net_b_add0": "0",
+      "net_sum0": "0",
+      "net_y_logic0": "0",
+      "net_b_add1": "0",
+      "net_sum1": "0",
+      "net_y_logic1": "0",
+      "net_b_add2": "0",
+      "net_sum2": "0",
+      "net_y_logic2": "0",
+      "net_b_add3": "0",
+      "net_sum3": "0",
+      "net_y_logic3": "0",
+      "net_b_add4": "0",
+      "net_sum4": "0",
+      "net_y_logic4": "0",
+      "net_b_add5": "0",
+      "net_sum5": "0",
+      "net_y_logic5": "0",
+      "net_b_add6": "0",
+      "net_sum6": "0",
+      "net_y_logic6": "0",
+      "net_b_add7": "0",
+      "net_sum7": "0",
+      "net_y_logic7": "0",
+      "net_y0": "0",
+      "net_y1": "0",
+      "net_y2": "0",
+      "net_y3": "0",
+      "net_y4": "0",
+      "net_y5": "0",
+      "net_y6": "0",
+      "net_y7": "0",
+      "net_c_lo": "0",
+      "net_c_hi": "0",
+      "pwr_vcc": "1",
+      "pwr_gnd": "0"
+    },
+    "buses": {
+      "a": {
+        "bits": "00000000",
+        "value": 0
+      },
+      "b": {
+        "bits": "00000000",
+        "value": 0
+      },
+      "b_add": {
+        "bits": "00000000",
+        "value": 0
+      },
+      "logic": {
+        "bits": "00000000",
+        "value": 0
+      },
+      "sum": {
+        "bits": "00000000",
+        "value": 0
+      },
+      "y": {
+        "bits": "00000000",
+        "value": 0
+      }
+    },
+    "changed_nets": [],
+    "active_nets": [
+      "net_a0",
+      "net_a1",
+      "net_a2",
+      "net_a3",
+      "net_a4",
+      "net_a5",
+      "net_a6",
+      "net_a7",
+      "net_b0",
+      "net_b1",
+      "net_b2",
+      "net_b3",
+      "net_b4",
+      "net_b5",
+      "net_b6",
+      "net_b7",
+      "net_b_add0",
+      "net_b_add1",
+      "net_b_add2",
+      "net_b_add3",
+      "net_b_add4",
+      "net_b_add5",
+      "net_b_add6",
+      "net_b_add7",
+      "net_bctrl0",
+      "net_bctrl1",
+      "net_bctrl2",
+      "net_bctrl3",
+      "net_c_hi",
+      "net_c_lo",
+      "net_cin",
+      "net_sum0",
+      "net_sum1",
+      "net_sum2",
+      "net_sum3",
+      "net_sum4",
+      "net_sum5",
+      "net_sum6",
+      "net_sum7",
+      "net_y0",
+      "net_y1",
+      "net_y2",
+      "net_y3",
+      "net_y4",
+      "net_y5",
+      "net_y6",
+      "net_y7",
+      "net_y_mux_sel"
+    ],
+    "components": {
+      "U_ALU_153_0": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_1": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_2": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_3": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_4": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_5": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_6": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_153_7": {
+        "pins": {
+          "A": "0",
+          "B": "0",
+          "1G": "0",
+          "2G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1C0": "0",
+          "1C1": "0",
+          "1C2": "0",
+          "1C3": "0",
+          "2C0": "0",
+          "2C1": "0",
+          "2C2": "1",
+          "2C3": "1",
+          "1Y": "0",
+          "2Y": "0"
+        },
+        "active": true,
+        "detail": "address A+2B=0,0"
+      },
+      "U_ALU_283_LO": {
+        "pins": {
+          "CIN": "0",
+          "COUT": "0",
+          "VCC": "1",
+          "GND": "0",
+          "A0": "0",
+          "B0": "0",
+          "S0": "0",
+          "A1": "0",
+          "B1": "0",
+          "S1": "0",
+          "A2": "0",
+          "B2": "0",
+          "S2": "0",
+          "A3": "0",
+          "B3": "0",
+          "S3": "0"
+        },
+        "active": true,
+        "detail": "CIN=0 COUT=0"
+      },
+      "U_ALU_283_HI": {
+        "pins": {
+          "CIN": "0",
+          "COUT": "0",
+          "VCC": "1",
+          "GND": "0",
+          "A0": "0",
+          "B0": "0",
+          "S0": "0",
+          "A1": "0",
+          "B1": "0",
+          "S1": "0",
+          "A2": "0",
+          "B2": "0",
+          "S2": "0",
+          "A3": "0",
+          "B3": "0",
+          "S3": "0"
+        },
+        "active": true,
+        "detail": "CIN=0 COUT=0"
+      },
+      "U_ALU_157_YBP_0": {
+        "pins": {
+          "S": "0",
+          "G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1A": "0",
+          "1B": "0",
+          "1Y": "0",
+          "2A": "0",
+          "2B": "0",
+          "2Y": "0",
+          "3A": "0",
+          "3B": "0",
+          "3Y": "0",
+          "4A": "0",
+          "4B": "0",
+          "4Y": "0"
+        },
+        "active": true,
+        "detail": "S=0 G=0"
+      },
+      "U_ALU_157_YBP_1": {
+        "pins": {
+          "S": "0",
+          "G": "0",
+          "VCC": "1",
+          "GND": "0",
+          "1A": "0",
+          "1B": "0",
+          "1Y": "0",
+          "2A": "0",
+          "2B": "0",
+          "2Y": "0",
+          "3A": "0",
+          "3B": "0",
+          "3Y": "0",
+          "4A": "0",
+          "4B": "0",
+          "4Y": "0"
+        },
+        "active": true,
+        "detail": "S=0 G=0"
+      }
+    },
+    "comparison": {
+      "expected": {
+        "b_add": 0,
+        "logic": 0,
+        "sum": 0,
+        "c_lo": 0,
+        "c_hi": 0,
+        "y": 0
+      },
+      "actual": {
+        "b_add": 0,
+        "logic": 0,
+        "sum": 0,
+        "y": 0,
+        "c_lo": 0,
+        "c_hi": 0
+      },
+      "match": true,
+      "first_mismatch": null
+    },
+    "cpu_policy": {
+      "acc_write": true,
+      "flags_write": [
+        "C",
+        "Z"
+      ]
+    },
+    "comparison_flags": {
+      "zero": true,
+      "carry_ge": 0
+    },
+    "diagnostics": [],
+    "settled": true,
+    "iterations": 5
+  }
+}

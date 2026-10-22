@@ -62,6 +62,20 @@ def cmd_export_alu8(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_viewer(args: argparse.Namespace) -> int:
+    from simulators.cyclesim.viewer_server import serve
+
+    if not 0 <= args.port <= 65535:
+        print("port must be between 0 and 65535", file=sys.stderr)
+        return 2
+    try:
+        serve(args.port)
+    except OSError as exc:
+        print(f"Cannot start local viewer: {exc}. Try --port 8766.", file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="simulators.cyclesim")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -76,6 +90,10 @@ def main(argv: list[str] | None = None) -> int:
 
     test_p = sub.add_parser("test", help="Run pytest suite")
     test_p.set_defaults(func=cmd_test)
+
+    viewer_p = sub.add_parser("viewer", help="Serve the live 12-chip ALU viewer on loopback")
+    viewer_p.add_argument("--port", type=int, default=8765)
+    viewer_p.set_defaults(func=cmd_viewer)
 
     exp_p = sub.add_parser("export", help="Export netlists")
     exp_sub = exp_p.add_subparsers(dest="export_target", required=True)

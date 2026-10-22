@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172b32">
+  <title>Swiver · ALU 회로 실험실</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Swiver 회로 실험실 홈"><span class="brand-mark">S<span>↗</span></span><span>swiver<span class="brand-sub">회로 실험실</span></span></a>
+    <div class="header-title">8-bit ALU <span>12 PACKAGE / LIVE NETLIST</span></div>
+    <div class="connection"><span id="connection-dot" class="dot"></span><span id="connection-text">연결 중</span><button id="reconnect" class="quiet">다시 연결</button></div>
+  </header>
+
+  <main>
+    <section class="intro"><div><div class="eyebrow">EXPLORE THE SIGNAL</div><h1>입력에서 출력까지, 한 비트씩.</h1><p>값과 제어를 바꾸고 실제 넷리스트의 신호 경로를 따라가세요.</p></div><div class="model-note"><span id="model-version">alu12-v1</span><span>지연 없는 기능 모델 · 물리 배선도 아님</span></div></section>
+
+    <section class="panel controls" aria-label="ALU 입력과 제어">
+      <div class="operands">
+        <div class="operand" data-operand="a"><div class="operand-head"><label for="a-dec"><span class="operand-symbol">A</span> 피연산자</label><span>8 BIT</span></div><div class="number-fields"><label>10진수<input id="a-dec" inputmode="numeric" value="0" autocomplete="off" aria-describedby="input-error"></label><label>16진수<span class="hex-input"><span>0x</span><input id="a-hex" value="00" maxlength="4" autocomplete="off" aria-describedby="input-error"></span></label></div><div id="a-bits" class="bit-input" aria-label="A 비트 토글"></div></div>
+        <div class="operand" data-operand="b"><div class="operand-head"><label for="b-dec"><span class="operand-symbol orange">B</span> 피연산자</label><span>8 BIT</span></div><div class="number-fields"><label>10진수<input id="b-dec" inputmode="numeric" value="0" autocomplete="off" aria-describedby="input-error"></label><label>16진수<span class="hex-input"><span>0x</span><input id="b-hex" value="00" maxlength="4" autocomplete="off" aria-describedby="input-error"></span></label></div><div id="b-bits" class="bit-input" aria-label="B 비트 토글"></div></div>
+      </div>
+      <div class="operation-controls"><div class="section-line"><h2>연산과 제어</h2><div class="segmented"><button id="mode-preset" aria-pressed="true">프리셋</button><button id="mode-direct" aria-pressed="false">직접 제어</button></div></div><label class="select-label" for="operation">연산 프리셋<select id="operation" disabled><option>모델 불러오는 중</option></select></label><div id="direct-controls" class="direct-controls" hidden><label>CIN<select id="cin"><option>0</option><option>1</option></select></label><label>BCTRL<input id="bctrl" inputmode="numeric" value="12" aria-label="BCTRL 0부터 15"></label><label>LGC<input id="lgc" inputmode="numeric" value="0" aria-label="LGC 0부터 15"></label><label>Y 선택<select id="y_mux_sel"><option value="0">SUM · 0</option><option value="1">LOGIC · 1</option></select></label></div><p id="control-summary" class="mono muted">CIN 0 / BCTRL 1100 / LGC 0000 / Y 0</p><div class="examples"><span>예제</span><button data-example="carry">자리올림</button><button data-example="borrow">뺄셈·비교</button><button data-example="logic">논리 패턴</button><button id="reset" class="quiet">초기화 ↺</button></div></div>
+      <div class="example-gallery" aria-label="바로 실행할 예제"><span>빠른 실험</span><button data-example="zero">00 + 00</button><button data-example="carry">FF + 01</button><button data-example="nibble">0F + 01</button><button data-example="sub">03 − 05 · SUB</button><button data-example="cmp">05 = 05 · CMP</button><button data-example="logic">AA XOR 55</button></div>
+      <div id="input-error" class="input-error" role="alert" hidden></div>
+    </section>
+
+    <div id="status-banner" class="status-banner" role="status" aria-live="polite">Python 모델에 연결하고 있습니다. 관측값을 기다려 주세요.</div>
+
+    <div class="workspace">
+      <section class="panel map-panel" aria-label="ALU 칩 지도">
+        <div class="panel-heading"><div><h2>신호 지도 <span class="count">153 × 8 + 283 × 2 + 157 × 2</span></h2><p>패키지 또는 버스를 선택해 연결과 값을 확인하세요.</p></div><div class="map-tools"><button id="zoom-out" title="축소" aria-label="축소">−</button><output id="zoom-label">100%</output><button id="zoom-in" title="확대" aria-label="확대">+</button><button id="fit">전체 보기</button><button id="fit-selection">선택 맞춤</button></div></div>
+        <div class="map-readout"><span>OUTPUT <strong id="live-y">Y —</strong></span><span id="live-carries">C_LO — · C_HI — · Z —</span><span id="live-policy">관측 대기</span></div>
+        <div class="map-subbar"><div class="bit-picker"><span>추적 비트</span><div id="trace-bits" role="group" aria-label="추적할 비트 선택"></div></div><label class="check-label"><input id="fanout" type="checkbox" checked>선택 비트 펼치기</label><span class="map-hint">드래그 이동 · 휠 확대</span></div>
+        <div id="map-viewport" class="map-viewport"><svg id="circuit-map" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="8개의 153, 2개의 283, 2개의 157과 버스 연결"><title>ALU 12개 패키지 신호 지도</title><g id="map-scene"></g></svg><div id="map-loading">회로 정의를 불러오는 중…</div></div>
+        <div class="map-footer"><div class="legend"><span><i class="legend-line one"></i>1</span><span><i class="legend-line zero"></i>0</span><span><i class="legend-line unknown"></i>X / Z</span><span><i class="legend-line selected"></i>선택 경로</span><span><i class="legend-line changed"></i>변경됨</span><span><i class="legend-line active"></i>활성 경로</span><span><i class="legend-line control"></i>제어</span></div><span>기능 핀 표기 · DIP 번호 아님</span></div>
+      </section>
+
+      <aside class="panel inspector" aria-label="핀과 넷 검사기"><div class="panel-heading"><div><div class="eyebrow">INSPECTOR</div><h2>선택 항목</h2></div><div><button id="clear-selection" class="quiet">해제</button><button id="toggle-inspector" aria-expanded="true" aria-controls="inspector-body">접기</button></div></div><div id="inspector-body" class="inspector-body"><div class="empty-state"><span>⌖</span><h3>신호를 자세히 들여다보세요</h3><p>칩, 버스 또는 신호선을 선택하면 기능 핀과 연결된 넷을 여기서 확인할 수 있습니다.</p></div></div></aside>
+    </div>
+
+    <section class="panel observations" aria-label="중간 단계 관측값"><div class="panel-heading"><div><h2>중간 단계 관측</h2><p>표시 값은 Python 응답에서 읽습니다. 알 수 없는 값은 X / Z로 유지됩니다.</p></div><div id="settle-info" class="muted mono">관측 대기</div></div><div id="bus-observations" class="bus-observations"></div><div class="comparison-row"><span id="comparison-status" class="comparison-status">비교 대기</span><span id="flag-info">Z — · 물리 C_HI —</span><span id="cpu-policy">CPU 정책 대기</span></div><div id="comparison-detail" class="comparison-detail"></div><div id="diagnostics" role="status"></div></section>
+
+    <section class="panel explanation"><div class="explanation-label"><span class="eyebrow">FOLLOW THE PATH</span><h2>지금 신호는 어디로 갈까요?</h2></div><div id="path-explanation"><p>연결 후 현재 입력과 선택 경로를 설명합니다.</p></div><div class="path-controls"><span>교육 경로 따라보기</span><button id="path-prev" aria-label="이전 경로 단계">← 이전</button><output id="path-step">단계를 선택하세요</output><button id="path-next" aria-label="다음 경로 단계">다음 →</button><button id="path-clear" class="quiet">경로 해제</button><span class="muted">화면 강조만 이동 · 시간 시뮬레이션 아님</span></div><details><summary>이 화면을 읽는 방법과 모델 경계</summary><div class="help-content"><p>153의 주소 선택은 항상 A_bit + 2 × B_bit입니다. LGC와 BCTRL은 4개 데이터 입력의 진리표이며, 피연산자 선택을 대체하지 않습니다. 283 두 개는 C_LO로 연결되고, 157은 SUM 또는 LOGIC을 Y로 보냅니다.</p><p>C_HI는 논리 연산 중에도 물리 가산기의 자리올림입니다. SUB / CMP에서만 부호 없는 A ≥ B로 해석합니다. CMP는 결과를 계산해도 ACC에 쓰지 않으며, NOP의 물리 Y=A와 CPU 상태 유지는 구분됩니다.</p><p>iterations는 안정화 패스 수이며 CPU 클록이나 시간 지연이 아닙니다. 이 화면은 패키지 간 기능 연결을 보여 주며 실제 핀 번호, 타이밍, 배선 또는 장착 검증을 제공하지 않습니다.</p><div id="boundary-notes"></div></div></details></section>
+    <footer class="page-footer"><span>SWIVER / ALU EXPLORER</span><span id="observation-time">아직 관측되지 않음</span><span>LOCAL SESSION · ZERO DELAY</span></footer>
+  </main>
+</body>
+</html>
