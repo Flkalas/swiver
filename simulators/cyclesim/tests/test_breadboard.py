@@ -182,7 +182,7 @@ COMPACT = {"board_count": 5, "topology": "compact221", "grouping": "compact221"}
 
 
 @pytest.mark.parametrize(
-    "rotation,gap,margin", [(0, 6, 0), (90, 6, 0), (0, 0, 8), (90, 50, 8)]
+    "rotation,gap,margin", [(0, 0, 0), (90, 0, 0), (0, 0, 8), (90, 0, 8)]
 )
 def test_compact221_assignments_facing_ends_and_output_alignment(rotation, gap, margin):
     settings = COMPACT | {
@@ -217,7 +217,9 @@ def test_compact221_assignments_facing_ends_and_output_alignment(rotation, gap, 
         axis = 1 if rotation == 0 else 0
         centers = {chip: (r[axis] + r[axis + 2]) / 2 for chip, r in rects.items()}
         for a, y in [("283_LO", "157_YBP_0"), ("283_HI", "157_YBP_1")]:
-            assert abs(centers["U_ALU_" + a] - centers["U_ALU_" + y]) <= 1.27 + 1e-6
+            # The closest symmetric pair also reserves two free rows. At zero
+            # margin this puts centers 1.32 mm away from the adder centers.
+            assert abs(centers["U_ALU_" + a] - centers["U_ALU_" + y]) <= 1.32 + 1e-6
         assert (centers["U_ALU_283_LO"] + centers["U_ALU_283_HI"]) / 2 == pytest.approx(
             (centers["U_ALU_157_YBP_0"] + centers["U_ALU_157_YBP_1"]) / 2
         )
@@ -289,3 +291,72 @@ def test_compact221_shifted_input_lock_repositions_neighbours():
     result = search(COMPACT | {"iterations": 80, "locks": [lock]})
     for c in result["candidates"]:
         assert next(p for p in c["placements"] if p["id"] == lock["id"]) == lock
+
+
+@pytest.mark.parametrize("gap", [-1, 0.01, 6, 50])
+def test_nonzero_board_gap_is_rejected_in_every_mode(gap):
+    for settings in ({}, COMPACT):
+        with pytest.raises(ValueError):
+            search(settings | {"gap_mm": gap})
+
+
+@pytest.mark.parametrize("dx,dy", [(55.1, 0), (55, 165)])
+def test_disconnected_or_corner_only_boards_are_rejected(dx, dy):
+    boards = [
+        {"id": 0, "x": 0, "y": 0, "rotation": 0},
+        {"id": 1, "x": dx, "y": dy, "rotation": 0},
+    ]
+    with pytest.raises(ValueError, match="0 mm"):
+        config({"board_count": 2, "topology": "custom", "custom_boards": boards})
+
+
+def test_connected_staggered_custom_layout_and_disconnected_import():
+    result = search(COMPACT | {"orientation": "0", "iterations": 40})
+    c = result["candidates"][0]
+    assert [(b["x"], b["y"]) for b in c["boards"]] == [
+        (0, 0),
+        (0, 165),
+        (55, 0),
+        (55, 165),
+        (110, 82.5),
+    ]
+    payload = {
+        "settings": result["settings"],
+        "boards": deepcopy(c["boards"]),
+        "placements": c["placements"],
+    }
+    # Sliding B5 along the contacting side is permitted.
+    payload["boards"][4]["y"] += 10
+    evaluate(payload)
+    payload["boards"][4]["x"] += 0.01
+    with pytest.raises(ValueError, match="0 mm"):
+        evaluate(payload)
+
+
+def test_separate_touching_pairs_do_not_form_a_joined_array():
+    boards = [
+        {"id": i, "x": x, "y": 0, "rotation": 0}
+        for i, x in enumerate([0, 55, 200, 255])
+    ]
+    with pytest.raises(ValueError, match="0 mm"):
+        validate_boards(boards)
+
+
+def test_zigzag_skips_detached_orientation_without_clamping_offset():
+    c = config({"topology": "zigzag", "orientation": "auto", "stagger_mm": 55})
+    layouts = arrays(c)
+    assert len(layouts) == 1 and layouts[0][1][0]["rotation"] == 0
+    assert layouts[0][1][1]["y"] == 55
+    with pytest.raises(ValueError, match="맞닿"):
+        arrays(config({"topology": "zigzag", "orientation": "90", "stagger_mm": 55}))
+
+
+@pytest.mark.parametrize(
+    "row_gap,expected", [(1, (24, 33)), (2, (23, 34)), (3, (23, 34)), (4, (22, 35))]
+)
+def test_joined_boards_keep_reserved_output_rows(row_gap, expected):
+    result = search(COMPACT | {"row_gap": row_gap, "iterations": 40})
+    for c in result["candidates"]:
+        rows = tuple(p["row"] for p in c["placements"] if "157" in p["id"])
+        assert rows == expected
+        assert rows[1] - rows[0] - 8 >= row_gap

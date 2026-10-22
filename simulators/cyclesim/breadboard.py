@@ -39,7 +39,7 @@ PROFILE = {
     "rail_y_mm": [round(8.84 + (i + i // 5) * PITCH, 2) for i in range(50)],
     "notes": [
         "범용 830 가정: 55 × 165 mm, 63행, 2.54 mm 격자. 제조사 실측 도면 아님.",
-        "결합 돌기는 제외. 같은 행 a–e / f–j는 각각 연결, 중앙 홈 양쪽은 분리.",
+        "돌기 결합은 보드 외곽 간격 0 mm로 모델링. 돌기 형상은 생략. 같은 행 a–e / f–j는 각각 연결.",
         "전원 레일 중간 단절은 설정에 표시하며 신호 배선 비용에는 포함하지 않음.",
     ],
 }
@@ -101,7 +101,7 @@ def config(raw):
     c = {
         "board_count": 4,
         "topology": "all",
-        "gap_mm": 6,
+        "gap_mm": 0,
         "stagger_mm": 55,
         "orientation": "auto",
         "row_gap": 2,
@@ -124,6 +124,8 @@ def config(raw):
         c[key] = number(c[key], key, lo, hi, True)
     for key, lo, hi in (("gap_mm", 0, 50), ("stagger_mm", 0, 165)):
         c[key] = number(c[key], key, lo, hi)
+    if c["gap_mm"] != 0:
+        raise ValueError("돌기 결합 배치의 보드 사이 간격은 0 mm로 고정입니다.")
     if (
         c["topology"] not in (*TOPOLOGIES, "all", "custom", "compact221")
         or c["priority"] not in ("short", "readable", "balanced")
@@ -212,6 +214,29 @@ def validate_boards(boards):
             if overlap(board_rect(a), board_rect(b)):
                 raise ValueError(f"보드 B{a['id'] + 1}와 B{b['id'] + 1}가 겹칩니다.")
 
+    # A joined array is one connected component of shared edges, not isolated
+    # boards or groups that only touch at a corner. Coordinates use mm.
+    def joined(a, b):
+        x_overlap = min(a[2], b[2]) - max(a[0], b[0])
+        y_overlap = min(a[3], b[3]) - max(a[1], b[1])
+        return (
+            (abs(a[2] - b[0]) < 1e-6 or abs(b[2] - a[0]) < 1e-6) and y_overlap > 1e-6
+        ) or ((abs(a[3] - b[1]) < 1e-6 or abs(b[3] - a[1]) < 1e-6) and x_overlap > 1e-6)
+
+    reached, pending = {0}, [0]
+    while pending:
+        i = pending.pop()
+        for j in range(len(boards)):
+            if j not in reached and joined(
+                board_rect(boards[i]), board_rect(boards[j])
+            ):
+                reached.add(j)
+                pending.append(j)
+    if len(reached) != len(boards):
+        raise ValueError(
+            "보드를 0 mm 간격으로 이어 붙이세요. 모든 보드가 변을 맞대어 연결되어야 합니다."
+        )
+
 
 def arrays(c):
     if c["topology"] == "custom":
@@ -243,6 +268,8 @@ def arrays(c):
     for topology in TOPOLOGIES if c["topology"] == "all" else [c["topology"]]:
         for rot in (0, 90) if c["orientation"] == "auto" else [int(c["orientation"])]:
             w, h = (55, 165) if rot == 0 else (165, 55)
+            if topology == "zigzag" and h - c["stagger_mm"] <= 1e-6:
+                continue
             boards = []
             for i in range(c["board_count"]):
                 if topology == "horizontal":
@@ -258,17 +285,23 @@ def arrays(c):
                     x, y = i * (w + c["gap_mm"]), (i % 2) * c["stagger_mm"]
                 boards.append({"id": i, "x": x, "y": y, "rotation": rot})
             layouts.append((topology, boards))
+    if not layouts:
+        raise ValueError(
+            "보드가 맞닿는 배열이 없습니다. 지그재그 오프셋을 보드 높이보다 작게 하거나 방향을 바꾸세요."
+        )
     return layouts
 
 
-def compact_targets(edge_rows, gap_mm):
-    """Fixed adder end rows and nearest output rows aligned to their centers."""
+def compact_targets(edge_rows, gap_mm, row_gap=2):
+    """Nearest symmetric output pair that also reserves the requested free rows."""
     adder_rows = (56 - edge_rows, 1 + edge_rows)
     # B5 origin is halfway between B3/B4 origins; equal package sizes cancel.
-    output_rows = (
-        round(adder_rows[0] - (165 + gap_mm) / (2 * PITCH)),
-        round(adder_rows[1] + (165 + gap_mm) / (2 * PITCH)),
-    )
+    lower = round(adder_rows[0] - (165 + gap_mm) / (2 * PITCH))
+    upper = 57 - lower
+    while upper - lower < 8 + row_gap:
+        lower -= 1
+        upper += 1
+    output_rows = (lower, upper)
     return dict(
         zip(
             ("U_ALU_283_LO", "U_ALU_283_HI", "U_ALU_157_YBP_0", "U_ALU_157_YBP_1"),
@@ -286,7 +319,7 @@ def compact_board(chip_id):
 
 
 def validate_placements(
-    placements, boards, gap, grouping="free", edge_rows=0, gap_mm=6
+    placements, boards, gap, grouping="free", edge_rows=0, gap_mm=0
 ):
     if (
         len(placements) != 12
@@ -310,7 +343,7 @@ def validate_placements(
                 raise ValueError("칩 몸체/핀 또는 예약한 행 간격이 겹칩니다.")
     ordered = sorted(placements, key=lambda p: (p["board"], p["row"]))
     if grouping == "compact221":
-        targets = compact_targets(edge_rows, gap_mm)
+        targets = compact_targets(edge_rows, gap_mm, gap)
         if len(boards) != 5 or any(
             p["board"] != compact_board(p["id"]) for p in placements
         ):
@@ -471,7 +504,7 @@ def initial(c, variant):
     capacity = (63 + c["row_gap"]) // step
     locks = {p["id"]: deepcopy(p) for p in c["locks"]}
     if c["grouping"] == "compact221":
-        targets = compact_targets(c["edge_rows"], c["gap_mm"])
+        targets = compact_targets(c["edge_rows"], c["gap_mm"], c["row_gap"])
         # Four input chips grouped near the corresponding adder end.
         out = []
         for i, chip_id in enumerate(ids):
@@ -711,7 +744,10 @@ def make_candidate(topology, placements, boards, metrics, c):
     cluster = None
     if c["grouping"] == "compact221":
         rects = {p["id"]: r for p, r in zip(placements, detail["chip_rects"])}
-        group = [rects[chip] for chip in compact_targets(c["edge_rows"], c["gap_mm"])]
+        group = [
+            rects[chip]
+            for chip in compact_targets(c["edge_rows"], c["gap_mm"], c["row_gap"])
+        ]
 
         def distance(a, b):
             return round(
