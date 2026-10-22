@@ -176,3 +176,116 @@ def test_eight_board_initial_stage_layout_uses_every_board():
     placements = initial(c, 0)
     assert {p["board"] for p in placements} == set(range(8))
     validate_placements(placements, arrays(c)[0][1], 2, "stages")
+
+
+COMPACT = {"board_count": 5, "topology": "compact221", "grouping": "compact221"}
+
+
+@pytest.mark.parametrize(
+    "rotation,gap,margin", [(0, 6, 0), (90, 6, 0), (0, 0, 8), (90, 50, 8)]
+)
+def test_compact221_assignments_facing_ends_and_output_alignment(rotation, gap, margin):
+    settings = COMPACT | {
+        "orientation": str(rotation),
+        "gap_mm": gap,
+        "edge_rows": margin,
+        "iterations": 80,
+        "seed": 830 + margin,
+    }
+    result = search(settings)
+    for candidate in result["candidates"]:
+        boards = candidate["boards"]
+        validate_boards(boards)
+        p = {x["id"]: x for x in candidate["placements"]}
+        for i in range(8):
+            assert p[f"U_ALU_153_{i}"]["board"] == (0 if i < 4 else 1)
+        for chip, board in [
+            ("283_LO", 2),
+            ("283_HI", 3),
+            ("157_YBP_0", 4),
+            ("157_YBP_1", 4),
+        ]:
+            assert p["U_ALU_" + chip]["board"] == board
+        assert p["U_ALU_283_LO"]["row"] == 56 - margin
+        assert p["U_ALU_283_HI"]["row"] == 1 + margin
+        assert candidate["cluster"]["adder_body_gap_mm"] == pytest.approx(
+            gap + 4.98 + 5.08 * margin
+        )
+        rects = dict(
+            zip((x["id"] for x in candidate["placements"]), candidate["chip_rects"])
+        )
+        axis = 1 if rotation == 0 else 0
+        centers = {chip: (r[axis] + r[axis + 2]) / 2 for chip, r in rects.items()}
+        for a, y in [("283_LO", "157_YBP_0"), ("283_HI", "157_YBP_1")]:
+            assert abs(centers["U_ALU_" + a] - centers["U_ALU_" + y]) <= 1.27 + 1e-6
+        assert (centers["U_ALU_283_LO"] + centers["U_ALU_283_HI"]) / 2 == pytest.approx(
+            (centers["U_ALU_157_YBP_0"] + centers["U_ALU_157_YBP_1"]) / 2
+        )
+        assert len(candidate["contacts"]) == 192 and len(candidate["wires"]) == 90
+        assert not candidate["routing_diagnostics"]
+        for wire in candidate["wires"]:
+            assert all(
+                segment_clear(a, b, candidate["chip_rects"])
+                for a, b in zip(wire["path"], wire["path"][1:])
+            )
+
+
+@pytest.mark.parametrize("change", [{"board": 3}, {"row": 28}])
+def test_compact221_evaluate_rejects_board_change_or_central_drift(change):
+    result = search(COMPACT | {"iterations": 40})
+    candidate = deepcopy(result["candidates"][0])
+    next(p for p in candidate["placements"] if p["id"] == "U_ALU_283_LO").update(change)
+    with pytest.raises(ValueError):
+        evaluate(
+            {
+                "settings": result["settings"],
+                "boards": candidate["boards"],
+                "placements": candidate["placements"],
+            }
+        )
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"board_count": 4},
+        {"edge_rows": -1},
+        {"edge_rows": 9},
+        {"edge_rows": True},
+        {"grouping": "free"},
+    ],
+)
+def test_compact221_rejects_invalid_contract(change):
+    with pytest.raises(ValueError):
+        search(COMPACT | change)
+
+
+def test_compact221_lock_and_json_roundtrip():
+    result = search(COMPACT | {"iterations": 80})
+    candidate = result["candidates"][0]
+    lock = next(p for p in candidate["placements"] if p["id"] == "U_ALU_283_LO")
+    result = search(result["settings"] | {"locks": [lock]})
+    assert all(
+        next(p for p in c["placements"] if p["id"] == lock["id"]) == lock
+        for c in result["candidates"]
+    )
+    candidate = result["candidates"][0]
+    loaded = json.loads(
+        json.dumps(
+            {
+                "settings": result["settings"],
+                "boards": candidate["boards"],
+                "placements": candidate["placements"],
+            }
+        )
+    )
+    assert evaluate(loaded)["id"] == candidate["id"]
+    with pytest.raises(ValueError):
+        search(result["settings"] | {"edge_rows": 1})
+
+
+def test_compact221_shifted_input_lock_repositions_neighbours():
+    lock = {"id": "U_ALU_153_1", "board": 0, "row": 34, "rotation": 180}
+    result = search(COMPACT | {"iterations": 80, "locks": [lock]})
+    for c in result["candidates"]:
+        assert next(p for p in c["placements"] if p["id"] == lock["id"]) == lock

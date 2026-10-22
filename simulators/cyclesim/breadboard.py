@@ -50,6 +50,7 @@ LABELS = {
     "grid": "격자 배열",
     "zigzag": "지그재그",
     "custom": "직접 지정",
+    "compact221": "2–2–1 · 안쪽 모음",
 }
 LIMITATIONS = [
     "유한 후보 탐색 결과이며 전역 최적해 보장이 아닙니다.",
@@ -93,6 +94,7 @@ def config(raw):
         "rail_split",
         "locks",
         "custom_boards",
+        "edge_rows",
     }
     if set(raw) - known:
         raise ValueError("알 수 없는 탐색 설정: " + ", ".join(sorted(set(raw) - known)))
@@ -110,23 +112,33 @@ def config(raw):
         "rail_split": True,
         "locks": [],
         "custom_boards": [],
+        "edge_rows": 0,
     } | deepcopy(raw)
     for key, lo, hi in (
         ("board_count", 2, 8),
         ("row_gap", 1, 4),
         ("iterations", 40, 1600),
         ("seed", 0, 2147483647),
+        ("edge_rows", 0, 8),
     ):
         c[key] = number(c[key], key, lo, hi, True)
     for key, lo, hi in (("gap_mm", 0, 50), ("stagger_mm", 0, 165)):
         c[key] = number(c[key], key, lo, hi)
     if (
-        c["topology"] not in (*TOPOLOGIES, "all", "custom")
+        c["topology"] not in (*TOPOLOGIES, "all", "custom", "compact221")
         or c["priority"] not in ("short", "readable", "balanced")
         or c["orientation"] not in ("auto", "0", "90")
-        or c["grouping"] not in ("stages", "nibbles", "free")
+        or c["grouping"] not in ("stages", "nibbles", "free", "compact221")
     ):
         raise ValueError("배열/방향/우선순위 설정을 확인하세요.")
+    if c["topology"] == "compact221" and c["grouping"] != "compact221":
+        raise ValueError("2–2–1 배열에는 2–2–1 안쪽 모음 조건을 선택하세요.")
+    if c["grouping"] == "compact221" and (
+        c["board_count"] != 5 or c["topology"] not in ("compact221", "custom")
+    ):
+        raise ValueError(
+            "2–2–1 안쪽 모음은 5장, 2–2–1 또는 직접 지정 배열을 사용하세요."
+        )
     if type(c["rail_split"]) is not bool:
         raise ValueError("rail_split은 참/거짓이어야 합니다.")
     if not isinstance(c["locks"], list) or len(c["locks"]) > 12:
@@ -204,6 +216,29 @@ def validate_boards(boards):
 def arrays(c):
     if c["topology"] == "custom":
         return [("custom", deepcopy(c["custom_boards"]))]
+    if c["topology"] == "compact221":
+        gap = c["gap_mm"]
+        origins = [
+            (0, 0),
+            (0, 165 + gap),
+            (55 + gap, 0),
+            (55 + gap, 165 + gap),
+            (2 * (55 + gap), (165 + gap) / 2),
+        ]
+        layouts = []
+        for rot in (0, 90) if c["orientation"] == "auto" else [int(c["orientation"])]:
+            # Rotate the complete assembly, not each board in place.
+            boards = [
+                {
+                    "id": i,
+                    "x": x if rot == 0 else 165 + gap - y,
+                    "y": y if rot == 0 else x,
+                    "rotation": rot,
+                }
+                for i, (x, y) in enumerate(origins)
+            ]
+            layouts.append(("compact221", boards))
+        return layouts
     layouts = []
     for topology in TOPOLOGIES if c["topology"] == "all" else [c["topology"]]:
         for rot in (0, 90) if c["orientation"] == "auto" else [int(c["orientation"])]:
@@ -226,7 +261,33 @@ def arrays(c):
     return layouts
 
 
-def validate_placements(placements, boards, gap, grouping="free"):
+def compact_targets(edge_rows, gap_mm):
+    """Fixed adder end rows and nearest output rows aligned to their centers."""
+    adder_rows = (56 - edge_rows, 1 + edge_rows)
+    # B5 origin is halfway between B3/B4 origins; equal package sizes cancel.
+    output_rows = (
+        round(adder_rows[0] - (165 + gap_mm) / (2 * PITCH)),
+        round(adder_rows[1] + (165 + gap_mm) / (2 * PITCH)),
+    )
+    return dict(
+        zip(
+            ("U_ALU_283_LO", "U_ALU_283_HI", "U_ALU_157_YBP_0", "U_ALU_157_YBP_1"),
+            (*adder_rows, *output_rows),
+        )
+    )
+
+
+def compact_board(chip_id):
+    if "153" in chip_id:
+        return int(chip_id.rsplit("_", 1)[1]) // 4
+    if "283" in chip_id:
+        return 2 if chip_id.endswith("LO") else 3
+    return 4
+
+
+def validate_placements(
+    placements, boards, gap, grouping="free", edge_rows=0, gap_mm=6
+):
     if (
         len(placements) != 12
         or any(not isinstance(p["id"], str) for p in placements)
@@ -248,6 +309,24 @@ def validate_placements(placements, boards, gap, grouping="free"):
             if p["board"] == q["board"] and abs(p["row"] - q["row"]) < 8 + gap:
                 raise ValueError("칩 몸체/핀 또는 예약한 행 간격이 겹칩니다.")
     ordered = sorted(placements, key=lambda p: (p["board"], p["row"]))
+    if grouping == "compact221":
+        targets = compact_targets(edge_rows, gap_mm)
+        if len(boards) != 5 or any(
+            p["board"] != compact_board(p["id"]) for p in placements
+        ):
+            raise ValueError(
+                "2–2–1 배치: B1/B2는 153 4개씩, B3/B4는 283 1개씩, B5는 157 2개입니다."
+            )
+        if any(p["id"] in targets and p["row"] != targets[p["id"]] for p in placements):
+            raise ValueError(
+                "안쪽 모음 위치를 유지하세요. 가산기 여유 행으로 간격을 조절하거나 자유 배치로 전환하세요."
+            )
+        for board in (0, 1):
+            bits = [
+                int(p["id"].rsplit("_", 1)[1]) for p in ordered if p["board"] == board
+            ]
+            if bits != sorted(bits):
+                raise ValueError("각 153 보드의 비트 순서를 유지하세요.")
     if grouping == "stages":
         stages = [
             0 if "153" in p["id"] else 1 if "283" in p["id"] else 2 for p in ordered
@@ -391,6 +470,41 @@ def initial(c, variant):
     step = 8 + c["row_gap"]
     capacity = (63 + c["row_gap"]) // step
     locks = {p["id"]: deepcopy(p) for p in c["locks"]}
+    if c["grouping"] == "compact221":
+        targets = compact_targets(c["edge_rows"], c["gap_mm"])
+        # Four input chips grouped near the corresponding adder end.
+        out = []
+        for i, chip_id in enumerate(ids):
+            row = targets.get(chip_id)
+            if row is None:
+                row = 56 - (3 - i) * step if i < 4 else 1 + (i - 4) * step
+                bit = i % 4
+                lo, hi = 1 + bit * step, 56 - (3 - bit) * step
+                for other in [*locks.values(), *out]:
+                    if "153" not in other["id"] or compact_board(other["id"]) != i // 4:
+                        continue
+                    other_bit = int(other["id"].rsplit("_", 1)[1]) % 4
+                    if other_bit < bit:
+                        lo = max(lo, other["row"] + (bit - other_bit) * step)
+                    elif other_bit > bit:
+                        hi = min(hi, other["row"] - (other_bit - bit) * step)
+                if lo > hi:
+                    raise ValueError(
+                        "고정한 153 위치에서 비트 순서와 행 간격을 만족하지 못했습니다."
+                    )
+                row = min(hi, max(lo, row))
+            out.append(
+                locks.get(
+                    chip_id,
+                    {
+                        "id": chip_id,
+                        "board": compact_board(chip_id),
+                        "row": row,
+                        "rotation": 0,
+                    },
+                )
+            )
+        return out
     if count * capacity < 12:
         raise ValueError("현재 행 간격에서는 보드가 부족합니다.")
     validate_partial = list(locks.values())
@@ -581,7 +695,9 @@ def evaluate(raw):
         for p in placements
     ):
         raise ValueError("칩 배치 형식이 올바르지 않습니다.")
-    validate_placements(placements, boards, c["row_gap"], c["grouping"])
+    validate_placements(
+        placements, boards, c["row_gap"], c["grouping"], c["edge_rows"], c["gap_mm"]
+    )
     locked = {p["id"]: p for p in c["locks"]}
     if any(p["id"] in locked and p != locked[p["id"]] for p in placements):
         raise ValueError("고정한 칩이 이동했습니다.")
@@ -591,6 +707,30 @@ def evaluate(raw):
 
 def make_candidate(topology, placements, boards, metrics, c):
     identity = json.dumps([boards, placements], sort_keys=True)
+    detail = detailed(placements, boards)
+    cluster = None
+    if c["grouping"] == "compact221":
+        rects = {p["id"]: r for p, r in zip(placements, detail["chip_rects"])}
+        group = [rects[chip] for chip in compact_targets(c["edge_rows"], c["gap_mm"])]
+
+        def distance(a, b):
+            return round(
+                math.hypot(
+                    max(0, a[0] - b[2], b[0] - a[2]), max(0, a[1] - b[3], b[1] - a[3])
+                ),
+                2,
+            )
+
+        cluster = {
+            "adder_body_gap_mm": distance(group[0], group[1]),
+            "output_body_gap_mm": distance(group[2], group[3]),
+            "bounds": [
+                min(r[0] for r in group),
+                min(r[1] for r in group),
+                max(r[2] for r in group),
+                max(r[3] for r in group),
+            ],
+        }
     return {
         "id": hashlib.sha256(identity.encode()).hexdigest()[:12],
         "topology": topology,
@@ -599,7 +739,8 @@ def make_candidate(topology, placements, boards, metrics, c):
         "placements": deepcopy(placements),
         "metrics": metrics,
         "score": score(metrics, c["priority"]),
-        **detailed(placements, boards),
+        "cluster": cluster,
+        **detail,
     }
 
 
@@ -612,7 +753,14 @@ def search(raw):
     for i in (0, 1):
         try:
             p = initial(c, i)
-            validate_placements(p, layouts[0][1], c["row_gap"], c["grouping"])
+            validate_placements(
+                p,
+                layouts[0][1],
+                c["row_gap"],
+                c["grouping"],
+                c["edge_rows"],
+                c["gap_mm"],
+            )
             seeds.append(p)
         except ValueError:
             pass
@@ -647,7 +795,9 @@ def search(raw):
     for topology, boards in layouts:
         states = []
         for p in seeds:
-            validate_placements(p, boards, c["row_gap"], c["grouping"])
+            validate_placements(
+                p, boards, c["row_gap"], c["grouping"], c["edge_rows"], c["gap_mm"]
+            )
             s, m = consider(topology, boards, p)
             states.append((s, deepcopy(p)))
         current_score, current = min(states, key=lambda x: x[0])
@@ -679,7 +829,14 @@ def search(raw):
             else:
                 trial[i]["row"] += rng.choice([-5, -2, -1, 1, 2, 5])
             try:
-                validate_placements(trial, boards, c["row_gap"], c["grouping"])
+                validate_placements(
+                    trial,
+                    boards,
+                    c["row_gap"],
+                    c["grouping"],
+                    c["edge_rows"],
+                    c["gap_mm"],
+                )
             except ValueError:
                 rejected += 1
                 continue
