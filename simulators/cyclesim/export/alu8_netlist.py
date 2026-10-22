@@ -17,6 +17,10 @@ def _153_instance(bit: int) -> dict[str, Any]:
         "pins": {
             "A": f"net_a{i}",
             "B": f"net_b{i}",
+            "1G": "pwr_gnd",
+            "2G": "pwr_gnd",
+            "VCC": "pwr_vcc",
+            "GND": "pwr_gnd",
             "1C0": "net_lgc0",
             "1C1": "net_lgc1",
             "1C2": "net_lgc2",
@@ -35,6 +39,8 @@ def _283_instance(ref: str, a_lo: int, b_lo: int, s_lo: int, cin: str, cout: str
     pins: dict[str, str] = {
         "CIN": cin,
         "COUT": cout,
+        "VCC": "pwr_vcc",
+        "GND": "pwr_gnd",
     }
     for n in range(4):
         pins[f"A{n}"] = f"net_a{a_lo + n}"
@@ -44,7 +50,12 @@ def _283_instance(ref: str, a_lo: int, b_lo: int, s_lo: int, cin: str, cout: str
 
 
 def _157_ybp_instance(ref: str, y_lo: int) -> dict[str, Any]:
-    pins: dict[str, str] = {"S": "net_y_mux_sel"}
+    pins: dict[str, str] = {
+        "S": "net_y_mux_sel",
+        "G": "pwr_gnd",
+        "VCC": "pwr_vcc",
+        "GND": "pwr_gnd",
+    }
     for n in range(4):
         i = y_lo + n
         ch = n + 1

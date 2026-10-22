@@ -1,110 +1,202 @@
-"""8-bit ALU composed of MUX4 slices, ADD4, MUX2, and CMP flags."""
+"""Physical 12-package ALU, instantiated from the exported functional pins.
+
+The 153 address is A + 2*B. Opcode controls populate its data inputs;
+CPU write/flag policy and comparison observers are outside these packages.
+"""
 
 from __future__ import annotations
-
 from dataclasses import dataclass
-
-from simulators.cyclesim.blocks.adder import add8
-from simulators.cyclesim.blocks.mux import mux4, mux2
+from typing import Any
+from simulators.cyclesim.blocks.adder import full_adder
+from simulators.cyclesim.blocks.mux import mux2, mux4_bits
+from simulators.cyclesim.engine import Block, SimContext
+from simulators.cyclesim.values import (
+    H,
+    L,
+    X,
+    Z,
+    from_bits,
+    logic_and,
+    logic_not,
+    logic_or,
+    to_bits,
+)
 
 
 @dataclass(frozen=True)
 class AluControls:
     cin: int = 0
-    bctrl: int = 0
-    lgc: int = 0
+    bctrl: int | None = 0
+    lgc: int | None = 0
     s0: int = 0
     s1: int = 0
 
     @property
     def y_mux_sel(self) -> int:
-        return self.s0 | self.s1
+        return logic_or(self.s0, self.s1)
 
 
-# Normative macro ALU ops (control-and-decode.md)
-ALU_NOP = AluControls(cin=0, bctrl=0b0000, lgc=0b0000, s0=0, s1=0)
-ALU_ADD = AluControls(cin=0, bctrl=0b1100, lgc=0b0000, s0=0, s1=0)
-ALU_SUB = AluControls(cin=1, bctrl=0b0011, lgc=0b0000, s0=0, s1=0)
+ALU_NOP = AluControls()
+ALU_ADD = AluControls(bctrl=0xC)
+ALU_SUB = AluControls(cin=1, bctrl=0x3)
 ALU_CMP = ALU_SUB
+ALU_PRESETS = {
+    "NOP": ALU_NOP,
+    "ADD": ALU_ADD,
+    "SUB": ALU_SUB,
+    "AND": AluControls(lgc=0x8, s0=1),
+    "OR": AluControls(lgc=0xE, s1=1),
+    "XOR": AluControls(lgc=0x6, s0=1, s1=1),
+    "NOT": AluControls(lgc=0x5, s0=1, s1=1),
+    "PASS_A": AluControls(lgc=0xA, s0=1),
+    "PASS_B": AluControls(lgc=0xC, s0=1),
+    "INC": AluControls(cin=1),
+    "DEC": AluControls(bctrl=0xF),
+    "CMP": ALU_CMP,
+}
 
 
-def _b_add_bit(a_i: int, b_i: int, bctrl: int) -> int:
-    """Mux2 B-path for shared bctrl pattern (alu8-phase-b.md)."""
-    if bctrl == 0b1100:
-        return b_i
-    if bctrl == 0b0011:
-        return 1 - b_i
-    if bctrl == 0b1111:
-        return 1
-    return 0
+class ScalarLogic:
+    """Gate operations used by the physical package truth tables."""
+
+    low = L
+    unknown = X
+    inv = staticmethod(logic_not)
+    and_ = staticmethod(logic_and)
+    mux2 = staticmethod(mux2)
+    mux4 = staticmethod(mux4_bits)
+    full_adder = staticmethod(full_adder)
 
 
-def _logic_bit(a_i: int, b_i: int, lgc: int, s0: int, s1: int) -> int:
-    if s0 or s1:
-        sel = (s1 << 1) | s0
+SCALAR_LOGIC = ScalarLogic()
+
+
+def chip_outputs(part: str, pins: dict[str, Any], logic=SCALAR_LOGIC) -> dict[str, Any]:
+    """Evaluate functional pins, using scalar or bit-parallel gate operations.
+
+    A packed backend evaluates independent lanes of these same package equations;
+    it cannot replace the exported wiring or dispatch on ALU operation names.
+    HC153/HC157 strobes force LOW, not high impedance. Unpowered outputs are X.
+    """
+    out = {}
+    if part == "74HC153":
+        for ch in (1, 2):
+            selected = logic.mux4(pins["A"], pins["B"], *(pins[f"{ch}C{i}"] for i in range(4)))
+            out[f"{ch}Y"] = logic.and_(logic.inv(pins[f"{ch}G"]), selected)
+    elif part == "74HC157":
+        for ch in range(1, 5):
+            selected = logic.mux2(pins["S"], pins[f"{ch}A"], pins[f"{ch}B"])
+            out[f"{ch}Y"] = logic.and_(logic.inv(pins["G"]), selected)
+    elif part == "74HC283":
+        carry = pins["CIN"]
+        for i in range(4):
+            out[f"S{i}"], carry = logic.full_adder(pins[f"A{i}"], pins[f"B{i}"], carry)
+        out["COUT"] = carry
     else:
-        sel = a_i | (b_i << 1)
-    c0 = (lgc >> 0) & 1
-    c1 = (lgc >> 1) & 1
-    c2 = (lgc >> 2) & 1
-    c3 = (lgc >> 3) & 1
-    return mux4(sel, c0, c1, c2, c3)
+        raise ValueError(f"unsupported ALU part: {part}")
+    powered = logic.and_(pins["VCC"], logic.inv(pins["GND"]))
+    return {pin: logic.mux2(powered, logic.unknown, value) for pin, value in out.items()}
+
+
+class ChipBlock(Block):
+    def __init__(self, instance: dict) -> None:
+        super().__init__(instance["ref"])
+        self.part = instance["part"]
+        self.pins = dict(instance["pins"])
+
+    def eval_comb(self, ctx: SimContext) -> bool:
+        inputs = {pin: ctx.get(net) for pin, net in self.pins.items()}
+        changed = False
+        for pin, value in chip_outputs(self.part, inputs).items():
+            changed |= ctx.drive(self.pins[pin], value, self.name)
+        return changed
+
+
+class ComparisonProbe(Block):
+    """Observation glue; never counted as a physical ALU package."""
+
+    def eval_comb(self, ctx: SimContext) -> bool:
+        y = [ctx.get(f"net_y{i}") for i in range(8)]
+        zero = L if H in y else H if all(v == L for v in y) else X
+        changed = ctx.drive("net_cmp_z", zero, self.name)
+        return ctx.drive("net_cmp_c_ge", ctx.get("net_c_hi"), self.name) | changed
+
+
+class PhysicalAlu:
+    """Reusable SimContext and twelve packages sourced from exported pins."""
+
+    def __init__(self, netlist: dict | None = None) -> None:
+        from simulators.cyclesim.export.alu8_netlist import build_alu8_func_netlist
+
+        self.netlist = netlist if netlist is not None else build_alu8_func_netlist()
+        self.ctx = SimContext({n["name"]: Z for n in self.netlist["nets"]})
+        self.chips = [ChipBlock(instance) for instance in self.netlist["instances"]]
+        for chip in self.chips:
+            self.ctx.add_block(chip)
+        self.ctx.add_block(ComparisonProbe("comparison_observer"))
+        self.ctx.set("pwr_vcc", H)
+        self.ctx.set("pwr_gnd", L)
+
+    def set_inputs(self, a: int | None, b: int | None, ctrl: AluControls) -> None:
+        for prefix, value, width in (
+            ("a", a, 8),
+            ("b", b, 8),
+            ("bctrl", ctrl.bctrl, 4),
+            ("lgc", ctrl.lgc, 4),
+        ):
+            for i, value_bit in enumerate([X] * width if value is None else to_bits(value, width)):
+                self.ctx.set(f"net_{prefix}{i}", value_bit)
+        for name, value in (
+            ("cin", ctrl.cin),
+            ("153_s0", ctrl.s0),
+            ("153_s1", ctrl.s1),
+            ("y_mux_sel", ctrl.y_mux_sel),
+        ):
+            self.ctx.set(f"net_{name}", value)
+
+    def settle(self) -> bool:
+        return self.ctx.comb_fixup()
 
 
 @dataclass
 class AluResult:
-    y: int
-    z: bool
+    y: int | None
+    z: bool | None
     c_hi: int
 
 
-def eval_alu8(a: int, b: int, ctrl: AluControls) -> AluResult:
-    """Evaluate 8-bit ALU from functional blocks (b3-opcode golden vectors)."""
-    b_add = 0
-    logic = 0
-    for i in range(8):
-        ai = (a >> i) & 1
-        bi = (b >> i) & 1
-        b_add |= _b_add_bit(ai, bi, ctrl.bctrl) << i
-        logic |= _logic_bit(ai, bi, ctrl.lgc, ctrl.s0, ctrl.s1) << i
-
-    sum_y, c_hi = add8(a, b_add, ctrl.cin)
-
-    if ctrl.y_mux_sel:
-        y = logic
-        c_hi = 0
-    else:
-        y = sum_y
-
-    return AluResult(y=y & 0xFF, z=(y & 0xFF) == 0, c_hi=c_hi)
+def eval_alu8(a: int | None, b: int | None, ctrl: AluControls) -> AluResult:
+    circuit = PhysicalAlu()
+    circuit.set_inputs(a, b, ctrl)
+    circuit.settle()
+    zero = circuit.ctx.get("net_cmp_z")
+    return AluResult(
+        from_bits(circuit.ctx.get(f"net_y{i}") for i in range(8)),
+        bool(zero) if zero in (L, H) else None,
+        circuit.ctx.get("net_c_hi"),
+    )
 
 
 class Alu8:
-    """Structural ALU block wired into SimContext nets."""
+    """Compatibility adapter; the SimContext block below preserves bit detail."""
 
     def __init__(self, name: str = "alu8") -> None:
         self.name = name
 
-    def read_ctrl(self, ctx) -> AluControls:
-        def nib(name: str) -> int:
-            v = 0
-            for i in range(4):
-                v |= (ctx.get(f"net_{name}{i}") & 1) << i
-            return v
-
+    def read_ctrl(self, ctx: SimContext) -> AluControls:
         return AluControls(
-            cin=ctx.get("net_cin") & 1,
-            bctrl=nib("bctrl"),
-            lgc=nib("lgc"),
-            s0=ctx.get("net_153_s0") & 1,
-            s1=ctx.get("net_153_s1") & 1,
+            ctx.get("net_cin"),
+            from_bits(ctx.get(f"net_bctrl{i}") for i in range(4)),
+            from_bits(ctx.get(f"net_lgc{i}") for i in range(4)),
+            ctx.get("net_153_s0"),
+            ctx.get("net_153_s1"),
         )
 
-    def eval(self, ctx, a: int, b: int) -> AluResult:
+    def eval(self, ctx: SimContext, a: int | None, b: int | None) -> AluResult:
         return eval_alu8(a, b, self.read_ctrl(ctx))
 
-    def drive_outputs(self, ctx, res: AluResult) -> None:
-        for i in range(8):
-            ctx.drive(f"net_y{i}", (res.y >> i) & 1, self.name)
-        ctx.drive("net_cmp_z", 1 if res.z else 0, self.name)
-        ctx.drive("net_c_hi", res.c_hi & 1, self.name)
+    def drive_outputs(self, ctx: SimContext, res: AluResult) -> None:
+        for i, value in enumerate([X] * 8 if res.y is None else to_bits(res.y)):
+            ctx.drive(f"net_y{i}", value, self.name)
+        ctx.drive("net_cmp_z", X if res.z is None else int(res.z), self.name)
+        ctx.drive("net_c_hi", res.c_hi, self.name)
