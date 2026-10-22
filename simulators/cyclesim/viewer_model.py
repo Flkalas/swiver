@@ -5,6 +5,7 @@ from copy import deepcopy
 from simulators.cyclesim.blocks.alu8 import ALU_PRESETS, AluControls, PhysicalAlu
 from simulators.cyclesim.export.alu8_netlist import build_alu8_func_netlist
 from simulators.cyclesim.values import H, L, X, Z, VALUE_NAMES, from_bits
+from simulators.cyclesim.package_pins import package_definition
 
 MODEL_VERSION = "alu12-v1"
 BUS_PREFIXES = {
@@ -43,6 +44,7 @@ def circuit_definition() -> dict:
             "id": inst["ref"],
             "part": inst["part"],
             "pins": dict(inst["pins"]),
+            "package": package_definition(inst["part"]),
             "source": "simulators/cyclesim/export/alu8_netlist.py",
         }
         for inst in netlist["instances"]
@@ -103,7 +105,7 @@ def circuit_definition() -> dict:
             {
                 "id": "time",
                 "label": "지연 없는 기능 모델",
-                "description": "정착 반복은 CPU 클럭이나 ns가 아닙니다. 핀은 DIP 번호가 아닌 기능 이름입니다.",
+                "description": "정착 반복은 CPU 클럭이나 ns가 아닙니다. 조립 화면의 DIP 번호는 TI PDIP-16 윗면 기준입니다.",
             },
         ],
     }

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
 import logging
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -13,6 +15,7 @@ from simulators.cyclesim.viewer_model import AluSession, circuit_definition
 
 WEB_ROOT = Path(__file__).with_name("viewer") / "web"
 ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
+          "/wiring.js": ("wiring.js", "text/javascript"), "/wiring.css": ("wiring.css", "text/css"),
           "/style.css": ("style.css", "text/css")}
 MAX_BODY = 8192
 
@@ -64,7 +67,12 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if not self.local_request():
             return
         path = urlsplit(self.path).path
-        if path == "/api/circuit":
+        if path == "/api/revision":
+            digest = hashlib.sha256()
+            for name, _ in ASSETS.values():
+                digest.update((WEB_ROOT / name).read_bytes())
+            self.respond(200, {"revision": f"{os.getpid()}:{digest.hexdigest()}"})
+        elif path == "/api/circuit":
             self.respond(200, circuit_definition())
         elif path == "/api/snapshot":
             with self.server.session_lock:

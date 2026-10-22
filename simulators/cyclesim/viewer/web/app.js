@@ -82,6 +82,7 @@
 
   function setStatus(message, kind = "stale") {
     stale = kind !== "live";
+    $("gates-view").classList.toggle("stale",stale);
     $("connection-dot").className = `dot ${kind === "live" ? "live" : kind === "error" ? "offline" : ""}`;
     $("connection-text").textContent = kind === "live" ? "모델 연결됨" : kind === "error" ? "연결 / 응답 오류" : "관측 갱신 대기";
     $("status-banner").textContent = message;
@@ -245,6 +246,7 @@
     positions = new Map(circuit.components.map(p => [p.id,geom(p)]));
     $("map-loading").hidden = true;
     renderMap(); fitAll();
+    window.SwiverViews.init(circuit, id => choose("net",id), bit => {traceBit=bit;renderMap();});
   }
   function renderMap() {
     if (!circuit) return;
@@ -357,6 +359,7 @@
     if (type === "net") for (const b of circuit.buses) { const index = b.nets.indexOf(id); if (index >= 0) traceBit = index; }
     if (type === "component" && id.startsWith("U_ALU_153_")) traceBit = Number(id.split("_").at(-1));
     renderMap(); renderInspector(); renderBuses();
+    window.SwiverViews.select(type,id);
   }
   function renderInspector(preserve = false) {
     const body = $("inspector-body"), scroll = body.scrollTop;
@@ -420,6 +423,7 @@
     }).join("");
   }
   function renderObservation() {
+    window.SwiverViews.update(snapshot);
     renderMap(); renderInspector(true); renderBuses();
     $("live-y").textContent = `Y ${snapshot.buses.y.value ?? "X / Z"} · 0x${hex(snapshot.buses.y.value)}`;
     $("live-carries").textContent = `C_LO ${snapshot.signals.net_c_lo} · C_HI ${snapshot.signals.net_c_hi} · Z ${snapshot.comparison_flags.zero === null?"X":snapshot.comparison_flags.zero?1:0}`;
@@ -544,5 +548,16 @@
     enqueue({path:"/api/snapshot",kind:"poll",gen:generation});
   },3000);
   document.querySelector(".example-gallery").append($("reset"));
+  // Observe asset/server revisions without evaluating any circuit state.
+  let revision = null;
+  setInterval(async () => {
+    try {
+      const r = await fetch('/api/revision', {cache:'no-store',signal:AbortSignal.timeout(2500)});
+      if (!r.ok) return;
+      const next = (await r.json()).revision;
+      if (revision && revision !== next) location.reload();
+      revision = next;
+    } catch (_) { /* The main session polling reports connection failures. */ }
+  }, 1500);
   syncInputs(); renderTracePicker(); renderBuses(); cameraUpdate(); connect();
 })();

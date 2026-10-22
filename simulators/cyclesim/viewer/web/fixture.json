@@ -24,7 +24,94 @@
           "1Y": "net_y_logic0",
           "2Y": "net_b_add0"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_1",
@@ -47,7 +134,94 @@
           "1Y": "net_y_logic1",
           "2Y": "net_b_add1"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_2",
@@ -70,7 +244,94 @@
           "1Y": "net_y_logic2",
           "2Y": "net_b_add2"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_3",
@@ -93,7 +354,94 @@
           "1Y": "net_y_logic3",
           "2Y": "net_b_add3"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_4",
@@ -116,7 +464,94 @@
           "1Y": "net_y_logic4",
           "2Y": "net_b_add4"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_5",
@@ -139,7 +574,94 @@
           "1Y": "net_y_logic5",
           "2Y": "net_b_add5"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_6",
@@ -162,7 +684,94 @@
           "1Y": "net_y_logic6",
           "2Y": "net_b_add6"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_153_7",
@@ -185,7 +794,94 @@
           "1Y": "net_y_logic7",
           "2Y": "net_b_add7"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc153.pdf#page=3",
+          "pins": {
+            "1G": {
+              "number": 1,
+              "label": "1G",
+              "direction": "input"
+            },
+            "B": {
+              "number": 2,
+              "label": "B",
+              "direction": "input"
+            },
+            "1C3": {
+              "number": 3,
+              "label": "1C3",
+              "direction": "input"
+            },
+            "1C2": {
+              "number": 4,
+              "label": "1C2",
+              "direction": "input"
+            },
+            "1C1": {
+              "number": 5,
+              "label": "1C1",
+              "direction": "input"
+            },
+            "1C0": {
+              "number": 6,
+              "label": "1C0",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 7,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "2Y": {
+              "number": 9,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "2C0": {
+              "number": 10,
+              "label": "2C0",
+              "direction": "input"
+            },
+            "2C1": {
+              "number": 11,
+              "label": "2C1",
+              "direction": "input"
+            },
+            "2C2": {
+              "number": 12,
+              "label": "2C2",
+              "direction": "input"
+            },
+            "2C3": {
+              "number": 13,
+              "label": "2C3",
+              "direction": "input"
+            },
+            "A": {
+              "number": 14,
+              "label": "A",
+              "direction": "input"
+            },
+            "2G": {
+              "number": 15,
+              "label": "2G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_283_LO",
@@ -208,7 +904,94 @@
           "B3": "net_b_add3",
           "S3": "net_sum3"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/cd74hc283.pdf#page=3",
+          "pins": {
+            "S1": {
+              "number": 1,
+              "label": "S1",
+              "direction": "output"
+            },
+            "B1": {
+              "number": 2,
+              "label": "B1",
+              "direction": "input"
+            },
+            "A1": {
+              "number": 3,
+              "label": "A1",
+              "direction": "input"
+            },
+            "S0": {
+              "number": 4,
+              "label": "S0",
+              "direction": "output"
+            },
+            "A0": {
+              "number": 5,
+              "label": "A0",
+              "direction": "input"
+            },
+            "B0": {
+              "number": 6,
+              "label": "B0",
+              "direction": "input"
+            },
+            "CIN": {
+              "number": 7,
+              "label": "CIN",
+              "direction": "input"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "COUT": {
+              "number": 9,
+              "label": "COUT",
+              "direction": "output"
+            },
+            "S3": {
+              "number": 10,
+              "label": "S3",
+              "direction": "output"
+            },
+            "B3": {
+              "number": 11,
+              "label": "B3",
+              "direction": "input"
+            },
+            "A3": {
+              "number": 12,
+              "label": "A3",
+              "direction": "input"
+            },
+            "S2": {
+              "number": 13,
+              "label": "S2",
+              "direction": "output"
+            },
+            "A2": {
+              "number": 14,
+              "label": "A2",
+              "direction": "input"
+            },
+            "B2": {
+              "number": 15,
+              "label": "B2",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_283_HI",
@@ -231,7 +1014,94 @@
           "B3": "net_b_add7",
           "S3": "net_sum7"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/cd74hc283.pdf#page=3",
+          "pins": {
+            "S1": {
+              "number": 1,
+              "label": "S1",
+              "direction": "output"
+            },
+            "B1": {
+              "number": 2,
+              "label": "B1",
+              "direction": "input"
+            },
+            "A1": {
+              "number": 3,
+              "label": "A1",
+              "direction": "input"
+            },
+            "S0": {
+              "number": 4,
+              "label": "S0",
+              "direction": "output"
+            },
+            "A0": {
+              "number": 5,
+              "label": "A0",
+              "direction": "input"
+            },
+            "B0": {
+              "number": 6,
+              "label": "B0",
+              "direction": "input"
+            },
+            "CIN": {
+              "number": 7,
+              "label": "CIN",
+              "direction": "input"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "COUT": {
+              "number": 9,
+              "label": "COUT",
+              "direction": "output"
+            },
+            "S3": {
+              "number": 10,
+              "label": "S3",
+              "direction": "output"
+            },
+            "B3": {
+              "number": 11,
+              "label": "B3",
+              "direction": "input"
+            },
+            "A3": {
+              "number": 12,
+              "label": "A3",
+              "direction": "input"
+            },
+            "S2": {
+              "number": 13,
+              "label": "S2",
+              "direction": "output"
+            },
+            "A2": {
+              "number": 14,
+              "label": "A2",
+              "direction": "input"
+            },
+            "B2": {
+              "number": 15,
+              "label": "B2",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_157_YBP_0",
@@ -254,7 +1124,94 @@
           "4B": "net_y_logic3",
           "4Y": "net_y3"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc157.pdf#page=3",
+          "pins": {
+            "S": {
+              "number": 1,
+              "label": "A/B",
+              "direction": "input"
+            },
+            "1A": {
+              "number": 2,
+              "label": "1A",
+              "direction": "input"
+            },
+            "1B": {
+              "number": 3,
+              "label": "1B",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 4,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "2A": {
+              "number": 5,
+              "label": "2A",
+              "direction": "input"
+            },
+            "2B": {
+              "number": 6,
+              "label": "2B",
+              "direction": "input"
+            },
+            "2Y": {
+              "number": 7,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "3Y": {
+              "number": 9,
+              "label": "3Y",
+              "direction": "output"
+            },
+            "3B": {
+              "number": 10,
+              "label": "3B",
+              "direction": "input"
+            },
+            "3A": {
+              "number": 11,
+              "label": "3A",
+              "direction": "input"
+            },
+            "4Y": {
+              "number": 12,
+              "label": "4Y",
+              "direction": "output"
+            },
+            "4B": {
+              "number": 13,
+              "label": "4B",
+              "direction": "input"
+            },
+            "4A": {
+              "number": 14,
+              "label": "4A",
+              "direction": "input"
+            },
+            "G": {
+              "number": 15,
+              "label": "G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       },
       {
         "id": "U_ALU_157_YBP_1",
@@ -277,7 +1234,94 @@
           "4B": "net_y_logic7",
           "4Y": "net_y7"
         },
-        "source": "simulators/cyclesim/export/alu8_netlist.py"
+        "source": "simulators/cyclesim/export/alu8_netlist.py",
+        "package": {
+          "type": "PDIP-16",
+          "view": "top",
+          "source": "https://www.ti.com/lit/ds/symlink/sn74hc157.pdf#page=3",
+          "pins": {
+            "S": {
+              "number": 1,
+              "label": "A/B",
+              "direction": "input"
+            },
+            "1A": {
+              "number": 2,
+              "label": "1A",
+              "direction": "input"
+            },
+            "1B": {
+              "number": 3,
+              "label": "1B",
+              "direction": "input"
+            },
+            "1Y": {
+              "number": 4,
+              "label": "1Y",
+              "direction": "output"
+            },
+            "2A": {
+              "number": 5,
+              "label": "2A",
+              "direction": "input"
+            },
+            "2B": {
+              "number": 6,
+              "label": "2B",
+              "direction": "input"
+            },
+            "2Y": {
+              "number": 7,
+              "label": "2Y",
+              "direction": "output"
+            },
+            "GND": {
+              "number": 8,
+              "label": "GND",
+              "direction": "power"
+            },
+            "3Y": {
+              "number": 9,
+              "label": "3Y",
+              "direction": "output"
+            },
+            "3B": {
+              "number": 10,
+              "label": "3B",
+              "direction": "input"
+            },
+            "3A": {
+              "number": 11,
+              "label": "3A",
+              "direction": "input"
+            },
+            "4Y": {
+              "number": 12,
+              "label": "4Y",
+              "direction": "output"
+            },
+            "4B": {
+              "number": 13,
+              "label": "4B",
+              "direction": "input"
+            },
+            "4A": {
+              "number": 14,
+              "label": "4A",
+              "direction": "input"
+            },
+            "G": {
+              "number": 15,
+              "label": "G",
+              "direction": "input"
+            },
+            "VCC": {
+              "number": 16,
+              "label": "VCC",
+              "direction": "power"
+            }
+          }
+        }
       }
     ],
     "nets": [

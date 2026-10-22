@@ -3,7 +3,7 @@
 This contract separates electrical connectivity, presentation, and observation.
 `model_version` is `alu12-v1`. Simulation is zero delay; `iterations` counts
 settling passes, never CPU clocks or nanoseconds. Pins use functional names,
-not DIP pin numbers. The physical core contains exactly eight HC153, two HC283,
+with additional `package.pins` metadata mapping them to TI PDIP-16 contact numbers. The physical core contains exactly eight HC153, two HC283,
 and two HC157 packages; control glue and comparison probes are outside it.
 
 ## Python boundary
@@ -22,6 +22,7 @@ The HTTP layer serializes session operations with a lock.
 
 - `GET /api/circuit`: circuit definition.
 - `GET /api/snapshot`: latest snapshot.
+- `GET /api/revision`: process/asset revision; clients reload when it changes.
 - `POST /api/input`: `{request_id, a, b, mode, operation, controls}`.
 - `POST /api/reset`: `{request_id}`.
 - Success returns the snapshot with the caller's integer `request_id` echoed.
@@ -39,7 +40,8 @@ observations stale when requests fail. Periodic GET detects disconnects.
 ```text
 {
   model_version, title,
-  components: [{id, part, pins: {pin_name: net_id}, source}],
+  components: [{id, part, pins: {pin_name: net_id}, source,
+                package: {type, view, source, pins: {pin_name: {number,label,direction}}}}],
   nets: [{id, kind: "data"|"control"|"power", endpoints: [{component,pin}]}],
   buses: [{id, label, nets: [least_significant_net,...]}],
   presets: [{id, label, controls: {cin,bctrl,lgc,y_mux_sel},

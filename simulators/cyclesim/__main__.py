@@ -65,12 +65,18 @@ def cmd_export_alu8(args: argparse.Namespace) -> int:
 def cmd_viewer(args: argparse.Namespace) -> int:
     from simulators.cyclesim.viewer_server import serve
 
-    if not 0 <= args.port <= 65535:
-        print("port must be between 0 and 65535", file=sys.stderr)
+    if not 0 <= args.port <= 65535 or (args.reload and args.port == 0):
+        print("port must be between 0 and 65535; --reload requires a fixed nonzero port", file=sys.stderr)
         return 2
     try:
-        serve(args.port)
-    except OSError as exc:
+        if args.reload:
+            from simulators.cyclesim.viewer_dev import serve_reload
+            serve_reload(args.port)
+        else:
+            serve(args.port)
+    except KeyboardInterrupt:
+        return 0
+    except (OSError, RuntimeError) as exc:
         print(f"Cannot start local viewer: {exc}. Try --port 8766.", file=sys.stderr)
         return 1
     return 0
@@ -93,6 +99,7 @@ def main(argv: list[str] | None = None) -> int:
 
     viewer_p = sub.add_parser("viewer", help="Serve the live 12-chip ALU viewer on loopback")
     viewer_p.add_argument("--port", type=int, default=8765)
+    viewer_p.add_argument("--reload", action="store_true", help="Restart on Python edits; resets the simulation")
     viewer_p.set_defaults(func=cmd_viewer)
 
     exp_p = sub.add_parser("export", help="Export netlists")

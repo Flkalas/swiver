@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#172b32">
   <title>Swiver · ALU 회로 실험실</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/wiring.css">
+  <script src="/wiring.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -16,7 +18,7 @@
   </header>
 
   <main>
-    <section class="intro"><div><div class="eyebrow">EXPLORE THE SIGNAL</div><h1>입력에서 출력까지, 한 비트씩.</h1><p>값과 제어를 바꾸고 실제 넷리스트의 신호 경로를 따라가세요.</p></div><div class="model-note"><span id="model-version">alu12-v1</span><span>지연 없는 기능 모델 · 물리 배선도 아님</span></div></section>
+    <section class="intro"><div><div class="eyebrow">EXPLORE THE SIGNAL</div><h1>입력에서 출력까지, 한 비트씩.</h1><p>값과 제어를 바꾸고 실제 넷리스트의 신호 경로를 따라가세요.</p></div><div class="model-note"><span id="model-version">alu12-v1</span><span>조립 핀 배선 / 지연 없는 기능 시뮬레이션</span></div></section>
 
     <section class="panel controls" aria-label="ALU 입력과 제어">
       <div class="operands">
@@ -30,7 +32,14 @@
 
     <div id="status-banner" class="status-banner" role="status" aria-live="polite">Python 모델에 연결하고 있습니다. 관측값을 기다려 주세요.</div>
 
-    <div class="workspace">
+    <nav class="view-tabs" aria-label="회로 화면 선택"><button id="view-assembly" aria-pressed="true">칩 배선도 <small>조립용 · DIP 핀</small></button><button id="view-gates" aria-pressed="false">게이트 배선도 <small>시뮬레이션용</small></button><button id="view-overview" aria-pressed="false">12칩 전체 구조</button></nav>
+    <section id="assembly-view" class="panel" aria-label="조립용 DIP 칩 배선도">
+      <div class="assembly-prep"><strong>조립 순서</strong> ① 전원·GND → ② Enable·제어 → ③ 데이터·캐리 → ④ 출력 확인<br>모든 칩: <b>16번 → +5 V / 8번 → GND</b> · 칩마다 가까이에 0.1 µF 디커플링 · 153의 1번·15번, 157의 15번 Enable은 GND에 연결</div>
+      <div class="assembly-layout"><aside class="assembly-sidebar"><h2>연결할 넷</h2><label for="assembly-group">배선 단계</label><select id="assembly-group"><option value="all">전체 배선</option><option value="power">① 전원·GND·Enable</option><option value="control">② 제어 입력</option><option value="data">③ 데이터·캐리·출력</option></select><label for="assembly-chip">칩으로 좁히기</label><select id="assembly-chip"></select><label for="assembly-search">넷 / 칩 / 핀 검색</label><input id="assembly-search" placeholder="예: c_lo, 153_0, 9번"><p id="wire-count"></p><div id="assembly-nets" class="assembly-nets"></div></aside><div id="assembly-detail" class="assembly-detail">핀 배치를 불러오는 중…</div></div>
+    </section>
+    <section id="gates-view" class="panel" hidden aria-label="시뮬레이션용 게이트 배선도"><div class="gates-toolbar"><h2>MUX · 가산기 신호 경로</h2><label>관측 비트 <select id="gate-bit"></select></label></div><div class="gate-scroll"><svg class="gate-diagram" viewBox="0 0 1190 550" role="group" aria-label="선택 비트의 기능 게이트 연결"><g id="gate-scene"></g></svg></div><p id="gate-caption"></p><p class="gate-state">값은 Python 관측입니다. 브라우저에서 별도로 계산하지 않습니다. AND/OR 트랜지스터 수준이 아닌 부품 기능 블록입니다.</p></section>
+
+    <div class="workspace" hidden>
       <section class="panel map-panel" aria-label="ALU 칩 지도">
         <div class="panel-heading"><div><h2>신호 지도 <span class="count">153 × 8 + 283 × 2 + 157 × 2</span></h2><p>패키지 또는 버스를 선택해 연결과 값을 확인하세요.</p></div><div class="map-tools"><button id="zoom-out" title="축소" aria-label="축소">−</button><output id="zoom-label">100%</output><button id="zoom-in" title="확대" aria-label="확대">+</button><button id="fit">전체 보기</button><button id="fit-selection">선택 맞춤</button></div></div>
         <div class="map-readout"><span>OUTPUT <strong id="live-y">Y —</strong></span><span id="live-carries">C_LO — · C_HI — · Z —</span><span id="live-policy">관측 대기</span></div>
@@ -44,7 +53,7 @@
 
     <section class="panel observations" aria-label="중간 단계 관측값"><div class="panel-heading"><div><h2>중간 단계 관측</h2><p>표시 값은 Python 응답에서 읽습니다. 알 수 없는 값은 X / Z로 유지됩니다.</p></div><div id="settle-info" class="muted mono">관측 대기</div></div><div id="bus-observations" class="bus-observations"></div><div class="comparison-row"><span id="comparison-status" class="comparison-status">비교 대기</span><span id="flag-info">Z — · 물리 C_HI —</span><span id="cpu-policy">CPU 정책 대기</span></div><div id="comparison-detail" class="comparison-detail"></div><div id="diagnostics" role="status"></div></section>
 
-    <section class="panel explanation"><div class="explanation-label"><span class="eyebrow">FOLLOW THE PATH</span><h2>지금 신호는 어디로 갈까요?</h2></div><div id="path-explanation"><p>연결 후 현재 입력과 선택 경로를 설명합니다.</p></div><div class="path-controls"><span>교육 경로 따라보기</span><button id="path-prev" aria-label="이전 경로 단계">← 이전</button><output id="path-step">단계를 선택하세요</output><button id="path-next" aria-label="다음 경로 단계">다음 →</button><button id="path-clear" class="quiet">경로 해제</button><span class="muted">화면 강조만 이동 · 시간 시뮬레이션 아님</span></div><details><summary>이 화면을 읽는 방법과 모델 경계</summary><div class="help-content"><p>153의 주소 선택은 항상 A_bit + 2 × B_bit입니다. LGC와 BCTRL은 4개 데이터 입력의 진리표이며, 피연산자 선택을 대체하지 않습니다. 283 두 개는 C_LO로 연결되고, 157은 SUM 또는 LOGIC을 Y로 보냅니다.</p><p>C_HI는 논리 연산 중에도 물리 가산기의 자리올림입니다. SUB / CMP에서만 부호 없는 A ≥ B로 해석합니다. CMP는 결과를 계산해도 ACC에 쓰지 않으며, NOP의 물리 Y=A와 CPU 상태 유지는 구분됩니다.</p><p>iterations는 안정화 패스 수이며 CPU 클록이나 시간 지연이 아닙니다. 이 화면은 패키지 간 기능 연결을 보여 주며 실제 핀 번호, 타이밍, 배선 또는 장착 검증을 제공하지 않습니다.</p><div id="boundary-notes"></div></div></details></section>
+    <section class="panel explanation"><div class="explanation-label"><span class="eyebrow">FOLLOW THE PATH</span><h2>지금 신호는 어디로 갈까요?</h2></div><div id="path-explanation"><p>연결 후 현재 입력과 선택 경로를 설명합니다.</p></div><div class="path-controls"><span>교육 경로 따라보기</span><button id="path-prev" aria-label="이전 경로 단계">← 이전</button><output id="path-step">단계를 선택하세요</output><button id="path-next" aria-label="다음 경로 단계">다음 →</button><button id="path-clear" class="quiet">경로 해제</button><span class="muted">화면 강조만 이동 · 시간 시뮬레이션 아님</span></div><details><summary>이 화면을 읽는 방법과 모델 경계</summary><div class="help-content"><p>153의 주소 선택은 항상 A_bit + 2 × B_bit입니다. LGC와 BCTRL은 4개 데이터 입력의 진리표이며, 피연산자 선택을 대체하지 않습니다. 283 두 개는 C_LO로 연결되고, 157은 SUM 또는 LOGIC을 Y로 보냅니다.</p><p>C_HI는 논리 연산 중에도 물리 가산기의 자리올림입니다. SUB / CMP에서만 부호 없는 A ≥ B로 해석합니다. CMP는 결과를 계산해도 ACC에 쓰지 않으며, NOP의 물리 Y=A와 CPU 상태 유지는 구분됩니다.</p><p>iterations는 안정화 패스 수이며 CPU 클록이나 시간 지연이 아닙니다. 게이트·전체 구조 화면은 기능 연결이며, 실제 DIP 핀 번호와 연결표는 칩 배선도 탭에서 확인합니다. 타이밍과 물리 장착은 별도 검증 대상입니다.</p><div id="boundary-notes"></div></div></details></section>
     <footer class="page-footer"><span>SWIVER / ALU EXPLORER</span><span id="observation-time">아직 관측되지 않음</span><span>LOCAL SESSION · ZERO DELAY</span></footer>
   </main>
 </body>

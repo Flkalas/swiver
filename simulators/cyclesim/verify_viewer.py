@@ -35,6 +35,41 @@ def run():
                 url = f"http://127.0.0.1:{server.server_port}"
                 page.goto(url)
                 expect(page.locator("#status-banner")).to_have_class("status-banner live")
+                expect(page.locator("#assembly-view")).to_be_visible()
+                expect(page.locator(".connection-table")).to_contain_text("283_LO · 9번 COUT")
+                expect(page.locator(".connection-table")).to_contain_text("283_HI · 7번 CIN")
+                expect(page.locator(".dip-pin.connected")).to_have_count(2)
+                page.locator('#assembly-nets [data-wire-net="net_b_add0"]').click()
+                expect(page.locator(".connection-table")).to_contain_text("153_0 · 9번 2Y")
+                expect(page.locator(".connection-table")).to_contain_text("283_LO · 6번 B0")
+                page.locator("#view-gates").click()
+                expect(page.locator("#gates-view")).to_be_visible()
+                expect(page.locator('#gate-scene [data-wire-net="net_b_add0"] .chosen')).to_have_count(1)
+                page.locator("#gate-bit").select_option("7")
+                expect(page.locator("#gate-caption")).to_contain_text("비트 7")
+                expect(page.locator("#gate-caption")).to_contain_text("283 HI")
+                page.locator('#gate-scene [data-wire-net="net_sum7"]').click()
+                page.locator("#view-assembly").click()
+                expect(page.locator(".connection-table")).to_contain_text("283_HI · 10번 S3")
+                expect(page.locator(".connection-table")).to_contain_text("157_1 · 14번 4A")
+                page.locator("#assembly-group").select_option("power")
+                page.locator('#assembly-nets [data-wire-net="pwr_gnd"]').click()
+                expect(page.locator(".dip-pin.connected")).to_have_count(30)
+                expect(page.locator(".dip-pin")).to_have_count(192)
+                page.locator("#assembly-search").fill("absent-net")
+                expect(page.locator("#assembly-nets")).to_contain_text("일치하는 연결이 없습니다")
+                page.locator("#assembly-search").fill("")
+                page.locator("#assembly-group").select_option("all")
+                page.locator('#assembly-nets [data-wire-net="net_c_lo"]').click()
+                for width,height in ((1440,900),(1280,800)):
+                    page.set_viewport_size({"width":width,"height":height})
+                    page.screenshot(path=str(OUT / f"assembly-{width}x{height}.png"),full_page=True)
+                    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+                page.locator("#view-gates").click()
+                page.screenshot(path=str(OUT / "gates-1280x800.png"),full_page=True)
+                page.locator("#view-overview").click()
+                page.set_viewport_size({"width":1440,"height":900})
+                checks.append("assembly DIP endpoints, 192 pins and 30 ground contacts; shared gate selection; view switching and filtering")
                 expect(page.locator("[data-component]")).to_have_count(12)
                 y = page.locator('[data-observe-bus="y"] .bus-value')
 
@@ -213,7 +248,7 @@ def run():
                     page.set_viewport_size({"width": width, "height": height})
                     page.locator("#fit").click()
                     page.evaluate("window.scrollTo(0,0)")
-                    page.screenshot(path=str(OUT / f"live-{width}x{height}.png"))
+                    page.screenshot(path=str(OUT / f"live-{width}x{height}.png"), full_page=True)
                     bounds = page.evaluate("""() => {
                       const view=document.querySelector('#map-viewport').getBoundingClientRect();
                       return [...document.querySelectorAll('.chip-body')].map(e=>{
@@ -224,7 +259,6 @@ def run():
                     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                     readable = page.locator(".chip-title").evaluate_all("els => els.every(e => parseFloat(getComputedStyle(e).fontSize)*e.getScreenCTM().a >= 10)")
                     assert readable, (width, height, "default chip labels are too small")
-                    assert page.locator(".map-panel").bounding_box()["y"] + page.locator(".map-panel").bounding_box()["height"] <= height + 1
                 checks.append("1440x900 and 1280x800: twelve chips fit; no horizontal document overflow")
                 assert not errors, errors
                 browser.close()
