@@ -145,3 +145,16 @@ uv run --python .venv\Scripts\python.exe -m simulators.cyclesim viewer --reload
 Python 파일 변경 시 자식 서버를 다시 시작하므로 시뮬레이션 입력은 초기화된다.
 HTML/CSS/JS는 서버 재시작 없이 읽고 브라우저가 변경 감지 후 새로고침한다.
 서버는 계속 loopback에만 바인딩한다. `--reload`에는 0이 아닌 고정 포트를 쓴다.
+
+
+## 830 빵판 배치 탐색
+
+**830 배치 탐색** 탭에서 2–8장 빵판의 가로·세로·격자·지그재그 배열,
+DIP 칩 행·방향, 칩 간 신호 경로를 비교한다. 기본은 **8–2–2 단계 순서 유지**다.
+칩 고정 후 재탐색, 보드 좌표 직접 편집, JSON 저장·불러오기, 신호 점퍼 CSV를 제공한다.
+범용 830 치수·구멍 가정과 비용식, 전원/외부 배선 제외 범위는
+[breadboard-explorer.md](breadboard-explorer.md)에 명시했다.
+
+```powershell
+uv run --python .venv\Scripts\python.exe -m simulators.cyclesim.verify_placement
+```

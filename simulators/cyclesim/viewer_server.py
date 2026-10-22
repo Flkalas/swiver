@@ -12,10 +12,12 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from simulators.cyclesim.viewer_model import AluSession, circuit_definition
+from simulators.cyclesim.breadboard import search, evaluate, PROFILE, LIMITATIONS, VERSION
 
 WEB_ROOT = Path(__file__).with_name("viewer") / "web"
 ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
           "/wiring.js": ("wiring.js", "text/javascript"), "/wiring.css": ("wiring.css", "text/css"),
+          "/placement.js": ("placement.js", "text/javascript"), "/placement.css": ("placement.css", "text/css"),
           "/style.css": ("style.css", "text/css")}
 MAX_BODY = 8192
 
@@ -27,6 +29,7 @@ class ViewerServer(ThreadingHTTPServer):
     def __init__(self, port: int = 8765):
         self.session = AluSession()
         self.session_lock = threading.Lock()
+        self.placement_lock = threading.Lock()
         super().__init__(("127.0.0.1", port), ViewerHandler)
 
 
@@ -72,6 +75,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
             for name, _ in ASSETS.values():
                 digest.update((WEB_ROOT / name).read_bytes())
             self.respond(200, {"revision": f"{os.getpid()}:{digest.hexdigest()}"})
+        elif path == "/api/placement/profile":
+            self.respond(200, {"version": VERSION, "profile": PROFILE, "limitations": LIMITATIONS})
         elif path == "/api/circuit":
             self.respond(200, circuit_definition())
         elif path == "/api/snapshot":
@@ -88,7 +93,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if not self.local_request():
             return
         path = urlsplit(self.path).path
-        if path not in ("/api/input", "/api/reset"):
+        if path not in ("/api/input", "/api/reset", "/api/placement/search", "/api/placement/evaluate"):
             self.respond(404, {"error": "경로를 찾을 수 없습니다."})
             return
         if self.headers.get_content_type() != "application/json":
@@ -105,6 +110,21 @@ class ViewerHandler(BaseHTTPRequestHandler):
             request_id = payload.get("request_id")
             if type(request_id) is not int or request_id < 0:
                 raise ValueError("request_id는 0 이상의 정수여야 합니다.")
+            if path.startswith("/api/placement/"):
+                if set(payload) != {"request_id", "settings"} and path.endswith("search"):
+                    raise ValueError("탐색 요청에는 request_id, settings만 지정하세요.")
+                if not self.server.placement_lock.acquire(blocking=False):
+                    self.respond(409, {"error": "다른 배치 탐색이 실행 중입니다. 잠시 후 다시 시도하세요."})
+                    return
+                try:
+                    if path.endswith("search"):
+                        result = search(payload["settings"])
+                    else:
+                        result = {"candidate": evaluate({k:v for k,v in payload.items() if k!="request_id"}), "version": VERSION, "profile": PROFILE, "limitations": LIMITATIONS}
+                finally:
+                    self.server.placement_lock.release()
+                self.respond(200, dict(result, request_id=request_id))
+                return
             with self.server.session_lock:
                 snapshot = (self.server.session.reset() if path == "/api/reset"
                             else self.server.session.update({k: v for k, v in payload.items() if k != "request_id"}))

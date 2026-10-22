@@ -7,6 +7,8 @@
   <title>Swiver · ALU 회로 실험실</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/wiring.css">
+  <link rel="stylesheet" href="/placement.css">
+  <script src="/placement.js" defer></script>
   <script src="/wiring.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
@@ -32,7 +34,34 @@
 
     <div id="status-banner" class="status-banner" role="status" aria-live="polite">Python 모델에 연결하고 있습니다. 관측값을 기다려 주세요.</div>
 
-    <nav class="view-tabs" aria-label="회로 화면 선택"><button id="view-assembly" aria-pressed="true">칩 배선도 <small>조립용 · DIP 핀</small></button><button id="view-gates" aria-pressed="false">게이트 배선도 <small>시뮬레이션용</small></button><button id="view-overview" aria-pressed="false">12칩 전체 구조</button></nav>
+    <nav class="view-tabs" aria-label="회로 화면 선택"><button id="view-assembly" aria-pressed="true">칩 배선도 <small>조립용 · DIP 핀</small></button><button id="view-gates" aria-pressed="false">게이트 배선도 <small>시뮬레이션용</small></button><button id="view-placement" aria-pressed="false">830 배치 탐색</button><button id="view-overview" aria-pressed="false">12칩 전체 구조</button></nav>
+
+    <section id="placement-view" class="panel" hidden aria-label="830 빵판 배치 탐색기">
+      <div class="placement-head"><div><div class="eyebrow">BREADBOARD PLACEMENT EXPLORER</div><h2>12개 칩, 어디에 놓을까요?</h2><p>830 빵판의 가로·세로·지그재그 배열을 비교합니다. 칩을 고정하고 나머지만 다시 탐색할 수 있습니다.</p></div><span class="tag">153 × 8 → 283 × 2 → 157 × 2</span></div>
+      <div id="placement-settings" class="placement-settings">
+        <label>빵판 수<select id="place-board_count"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
+        <label>배열<select id="place-topology"><option value="all">모든 배열 비교</option><option value="horizontal">가로</option><option value="vertical">세로</option><option value="grid">격자</option><option value="zigzag">지그재그</option><option value="custom">직접 지정한 배열</option></select></label>
+        <label>보드 사이 간격 mm<input id="place-gap_mm" type="number" min="0" max="50" value="6"></label>
+        <label>지그재그 오프셋 mm<input id="place-stagger_mm" type="number" min="0" max="165" value="55"></label>
+        <label>보드 방향<select id="place-orientation"><option value="auto">0° / 90° 비교</option><option value="0">0° · 긴 변 세로</option><option value="90">90° · 긴 변 가로</option></select></label>
+        <label>평가 우선순위<select id="place-priority"><option value="balanced">배선·가독성 절충</option><option value="short">배선 길이 우선</option><option value="readable">읽기 쉬운 배치 우선</option></select></label>
+        <label>칩 묶음 순서<select id="place-grouping"><option value="stages">8–2–2 단계 유지</option><option value="nibbles">4비트씩 두 묶음</option><option value="free">자유 배치</option></select></label>
+        <label>칩 사이 빈 행<input id="place-row_gap" type="number" min="1" max="4" value="2"></label>
+        <label>탐색 시도 수<input id="place-iterations" type="number" min="40" max="1600" value="400"></label>
+        <label>재현용 시드<input id="place-seed" type="number" min="0" max="2147483647" value="830"></label>
+        <label class="place-check"><input id="place-rail_split" type="checkbox" checked>전원 레일 중간 단절 표시</label>
+      </div>
+      <div class="placement-actions"><button id="placement-search" class="placement-primary" disabled>배치 탐색</button><button id="placement-unlock">칩 고정 모두 해제</button><span id="placement-locks" class="placement-locks"></span></div>
+      <div id="placement-status" class="placement-status" role="status">설정 후 배치 탐색을 누르세요.</div>
+      <div class="placement-content"><aside class="placement-results"><h3>비교 후보</h3><p>맨해튼 예상 길이 + 비트 순서·방향 + 보드 간 점퍼로 정렬합니다. 작은 가독성 벌점이 더 정돈된 배치입니다.</p><div id="placement-candidates" class="placement-candidates"></div></aside>
+        <div class="placement-canvas"><div class="placement-map-tools"><label><input id="placement-all-wires" type="checkbox">전체 신호 배선 표시</label><button id="placement-zoom-out" aria-label="배치 축소">−</button><button id="placement-zoom-in" aria-label="배치 확대">+</button><button id="placement-fit">전체 맞춤</button><button id="placement-fit-chip">선택 칩 확대</button></div><svg id="placement-map" class="placement-map" viewBox="0 0 300 180" role="group" aria-label="830 빵판과 DIP 칩 배치"><g id="placement-scene"></g></svg><div id="placement-metrics" class="placement-metrics"></div><p id="placement-route-status" class="placement-note"></p><p class="placement-note">드래그로 이동 · 휠로 확대 · 주황색은 선택 점퍼 · 파란 점선은 빵판 내부 접점 연결</p></div>
+        <aside class="placement-inspector"><label>칩 찾기<select id="placement-chip-picker"><option value="">칩 선택</option></select></label><h3 id="placement-selected-chip">칩을 눌러 위치 고정</h3><div id="placement-chip-form" hidden><label>보드<select id="placement-chip-board"></select></label><label>시작 행 (8개 행 사용)<input id="placement-chip-row" type="number" min="1" max="56"></label><label>홈 방향<select id="placement-chip-rotation"><option value="0">0° · 보드 위쪽</option><option value="180">180° · 보드 아래쪽</option></select></label><label><input id="placement-chip-lock" type="checkbox">이 칩의 보드·행·방향 고정</label><button id="placement-apply-chip">위치 적용</button></div><label>추적할 넷<select id="placement-net"></select></label><div id="placement-wire-list" class="placement-wire-list"></div></aside>
+      </div>
+      <div class="placement-files"><button id="placement-export" disabled>배치 JSON 저장</button><button id="placement-csv" disabled>신호 점퍼 CSV</button><label>배치 불러오기 <input id="placement-import" type="file" accept=".json,application/json"></label></div>
+      <details class="placement-details"><summary>보드 좌표 직접 편집 — 자유로운 지그재그 배열</summary><p>회전한 보드 외곽의 왼쪽 위가 X/Y입니다. 단위 mm. 결합 돌기는 계산하지 않습니다.</p><div id="placement-board-fields"></div><button id="placement-apply-boards">보드 배열 적용</button></details>
+      <details class="placement-details"><summary>가정과 평가 범위</summary><p id="placement-assumptions"></p><ul id="placement-limits"></ul><p>칩 사이 빈 행은 공간 예약입니다. 디커플링·프로브·입력 스위치의 실제 크기는 별도로 확인하세요. 묶음 순서는 보드 번호→행 순서입니다. 교차 수는 서로 다른 넷의 직교 교차이며 겹쳐 달리는 구간은 포함하지 않습니다.</p></details>
+    </section>
+
     <section id="assembly-view" class="panel" aria-label="조립용 DIP 칩 배선도">
       <div class="assembly-prep"><strong>조립 순서</strong> ① 전원·GND → ② Enable·제어 → ③ 데이터·캐리 → ④ 출력 확인<br>모든 칩: <b>16번 → +5 V / 8번 → GND</b> · 칩마다 가까이에 0.1 µF 디커플링 · 153의 1번·15번, 157의 15번 Enable은 GND에 연결</div>
       <div class="assembly-layout"><aside class="assembly-sidebar"><h2>연결할 넷</h2><label for="assembly-group">배선 단계</label><select id="assembly-group"><option value="all">전체 배선</option><option value="power">① 전원·GND·Enable</option><option value="control">② 제어 입력</option><option value="data">③ 데이터·캐리·출력</option></select><label for="assembly-chip">칩으로 좁히기</label><select id="assembly-chip"></select><label for="assembly-search">넷 / 칩 / 핀 검색</label><input id="assembly-search" placeholder="예: c_lo, 153_0, 9번"><p id="wire-count"></p><div id="assembly-nets" class="assembly-nets"></div></aside><div id="assembly-detail" class="assembly-detail">핀 배치를 불러오는 중…</div></div>

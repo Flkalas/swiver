@@ -20,23 +20,25 @@ window.SwiverViews = (() => {
   }
   function mode(next) {
     view=next;
-    for (const name of ['assembly','gates','overview']) {
+    for (const name of ['assembly','gates','overview','placement']) {
       $(`view-${name}`).setAttribute('aria-pressed',String(name===view));
       document.querySelector(name==='overview'?'.workspace':`#${name}-view`).hidden=name!==view;
     }
-    document.querySelector('.controls').hidden=view==='assembly';
-    document.querySelector('.observations').hidden=view==='assembly';
-    document.querySelector('.explanation').hidden=view==='assembly';
+    document.querySelector('.controls').hidden=['assembly','placement'].includes(view);
+    document.querySelector('.observations').hidden=['assembly','placement'].includes(view);
+    document.querySelector('.explanation').hidden=['assembly','placement'].includes(view);
     if(view==='overview') $('fit').click();
+    if(view==='placement') window.SwiverPlacement.open();
   }
   function init(c,onNet,onBit) {
     circuit=c;selectNet=onNet;selectBit=onBit;
+    window.SwiverPlacement.init(c,onNet);
     $('assembly-chip').innerHTML='<option value="">모든 칩</option>'+c.components.map(p=>`<option value="${esc(p.id)}">${short(p.id)} · ${p.part}</option>`).join('');
     $('gate-bit').innerHTML=Array.from({length:8},(_,i)=>`<option value="${i}">비트 ${i}</option>`).join('');
     mode(view); render();
   }
   function update(s) {snapshot=s; renderGates();}
-  function select(type,id) {if(type==='net') {selected=id; for(const bus of circuit.buses) {const index=bus.nets.indexOf(id);if(index>=0){bit=index;$('gate-bit').value=String(bit);selectBit(bit);break;}}} render();}
+  function select(type,id) {if(type==='net') {window.SwiverPlacement.selectNet(id);selected=id; for(const bus of circuit.buses) {const index=bus.nets.indexOf(id);if(index>=0){bit=index;$('gate-bit').value=String(bit);selectBit(bit);break;}}} render();}
   function matches(n) {
     return n.endpoints.length && (!chip || n.endpoints.some(e=>e.component===chip)) &&
       (group==='all'||(group==='power'?n.kind==='power':group==='control'?n.kind==='control':n.kind==='data')) &&
@@ -99,7 +101,7 @@ window.SwiverViews = (() => {
   function render(){if(!circuit)return;renderAssembly();renderGates();}
   document.addEventListener('click',e=>{const target=e.target.closest('[data-wire-net]');if(target&&circuit) {selected=target.dataset.wireNet;selectNet(selected);} });
   document.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.matches('g[data-wire-net]')) {e.preventDefault();selected=e.target.dataset.wireNet;selectNet(selected);}});
-  for(const name of ['assembly','gates','overview']) $(`view-${name}`).addEventListener('click',()=>mode(name));
+  for(const name of ['assembly','gates','overview','placement']) $(`view-${name}`).addEventListener('click',()=>mode(name));
   $('assembly-search').addEventListener('input',e=>{filter=e.target.value.toLowerCase();renderList();});
   $('assembly-chip').addEventListener('change',e=>{chip=e.target.value;renderList();});
   $('assembly-group').addEventListener('change',e=>{group=e.target.value;renderList();});

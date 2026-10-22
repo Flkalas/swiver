@@ -89,6 +89,24 @@ def test_direct_controls_and_rejected_control_are_atomic(server):
 
 
 def test_assets_are_local_and_available(server):
-    for path in ("/", "/style.css", "/app.js"):
+    for path in ("/", "/style.css", "/app.js", "/placement.js", "/placement.css"):
         status, body = call(server, path)
         assert status == 200 and body
+
+
+def test_placement_api_does_not_mutate_simulator(server):
+    _, before = call(server, "/api/snapshot")
+    status, profile = call(server, "/api/placement/profile")
+    assert status == 200 and profile["profile"]["rows"] == 63
+    status, result = call(server, "/api/placement/search", {"request_id": 2, "settings": {"iterations": 40}})
+    assert status == 200 and result["request_id"] == 2
+    candidate = result["candidates"][0]
+    payload = {"request_id": 3, "settings": result["settings"], "boards": candidate["boards"], "placements": candidate["placements"]}
+    status, checked = call(server, "/api/placement/evaluate", payload)
+    assert status == 200 and checked["candidate"]["id"] == candidate["id"]
+    assert call(server, "/api/placement/search", {"request_id": 4, "settings": {"board_count": 1}})[0] == 400
+    assert call(server, "/api/placement/evaluate", {"request_id": 4})[0] == 400
+    with server.placement_lock:
+        assert call(server, "/api/placement/search", {"request_id": 5, "settings": {}})[0] == 409
+    _, after = call(server, "/api/snapshot")
+    assert after == before
