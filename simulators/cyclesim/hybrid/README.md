@@ -441,3 +441,56 @@ CPU 동작 비교는 pre-fit 클록 에지 모델이며, 보드 타이밍은 여
 `build\hybrid-partition\strucseq\`에 생성한다(위 경로는 cyclesim 기준).
 재현 당시 측정 및 기본 fit 요약은 [structured-evidence.json](structured-evidence.json)에
 보존한다. 실패한 fit 요약은 성공한 JEDEC 또는 배치 완료 핀 배치를 제공하지 않는다.
+
+## 같은 공통 증감·단계 CU를 전부 74로 매핑한 수량
+
+`structured_ttl.py`에서 위 공통 PC/RP 증감과 명령 종류·단계 CU를 실제
+74 게이트·MUX·574 연결로 구현했다. **채널 공유·다입력 AND·공통식 제거 후
+247개 74HC 패키지**다. 프로그램 Flash + SRAM×2를 더하면 **250 IC**이며,
+발진기, 물리 reset/부팅 회로, 부하 버퍼, 메일박스 코프로세서, 전원·수동부품은
+별도다. 제어 ROM과 CPLD는 0개다. 이전 74 CPU의 167개를 재사용한 수치가 아니다.
+
+| 부품 | 수량 |
+|---|---:|
+| 74HC574 | 14 |
+| 74HC157 | 59 |
+| 74HC153 | 8 |
+| 74HC283 | 2 |
+| 74HC245 | 1 |
+| 74HC04 | 12 |
+| 74HC08 | 57 |
+| 74HC11 | 23 |
+| 74HC21 | 16 |
+| 74HC32 | 55 |
+| **합계** | **247** |
+
+ALU 코어는 이 중 153×8 + 283×2 + 157×2 = 12개다. PC/RP 전용 가산기는
+없으며, 증감은 이 ALU를 공유한다. 574의 enable을 가정하지 않고 유지용 157을
+실제로 넣었다. 11바이트 데이터 저장과 20비트 제어·플래그·오류 상태를 동일 클록
+조건에서 패킹하여 574 14개를 쓴다. 명령 코드 인코딩 후 재디코드하는 경로는
+제거하고, 주 절차·단계·명령 종류에서 직접 출력 제어를 생성한다.
+
+이 숫자는 **현재 자동 게이트 매핑 후보의 실제 수량**이며 최소 수량이 아니다.
+CPLD 식을 직접 게이트로 옮긴 후보는 294개, 중간 명령 코드 없이 직접 제어하는
+후보는 247개였다. 전용 138/154 디코더·161 카운터를 선택하는 기술 매핑까지
+최적화한 결과는 아니다. 상태 절차를 공유하는 것만으로 패키지 감소가 보장되지는
+않으며, 현재 후보에서는 단계·복귀·종류 해석 및 버스 선택 논리 비용이 크다.
+
+내부 공통 8비트 버스는 **157 MUX 선택망**이고, 외부 메모리 버스에는 245를 쓴다.
+앞선 CPLD 후보의 574별 등록 클록/OE 배선을 그대로 복제한 것은 아니다.
+이 동기식 후보는 모든 574가 공통 클록을 쓰며 유지 MUX 비용을 포함한다.
+따라서 247개는 모든 가능한 공통 버스 배선 방식의 하한이 아니다.
+
+실행 중 Python은 클록·WAIT·외부 메모리만 제공한다. opcode dispatch, PC/RP
+정수 증감, Transfer 실행, CUPL 식 평가를 런타임 제어로 사용하지 않는다.
+제어·ALU·스택 검사·메모리 선택은 게이트 진리표와 동시 D 샘플링으로 실행한다.
+전원 투입 레지스터 값은 fixture이며 ns 지연·fanout·글리치 검증은 포함하지 않는다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.structured_ttl
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_structured_ttl.py -q
+```
+
+생성 넷리스트와 집계는 `simulators\cyclesim\build\structured-ttl\`에 저장한다.
+수량·소스 해시·재귀 CALL/RET 검증 기록은
+[structured-ttl-evidence.json](structured-ttl-evidence.json)에 보존한다.

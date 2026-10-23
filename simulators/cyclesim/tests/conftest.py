@@ -17,6 +17,7 @@ DEFAULT_TEST_TIMEOUT_S = 30
 
 # Explicit budgets for slow or hang-prone tests (must be >= measured runtime + margin).
 TIMEOUT_OVERRIDES_S: dict[str, int] = {
+    "test_structured_ttl_recursive_wait": 60,
     "test_structured_recursive_wait": 30,
     "test_structured_transfer_sequence_unchanged": 30,
     "test_incdec_recursive_wait": 15,

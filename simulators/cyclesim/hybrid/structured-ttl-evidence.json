@@ -1,0 +1,181 @@
+{
+  "scope": "Concrete shared-adjust/class-step all-74 mapping, not minimum BOM or timing acceptance",
+  "control_roms": 0,
+  "cplds": 0,
+  "variants": [
+    {
+      "optimized": false,
+      "packages": 353,
+      "parts": {
+        "74HC574": 28,
+        "74HC32": 64,
+        "74HC04": 25,
+        "74HC08": 166,
+        "74HC157": 59,
+        "74HC245": 1,
+        "74HC153": 8,
+        "74HC283": 2
+      },
+      "groups": {
+        "alu": {
+          "74HC153": 8,
+          "74HC157": 2,
+          "74HC283": 2
+        },
+        "alu_control": {
+          "74HC04": 3,
+          "74HC08": 11,
+          "74HC157": 1,
+          "74HC32": 3
+        },
+        "bus": {
+          "74HC04": 3,
+          "74HC08": 36,
+          "74HC157": 18,
+          "74HC245": 1,
+          "74HC32": 16
+        },
+        "control": {
+          "74HC04": 9,
+          "74HC08": 57,
+          "74HC157": 12,
+          "74HC32": 24,
+          "74HC574": 17
+        },
+        "datapath": {
+          "74HC04": 3,
+          "74HC08": 35,
+          "74HC157": 22,
+          "74HC32": 12,
+          "74HC574": 11
+        },
+        "flags_stack_checks": {
+          "74HC04": 5,
+          "74HC08": 21,
+          "74HC157": 4,
+          "74HC32": 8
+        },
+        "memory_decode": {
+          "74HC04": 2,
+          "74HC08": 6,
+          "74HC32": 1
+        }
+      }
+    },
+    {
+      "optimized": true,
+      "packages": 247,
+      "parts": {
+        "74HC32": 55,
+        "74HC04": 12,
+        "74HC08": 57,
+        "74HC11": 23,
+        "74HC21": 16,
+        "74HC157": 59,
+        "74HC245": 1,
+        "74HC153": 8,
+        "74HC283": 2,
+        "74HC574": 14
+      },
+      "groups": {
+        "alu": {
+          "74HC153": 8,
+          "74HC157": 2,
+          "74HC283": 2
+        },
+        "alu_control": {
+          "74HC08": 2,
+          "74HC157": 1,
+          "74HC32": 1
+        },
+        "bus": {
+          "74HC08": 18,
+          "74HC11": 6,
+          "74HC157": 18,
+          "74HC245": 1,
+          "74HC32": 14
+        },
+        "control": {
+          "74HC04": 5,
+          "74HC08": 24,
+          "74HC11": 6,
+          "74HC157": 12,
+          "74HC21": 6,
+          "74HC32": 22,
+          "74HC574": 2
+        },
+        "datapath": {
+          "74HC08": 5,
+          "74HC11": 5,
+          "74HC157": 22,
+          "74HC21": 3,
+          "74HC32": 9,
+          "74HC574": 11
+        },
+        "flags_stack_checks": {
+          "74HC04": 2,
+          "74HC08": 2,
+          "74HC11": 1,
+          "74HC157": 3,
+          "74HC21": 3,
+          "74HC32": 5
+        },
+        "memory_decode": {
+          "74HC08": 2,
+          "74HC21": 1
+        },
+        "shared": {
+          "74HC04": 5,
+          "74HC08": 4,
+          "74HC11": 5,
+          "74HC157": 1,
+          "74HC21": 3,
+          "74HC32": 4,
+          "74HC574": 1
+        }
+      }
+    }
+  ],
+  "cases": [
+    {
+      "program": "fib_recursive_3",
+      "wait_every": 0,
+      "ticks": 6604,
+      "instructions": 107,
+      "memory_accesses": 336,
+      "architectural_and_memory_access_match": true
+    },
+    {
+      "program": "fib_recursive_3",
+      "wait_every": 5,
+      "ticks": 6666,
+      "instructions": 107,
+      "memory_accesses": 336,
+      "architectural_and_memory_access_match": true
+    }
+  ],
+  "program_memory_chips_excluded": 3,
+  "logic_plus_program_memory": 250,
+  "excludes": [
+    "oscillator",
+    "physical reset/boot circuit",
+    "fanout buffers",
+    "mailbox coprocessor",
+    "power/passives"
+  ],
+  "bus_implementation": "Internal mux-selected 8-bit bus; external memory bus uses 74HC245",
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/structured_ttl.py": "987f0c2d47967afb17ac4208f66ed9695430bedd6f4176a734b1dd4fdb3175eb",
+    "simulators/cyclesim/hybrid/structured_cu.py": "618c401c1b36920e4deede5a8d4440fbdda7fd065a5ce6b489968652ba0a2d13",
+    "simulators/cyclesim/hybrid/structured_fit.py": "9057caa60a84320309ae6795d8223698202199c594724fdd47e20498b8d0a2d0",
+    "simulators/cyclesim/ttl/netlist.py": "635b8b317f1b5a0bac527be48779a9e240e8aef25ab6477c39d49c00f9d3e105",
+    "simulators/cyclesim/ttl/optimize.py": "94b667d3b29c72ed5bc26ab037be72cbe49d19260b33c1ddde5797deaa613ed4"
+  },
+  "netlist_sha256": "841c7f9e78b98926f04626b757444997f70599c4ed6aeee598e7117dfcd0a417",
+  "validation": {
+    "pytest_file": "simulators/cyclesim/tests/test_hybrid_structured_ttl.py",
+    "passed": 542,
+    "seconds": 46.37,
+    "physical_timing_verified": false
+  }
+}
