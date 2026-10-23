@@ -345,6 +345,8 @@ CPLD bitstream **Design fits pending**. 이전 P12 pipe 설계와 동결 ns 값�
 
 별도의 [74 전용 제어·데이터패스 재설계 후보](simulators/cyclesim/hybrid/README.md#직접-쓰기와-2위상-제어-재설계-2026-10-24)는 RESULT 왕복을 없애고 공통 쓰기 경로를 사용합니다. ISA·메모리 접근 순서를 대조하는 실험 모델이며, 아래 논리 SYS 비용이나 정본 CPLD의 물리 검증 상태를 대체하지 않습니다.
 
+후속 [RAM 명령 중심의 새 ISA 실험](reference/hardware/ram-isa-experiment.md)은 페이지·하위 주소로 RAM을 직접 읽고, RAM→ALU 및 RAM→주소 레지스터 전송을 지원합니다. 명령을 고정 2바이트로 만들고 CALL/RET·스택 검사를 소프트웨어로 옮겨 **74HC 115 → 60개**, Flash·SRAM 3개 포함 **63 IC**로 줄였습니다. 기존 v1.0 바이너리와 호환되지 않는 별도 실행 후보이며, 아래 정본 ISA와 SYS 수치는 유지합니다.
+
 ### 6.3 실행 모델
 
 1. **FETCH_OPCODE** — shared bus: PC → 현재 맵의 Flash/RAM → IR

@@ -5,7 +5,19 @@
 후속 [기가트론 비교 연구](gigatron-lessons-2026-10-23.md)는 적용 가능한 제어·부품 선택과
 현재 PC/RP 증감 전송 비용을 원본 회로 및 로컬 실행으로 확인한다.
 
-**최신 74 전용 축소 후보:** `direct_ttl.py` — 제어와 데이터패스를 함께 바꿔
+**최신 RAM 명령 재설계 후보:** `ram_ttl.py` — RAM→레지스터·ALU 직접 경로와
+고정 2바이트 명령으로 **115 → 60개 74HC**, 프로그램 메모리 포함 **63 IC**다.
+새 ISA를 실행하는 부품 연결 모델이며 기존 바이너리와 호환되지 않는다.
+CALL/RET와 스택 검사는 소프트웨어로 옮겼다. 명령표·부품별 집계·실행 비용은
+[RAM ISA 실험 문서](../../../reference/hardware/ram-isa-experiment.md), 재현 수치는
+[ram-ttl-evidence.json](ram-ttl-evidence.json)을 따른다.
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.ram_measure
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_ram_ttl.py
+```
+
+**v1.0 ISA를 유지하는 74 전용 후보:** `direct_ttl.py` — 제어와 데이터패스를 함께 바꿔
 **131 → 115개 74HC**, 프로그램 메모리 3개 포함 **118 IC**로 줄였다.
 아래 「직접 쓰기와 2위상 제어 재설계」와 실행 근거를 따른다.
 이전 131개·247개 후보는 비교 기준으로 보존한다.

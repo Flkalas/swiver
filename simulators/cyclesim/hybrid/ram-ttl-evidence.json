@@ -1,0 +1,223 @@
+{
+  "scope": "Experimental incompatible RAM ISA, all-74 functional-pin execution",
+  "logic_packages": 60,
+  "program_memory_packages": 3,
+  "logic_plus_program_memory": 63,
+  "baseline_logic_packages": 115,
+  "logic_packages_saved": 55,
+  "reduction_percent": 47.83,
+  "parts": {
+    "74HC00": 1,
+    "74HC02": 2,
+    "74HC04": 4,
+    "74HC08": 7,
+    "74HC11": 1,
+    "74HC153": 8,
+    "74HC157": 15,
+    "74HC161": 5,
+    "74HC20": 1,
+    "74HC21": 3,
+    "74HC238": 1,
+    "74HC244": 1,
+    "74HC27": 1,
+    "74HC283": 2,
+    "74HC32": 2,
+    "74HC377": 5,
+    "74HC574": 1
+  },
+  "groups": {
+    "address": {
+      "74HC157": 6
+    },
+    "alu": {
+      "74HC153": 8,
+      "74HC157": 2,
+      "74HC283": 2
+    },
+    "bus": {
+      "74HC244": 1
+    },
+    "control": {
+      "74HC04": 1,
+      "74HC08": 1,
+      "74HC11": 1,
+      "74HC157": 3,
+      "74HC161": 1,
+      "74HC20": 1,
+      "74HC238": 1,
+      "74HC27": 1,
+      "74HC377": 1,
+      "74HC574": 1
+    },
+    "datapath": {
+      "74HC161": 4,
+      "74HC377": 4
+    },
+    "memory_decode": {
+      "74HC08": 3,
+      "74HC21": 1
+    },
+    "operand": {
+      "74HC157": 2
+    },
+    "shared": {
+      "74HC00": 1,
+      "74HC02": 2,
+      "74HC04": 3,
+      "74HC08": 3,
+      "74HC21": 2,
+      "74HC32": 2
+    },
+    "writeback": {
+      "74HC157": 2
+    }
+  },
+  "baseline_parts": {
+    "74HC00": 3,
+    "74HC02": 5,
+    "74HC04": 7,
+    "74HC08": 16,
+    "74HC10": 2,
+    "74HC11": 2,
+    "74HC153": 8,
+    "74HC157": 12,
+    "74HC161": 2,
+    "74HC20": 1,
+    "74HC21": 6,
+    "74HC238": 6,
+    "74HC244": 8,
+    "74HC27": 1,
+    "74HC283": 2,
+    "74HC32": 14,
+    "74HC377": 11,
+    "74HC4075": 8,
+    "74HC574": 1
+  },
+  "no_index_mux_ablation": {
+    "logic_packages": 58,
+    "note": "Only removes X/literal address mux; X register retained; not selected"
+  },
+  "cplds": 0,
+  "control_roms": 0,
+  "alu_packages": 12,
+  "instruction_bytes": 2,
+  "clocks_per_instruction_without_wait": 6,
+  "data_bus_bits": 8,
+  "address_bus_bits": 16,
+  "native_mips_per_mhz": 0.16666666666666666,
+  "v1_binary_compatible": false,
+  "hardware_stack_guards": false,
+  "software_checked_call_return": true,
+  "memory_map_preserved": true,
+  "physical_timing_verified": false,
+  "reset_entry_address": 0,
+  "limits": [
+    "Software CALL/RET preserves A but clobbers X/P/Z/C and uses scratch 0F02..0F05.",
+    "Arbitrary programs can bypass software stack bounds checks.",
+    "Hardware reset does not fetch the v1 reset vector; starts at 0000.",
+    "HALT leaves post-fetch PC; all opcode bit patterns have defined aliases.",
+    "RAM-to-ALU capture and memory write hold require physical timing qualification."
+  ],
+  "excludes": [
+    "oscillator",
+    "external clean reset/wait sources",
+    "load buffers",
+    "mailbox coprocessor",
+    "power/passives"
+  ],
+  "cases": [
+    {
+      "name": "iterative_fibonacci_13",
+      "program_bytes": 54,
+      "instructions": 205,
+      "ticks": 1230,
+      "result_a": 233,
+      "memory_transactions": 531,
+      "reference_state_and_memory_trace_match": true
+    },
+    {
+      "name": "ram_pointer_cross_page_copy",
+      "program_bytes": 162,
+      "instructions": 64,
+      "ticks": 384,
+      "result_a": 2,
+      "memory_transactions": 154,
+      "reference_state_and_memory_trace_match": true
+    },
+    {
+      "name": "recursive_fibonacci_3_checked_stack",
+      "program_bytes": 954,
+      "instructions": 684,
+      "ticks": 4104,
+      "result_a": 2,
+      "memory_transactions": 1567,
+      "reference_state_and_memory_trace_match": true
+    }
+  ],
+  "software_call_return_costs": [
+    {
+      "operation": "CALL",
+      "initial_rp": 62976,
+      "expansion_bytes": 152,
+      "instructions": 52,
+      "ticks": 312,
+      "shared_error_handlers_bytes": 24,
+      "note": "Excludes surrounding LDI/HALT; includes bounds/alignment checks"
+    },
+    {
+      "operation": "CALL",
+      "initial_rp": 63230,
+      "expansion_bytes": 152,
+      "instructions": 55,
+      "ticks": 330,
+      "shared_error_handlers_bytes": 24,
+      "note": "Excludes surrounding LDI/HALT; includes bounds/alignment checks"
+    },
+    {
+      "operation": "RET",
+      "initial_rp": 62978,
+      "expansion_bytes": 216,
+      "instructions": 75,
+      "ticks": 450,
+      "shared_error_handlers_bytes": 24,
+      "note": "Excludes surrounding LDI/HALT; includes bounds/alignment checks"
+    },
+    {
+      "operation": "RET",
+      "initial_rp": 63232,
+      "expansion_bytes": 216,
+      "instructions": 77,
+      "ticks": 462,
+      "shared_error_handlers_bytes": 24,
+      "note": "Excludes surrounding LDI/HALT; includes bounds/alignment checks"
+    }
+  ],
+  "recursive_fibonacci_3_comparison": {
+    "old_instructions": 107,
+    "old_ticks": 2744,
+    "new_instructions": 684,
+    "new_ticks": 4104,
+    "tick_increase_percent": 49.56,
+    "note": "Same Fibonacci input/output; different ISA, ABI and instruction stream"
+  },
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/ram_measure.py": "d9015e389878aea80925e5b63106ce22e78384107d9e4ada75dcb1e0cfea30b8",
+    "simulators/cyclesim/hybrid/ram_ttl.py": "d08a29de1ccbb2e132e909c4786075d5ed2a3c81a9dad10d1b3e9f4119c81a12",
+    "simulators/cyclesim/hybrid/ram_isa.py": "540e2d3d4871eb74707a05589004ce2fad6a66c7efdd7302a91b2067f398ebaf",
+    "simulators/cyclesim/hybrid/ram_programs.py": "dc47f8f5c813d447eec911e06af37622f27b665f671a254f631c207b34582634",
+    "simulators/cyclesim/hybrid/direct_ttl.py": "1b92f1ba89a35e0c3177eb751515b9b137c23ea54335f2b732a07cf397b4101e",
+    "simulators/cyclesim/hybrid/compact_ttl.py": "8e2196624b6069803f9929e06838c085b73c39a50c55b413d89783458e36a658",
+    "simulators/cyclesim/ttl/netlist.py": "63323839c32dd8971ae2b24ec34fc65c16816c7ad79ff91397401189a406103f",
+    "simulators/cyclesim/ttl/optimize.py": "be646b862c224ef865a621e3a7a3adaf3a82f967656efd7b73d616e74818a1ac",
+    "simulators/cyclesim/ttl/polarity.py": "0c24cf7addca8658683f80856a52739550b0c7f78aedf03a394ad8d496aa146d",
+    "simulators/cyclesim/blocks/mem_decode.py": "59c0fa1e21cda04cba364051b0a7b65ac14f7007ff5410ce9116e998ebc84ceb",
+    "simulators/cyclesim/export/alu8_netlist.py": "c84923021dc7d72d2d32129155ee5688e59d83d8e1444ad465d8f823780804a8",
+    "simulators/cyclesim/blocks/alu8.py": "fdae9c16bc3cba2a2ebe4fed8003b61fe1e98181f53b2ddc8e3a89d6bf900f0f",
+    "simulators/cyclesim/blocks/mux.py": "2bdbfecc0a6b294295ad200cdbb180c310e81f07e5831d69d5a2704b9654b8de",
+    "simulators/cyclesim/values.py": "9e59f86e0b5cdc0e1c05088adeb1a5be12bf1b0e09c88d11c2080879e06aacf7",
+    "simulators/cyclesim/fixtures/rom_builder.py": "2f946e72f2f3601fb60430c4393b44e37198099d55f2dd2acb720a9fd987dc54",
+    "simulators/cyclesim/hybrid/compare.py": "8cf10adad32515f25b32b4beb2b3990027f6f76ec4d61187e47786a0964f4f52",
+    "simulators/cyclesim/tests/test_ram_ttl.py": "917915443ed2fa20e048a48e43d291f8121978fe609dc8e244395befb4d557b5"
+  },
+  "netlist_sha256": "98bd5acbd330ee8ddf247c605e596802174e08a09b7fb261662272bc10cfe3a2"
+}

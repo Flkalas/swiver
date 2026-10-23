@@ -9,6 +9,8 @@ This specification supersedes the [historical P12 pipe design](cpld-pipe-cu.md).
 
 The [all-74 direct-writeback experiment](../../simulators/cyclesim/hybrid/README.md#직접-쓰기와-2위상-제어-재설계-2026-10-24) separately implements two-phase byte transfers and a shared ALU/register writeback path. Its package counts and transfer clocks are experimental implementation results, not changes to this specification's logical SYS counts or physical acceptance gates.
 
+The later [RAM-oriented ISA experiment](ram-isa-experiment.md) reduces that implementation from 115 to 60 logic packages by changing the instruction encoding, memory-to-register paths and CALL/RET implementation. It has its own interpreter and 74-gate execution model; it is not binary-compatible with this v1.0 specification and does not enforce stack guards in hardware.
+
 ---
 
 ## 1. Execution and memory contract
