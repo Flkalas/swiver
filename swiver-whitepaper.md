@@ -343,6 +343,8 @@ PC·IR·abs16·CALL/RET 임시 상태의 실제 할당을 아직 대조하지 �
 
 CPLD bitstream **Design fits pending**. 이전 P12 pipe 설계와 동결 ns 값은 [superseded P12 기록](reference/hardware/cpld-pipe-cu.md)이며 새 스케줄의 타이밍·fit 증거가 아닙니다.
 
+별도의 [74 전용 제어·데이터패스 재설계 후보](simulators/cyclesim/hybrid/README.md#직접-쓰기와-2위상-제어-재설계-2026-10-24)는 RESULT 왕복을 없애고 공통 쓰기 경로를 사용합니다. ISA·메모리 접근 순서를 대조하는 실험 모델이며, 아래 논리 SYS 비용이나 정본 CPLD의 물리 검증 상태를 대체하지 않습니다.
+
 ### 6.3 실행 모델
 
 1. **FETCH_OPCODE** — shared bus: PC → 현재 맵의 Flash/RAM → IR

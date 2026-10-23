@@ -12,7 +12,8 @@ from copy import deepcopy
 from simulators.cyclesim.ttl.netlist import Package
 
 CAPACITY = {"74HC04": 6, "74HC08": 4, "74HC32": 4, "74HC157": 4,
-            "74HC11": 3, "74HC21": 2, "74HC4075": 3}
+            "74HC11": 3, "74HC21": 2, "74HC4075": 3,
+            "74HC00": 4, "74HC02": 4, "74HC10": 3, "74HC20": 2, "74HC27": 3}
 
 
 def inputs(op):

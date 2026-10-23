@@ -5,10 +5,10 @@
 후속 [기가트론 비교 연구](gigatron-lessons-2026-10-23.md)는 적용 가능한 제어·부품 선택과
 현재 PC/RP 증감 전송 비용을 원본 회로 및 로컬 실행으로 확인한다.
 
-**최신 74 전용 축소 후보:** `compact_ttl.py` — 공통 증감·단계 CU를 유지하면서
-**247 → 131개 74HC**, 메모리 3개 포함 **134 IC**로 줄였다.
-아래 「전용 부품으로 다시 설계한 131개 구성」과 실행 근거를 따른다.
-이전 247개 자동 게이트 변환 후보는 비교 기준으로 보존한다.
+**최신 74 전용 축소 후보:** `direct_ttl.py` — 제어와 데이터패스를 함께 바꿔
+**131 → 115개 74HC**, 프로그램 메모리 3개 포함 **118 IC**로 줄였다.
+아래 「직접 쓰기와 2위상 제어 재설계」와 실행 근거를 따른다.
+이전 131개·247개 후보는 비교 기준으로 보존한다.
 
 ## INC/DEC ALU 제어 연결 — 첫 구현 단계
 
@@ -569,3 +569,73 @@ reset-vector 부팅은 별도다. Gigatron과 동일한 칩 수를 달성했다�
 `simulators\cyclesim\build\compact-ttl\netlist.json`은 실제 패키지·기능 핀 연결,
 `comparison.json`은 집계와 프로그램 대조 결과다. 소스/넷리스트 해시를 포함한
 기록은 [compact-ttl-evidence.json](compact-ttl-evidence.json)에 보존한다.
+
+
+## 직접 쓰기와 2위상 제어 재설계 (2026-10-24)
+
+`direct_ttl.py`는 기존 절차의 단순 게이트 치환에 그치지 않고 저장·전송·제어
+스케줄을 함께 바꾼 후보다. 실제 부품 연결 집계는 **115개 74HC**, 프로그램
+Flash + SRAM×2 포함 **118 IC**다. 기존 131개보다 **16개(12.21%) 감소**했으며,
+Gigatron 수준의 36개를 달성한 결과는 아니다. 제어 ROM과 CPLD는 사용하지 않는다.
+
+- **RESULT 1바이트와 버스 드라이버 제거:** ALU Y를 목적 레지스터에 직접 쓴다.
+  기존 읽기/메모리용 공통 8비트 버스는 유지한다. 157×2로 bus/Y를 선택하는
+  **공통 8비트 쓰기 경로가 추가**되므로 전체 배선 감소를 주장하지 않는다.
+- **캡처와 제어 진행을 같은 상승 에지에 처리:** setup/capture 두 위상으로 바꾼다.
+  ADD/CMP 플래그는 그 에지의 Y/carry에서 캡처하고, 증감 상위 바이트 진행 여부도
+  같은 carry로 결정한다. RESULT 전송 및 working-carry 저장은 필요 없다.
+- **공통 byte 단계 1비트:** 저·고 바이트만 구분한다. RET의 −2는 공통 DEC를 두 번
+  실행하여 MBR에 상수 2를 적재하는 동작을 없앤다. ISA 플래그는 변경하지 않는다.
+- **두 번째 operand 표시:** 다음 인출 상태를 역으로 해석하지 않고 IR 캡처에서
+  clear, operand 캡처에서 set한다. 다음 상태 비트도 공통 분기 조건을 직접 공유한다.
+- **NAND/NOR 극성 배치:** 고정된 반복 한도 안에서 게이트 입력·출력 극성을 탐색하고
+  반전기를 공유한다. 이는 생성 시 탐색이며 실행 중 표 조회나 호스트 명령 해석이 아니다.
+  `polarity.py`와 `netlist.py`가 실제 00/02/10/20/27 채널을 평가하고 패키징한다.
+
+| 같은 전체 CPU 범위 | 기존 compact | 새 ALU 공유 | 새 전용 PC 카운터 |
+|---|---:|---:|---:|
+| 74 논리 패키지 | 131 | **115** | 117 |
+| 프로그램 메모리 포함 | 134 | **118** | 120 |
+| RESULT 저장 | 1바이트 | 없음 | 없음 |
+| byte 단계 저장 | 161×1 | 1비트 | 1비트 |
+| 위상 수 | 4 | 2 | 2 |
+
+PC 카운터 비교안은 PC 16비트를 161×4로 구현하고 opcode/operand 캡처 시
+증가시킨다(HALT 제외). PC/RP 공유안보다 2개 많아서 기본값으로 채택하지 않았다.
+RP는 양쪽 모두 ALU로 증감한다. RP 전용 up/down 카운터안까지 탐색한 결과는 아니다.
+
+| WAIT 없는 프로그램 | 기존 4위상 후보 tick | 새 2위상 후보 tick |
+|---|---:|---:|
+| 반복 Fibonacci | 8,920 | 3,724 |
+| 재귀 Fibonacci(3) | 6,604 | 2,744 |
+| ADD 256회 | 12,316 | 4,618 |
+
+각 tick은 후보의 외부 클록 에지다. 새 경로는 bus → ALU → writeback MUX →
+레지스터 D까지 한 캡처 전에 안정되어야 한다. **최대 클록·ns 타이밍은 미검증**이므로
+tick 감소를 같은 주파수의 실효 MIPS 향상으로 확정하지 않는다. 정본 모델의 논리
+SYS와도 다르다. 명령 완료 상태와 메모리 접근 주소·값·순서를 독립 CPU와 대조한다.
+
+버스 구동 선택은 정지 중에도 유지될 수 있으나 CAP/WR 및 상태 진행을 차단한다.
+메모리 WAIT에서는 상태와 저장을 정지하며, 해제 후 접근을 한 번만 완료한다.
+스택 범위·짝수 정렬·overflow/underflow, HALT PC 유지, reserved-op 길이 정책을
+유지한다. 전원 초기값은 fixture이며 reset-vector 부팅, 물리 reset/클록 회로,
+fanout 버퍼, 메일박스 MCU, 수동부품은 수량에서 제외한다. 재고·패키지 구매 가능성과
+배선 수, 실물 글리치·setup/hold는 이번 검증 범위가 아니다.
+
+새 게이트의 기능 근거는 제조사 [00](https://assets.nexperia.com/documents/data-sheet/74HC_HCT00.pdf),
+[02](https://assets.nexperia.com/documents/data-sheet/74HC_HCT02.pdf),
+[10](https://assets.nexperia.com/documents/data-sheet/74HC_HCT10.pdf),
+[20](https://www.ti.com/lit/ds/symlink/sn74hc20.pdf),
+[27](https://assets.nexperia.com/documents/data-sheet/74HC_HCT27.pdf) 데이터시트다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.direct_ttl
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_structured_ttl.py -k DirectTtlCpu -q
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_direct_ttl.py -q
+```
+
+검증: 기존 두 후보와 새 후보의 opcode/flag·스택·메모리·WAIT 검사 및 새 부품 검사 **1,896개 통과**. 기존 TTL CPU/netlist/optimizer 회귀도 **590개 통과**했다.
+
+생성 연결표: `simulators\cyclesim\build\direct-ttl\netlist.json`.
+비교 결과: 같은 폴더의 `comparison.json`. 검증 시점 집계와 소스 해시는
+[direct-ttl-evidence.json](direct-ttl-evidence.json)에 보존한다.

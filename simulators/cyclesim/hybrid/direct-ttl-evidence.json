@@ -1,0 +1,234 @@
+{
+  "scope": "Functional-pin all-74 redesign; not physical timing acceptance",
+  "baseline_logic_packages": 131,
+  "selected_counter_pc": false,
+  "variants": [
+    {
+      "counter_pc": false,
+      "logic_packages": 115,
+      "logic_plus_program_memory": 118,
+      "parts": {
+        "74HC00": 3,
+        "74HC02": 5,
+        "74HC04": 7,
+        "74HC08": 16,
+        "74HC10": 2,
+        "74HC11": 2,
+        "74HC153": 8,
+        "74HC157": 12,
+        "74HC161": 2,
+        "74HC20": 1,
+        "74HC21": 6,
+        "74HC238": 6,
+        "74HC244": 8,
+        "74HC27": 1,
+        "74HC283": 2,
+        "74HC32": 14,
+        "74HC377": 11,
+        "74HC4075": 8,
+        "74HC574": 1
+      },
+      "groups": {
+        "alu": {
+          "74HC153": 8,
+          "74HC157": 2,
+          "74HC283": 2
+        },
+        "alu_control": {
+          "74HC157": 1
+        },
+        "bus": {
+          "74HC244": 8
+        },
+        "control": {
+          "74HC00": 2,
+          "74HC02": 1,
+          "74HC08": 8,
+          "74HC157": 6,
+          "74HC161": 2,
+          "74HC238": 6,
+          "74HC32": 9,
+          "74HC377": 1,
+          "74HC4075": 5,
+          "74HC574": 1
+        },
+        "datapath": {
+          "74HC377": 10
+        },
+        "flags_stack_checks": {
+          "74HC02": 1,
+          "74HC08": 1,
+          "74HC11": 1,
+          "74HC157": 3,
+          "74HC21": 2,
+          "74HC4075": 1
+        },
+        "memory_decode": {
+          "74HC08": 1,
+          "74HC21": 1
+        },
+        "shared": {
+          "74HC00": 1,
+          "74HC02": 3,
+          "74HC04": 7,
+          "74HC08": 6,
+          "74HC10": 2,
+          "74HC11": 1,
+          "74HC20": 1,
+          "74HC21": 3,
+          "74HC27": 1,
+          "74HC32": 5,
+          "74HC4075": 2
+        }
+      },
+      "cases": [
+        {
+          "name": "fib_iterative",
+          "ticks": 3724,
+          "instructions": 160,
+          "architectural_and_memory_access_match": true
+        },
+        {
+          "name": "fib_recursive_3",
+          "ticks": 2744,
+          "instructions": 107,
+          "architectural_and_memory_access_match": true
+        },
+        {
+          "name": "add_256",
+          "ticks": 4618,
+          "instructions": 257,
+          "architectural_and_memory_access_match": true
+        }
+      ]
+    },
+    {
+      "counter_pc": true,
+      "logic_packages": 117,
+      "logic_plus_program_memory": 120,
+      "parts": {
+        "74HC00": 3,
+        "74HC02": 6,
+        "74HC04": 7,
+        "74HC08": 15,
+        "74HC10": 3,
+        "74HC11": 2,
+        "74HC153": 8,
+        "74HC157": 12,
+        "74HC161": 6,
+        "74HC20": 1,
+        "74HC21": 6,
+        "74HC238": 6,
+        "74HC244": 8,
+        "74HC27": 1,
+        "74HC283": 2,
+        "74HC32": 13,
+        "74HC377": 9,
+        "74HC4075": 8,
+        "74HC574": 1
+      },
+      "groups": {
+        "alu": {
+          "74HC153": 8,
+          "74HC157": 2,
+          "74HC283": 2
+        },
+        "alu_control": {
+          "74HC157": 1
+        },
+        "bus": {
+          "74HC244": 8
+        },
+        "control": {
+          "74HC00": 2,
+          "74HC02": 1,
+          "74HC04": 1,
+          "74HC08": 7,
+          "74HC10": 1,
+          "74HC157": 6,
+          "74HC161": 2,
+          "74HC238": 6,
+          "74HC32": 8,
+          "74HC377": 1,
+          "74HC4075": 5,
+          "74HC574": 1
+        },
+        "datapath": {
+          "74HC161": 4,
+          "74HC377": 8
+        },
+        "flags_stack_checks": {
+          "74HC10": 1,
+          "74HC157": 3,
+          "74HC21": 3,
+          "74HC4075": 1
+        },
+        "memory_decode": {
+          "74HC08": 1,
+          "74HC21": 1
+        },
+        "shared": {
+          "74HC00": 1,
+          "74HC02": 5,
+          "74HC04": 6,
+          "74HC08": 7,
+          "74HC10": 1,
+          "74HC11": 2,
+          "74HC20": 1,
+          "74HC21": 2,
+          "74HC27": 1,
+          "74HC32": 5,
+          "74HC4075": 2
+        }
+      },
+      "cases": [
+        {
+          "name": "fib_iterative",
+          "ticks": 3724,
+          "instructions": 160,
+          "architectural_and_memory_access_match": true
+        },
+        {
+          "name": "fib_recursive_3",
+          "ticks": 2744,
+          "instructions": 107,
+          "architectural_and_memory_access_match": true
+        },
+        {
+          "name": "add_256",
+          "ticks": 4614,
+          "instructions": 257,
+          "architectural_and_memory_access_match": true
+        }
+      ]
+    }
+  ],
+  "cplds": 0,
+  "control_roms": 0,
+  "phase_count": 2,
+  "read_memory_bus_bits": 8,
+  "additional_shared_writeback_bits": 8,
+  "isa_and_stack_checks_preserved": true,
+  "physical_timing_verified": false,
+  "excludes": [
+    "oscillator",
+    "physical reset/boot circuit",
+    "load buffers",
+    "mailbox coprocessor",
+    "power/passives"
+  ],
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/direct_ttl.py": "1b92f1ba89a35e0c3177eb751515b9b137c23ea54335f2b732a07cf397b4101e",
+    "simulators/cyclesim/hybrid/compact_ttl.py": "8e2196624b6069803f9929e06838c085b73c39a50c55b413d89783458e36a658",
+    "simulators/cyclesim/ttl/polarity.py": "0c24cf7addca8658683f80856a52739550b0c7f78aedf03a394ad8d496aa146d",
+    "simulators/cyclesim/ttl/netlist.py": "63323839c32dd8971ae2b24ec34fc65c16816c7ad79ff91397401189a406103f",
+    "simulators/cyclesim/ttl/optimize.py": "be646b862c224ef865a621e3a7a3adaf3a82f967656efd7b73d616e74818a1ac"
+  },
+  "netlist_sha256": "2d8b0de166900c349fb7b7e334fcd9ba7544a7219c70fcf47b5059e7d4f44b94",
+  "validation": {
+    "command": "python -m pytest simulators/cyclesim/tests/test_hybrid_structured_ttl.py simulators/cyclesim/tests/test_direct_ttl.py simulators/cyclesim/tests/test_compact_ttl_parts.py -q",
+    "passed": 1896,
+    "wall_seconds": 109.12,
+    "legacy_ttl_regressions_passed": 590
+  }
+}

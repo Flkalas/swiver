@@ -3,11 +3,12 @@ import pytest
 
 from simulators.cyclesim.hybrid.structured_ttl import StructuredTtlCpu, build
 from simulators.cyclesim.hybrid.compact_ttl import CompactTtlCpu
+from simulators.cyclesim.hybrid.direct_ttl import DirectTtlCpu
 from simulators.cyclesim.hybrid.compare import paired, compare_instruction, run_pair
 from simulators.cyclesim.fixtures.rom_builder import build_fib_recursive_rom
 
 
-@pytest.fixture(params=[StructuredTtlCpu, CompactTtlCpu])
+@pytest.fixture(params=[StructuredTtlCpu, CompactTtlCpu, DirectTtlCpu])
 def cpu_class(request):
     return request.param
 

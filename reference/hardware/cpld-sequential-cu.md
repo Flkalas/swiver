@@ -7,6 +7,8 @@
 
 This specification supersedes the [historical P12 pipe design](cpld-pipe-cu.md). Existing ISA encodings, R0/MBR datapath, flag semantics, MMIO addresses and software return-stack layout remain unchanged.
 
+The [all-74 direct-writeback experiment](../../simulators/cyclesim/hybrid/README.md#직접-쓰기와-2위상-제어-재설계-2026-10-24) separately implements two-phase byte transfers and a shared ALU/register writeback path. Its package counts and transfer clocks are experimental implementation results, not changes to this specification's logical SYS counts or physical acceptance gates.
+
 ---
 
 ## 1. Execution and memory contract
