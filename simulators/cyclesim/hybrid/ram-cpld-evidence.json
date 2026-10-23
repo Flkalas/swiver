@@ -82,9 +82,9 @@
       "macrocells_available": 64,
       "artifact_sha256": {
         "ramcu.pld": "0555d7a641e7105020f298d60b3142f4d540f9e67fb211d7b9d538e07ec311bb",
-        "ramcu.tt2": "1a8fa04072c79372ba98fdab9041dce1825c5b7b101139e8867fd056a2ea8f4e",
-        "ramcu_fit.fit": "31337ddfd6a81e84450996196215281ea3ab0fa73a41e6c5633f9d0731789a21",
-        "ramcu_fit.jed": "b6efde7e417ca0e295d738f7c12dabbc0604502d6b4b956162266edd51f1b72e"
+        "ramcu.tt2": "9ca91e465b3c9bf8423ba19e5c9a19589bde563641351b26741a753105fcadd7",
+        "ramcu_fit.fit": "934f38cc16484754e4f46dad588969de52ca452274b6899a31567cb2078b8c56",
+        "ramcu_fit.jed": "99d59f631f177b3e4377d956a7be787376dcb4816d2cd3d6fb7bd41e2c077380"
       }
     },
     "ramaddrfit": {
@@ -148,9 +148,9 @@
       "macrocells_available": 64,
       "artifact_sha256": {
         "ramaddrfit.pld": "13c62572fb1651de3acc4092932540663e23ad0ab84f66da012f1d6fb5027716",
-        "ramaddrfit.tt2": "cc13d38170716007fe9f6e062907321ed134e0b30a723a212eb92b3f31747d78",
-        "ramaddrfit_fit.fit": "8412afd29f8e81141b087a6c67c7169b111eed59bedecf5a157aa666dfaf01c8",
-        "ramaddrfit_fit.jed": "96c66824be14f05c0a5bc9bbd5f7132c485e739b585ea57f8bc90ab608af0651"
+        "ramaddrfit.tt2": "ac4418ce62b5f09a66df6ffd7c019e73c7e0b4bc4a0a525cc5c0d4c897685fa7",
+        "ramaddrfit_fit.fit": "6e5788b988b91f7ce8a81a91eebd6bf32e9e10ec2c461d3100803b86df4054fa",
+        "ramaddrfit_fit.jed": "eea21895d35c6b0aa1305feed836e118eed0da80c57de2c4df591716849e711b"
       }
     },
     "rampagedec": {
@@ -216,9 +216,9 @@
       "macrocells_available": 32,
       "artifact_sha256": {
         "rampagedec.pld": "de13ad85bf776a8fa6aa0240ef0a8e58aa71427ad516c283c869cc479e6c408b",
-        "rampagedec.tt2": "9b6fc9005047dba53def663279323802fc36725bd22ae4fecc3d357d5bbeabc9",
-        "rampagedec_fit.fit": "0a2311eb3fc617c71a4d1977f8f7171bf9a5f0ad99beab25108828d866a9f24d",
-        "rampagedec_fit.jed": "7d0cc6fda41c8a8ddc0a80612c1675ac598825890746a256c2f88ef99f2b3ebb"
+        "rampagedec.tt2": "52a99ccd1a9c47942dc9784d80793fa74688149be2af1a864fa030b0accedc60",
+        "rampagedec_fit.fit": "77e455c895a629d10f8a1194dbfa847e2c47e9eb6836e9d7fc498095490b2fca",
+        "rampagedec_fit.jed": "82d68cc0d65e895603eedc1fc9c1d009160d71fcfc5a028747e6b3726a873030"
       }
     }
   },
@@ -354,7 +354,7 @@
     "simulators/cyclesim/export/alu8_netlist.py": "c84923021dc7d72d2d32129155ee5688e59d83d8e1444ad465d8f823780804a8",
     "simulators/cyclesim/blocks/alu8.py": "fdae9c16bc3cba2a2ebe4fed8003b61fe1e98181f53b2ddc8e3a89d6bf900f0f",
     "simulators/cyclesim/values.py": "9e59f86e0b5cdc0e1c05088adeb1a5be12bf1b0e09c88d11c2080879e06aacf7",
-    "simulators/cyclesim/tests/test_ram_cpld.py": "7e2a64ee06ae263ec0d0e8ae2b8494314b2b26c5aa2fc4add6997f1af14de05f"
+    "simulators/cyclesim/tests/test_ram_cpld.py": "7a663b77fcb14deec59fd8d7e915bd2df1ce01ea772443479222cae53fd4b36f"
   },
   "tool_sha256": {
     "Shared/cupl.exe": "7b503d85dc76502e0c339d8c3472775d87949409d5d1a0d5b3302f4e5ea3d544",

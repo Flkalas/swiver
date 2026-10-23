@@ -3,11 +3,19 @@ import pytest
 
 from simulators.cyclesim.hybrid.cupl_model import bits, number
 from simulators.cyclesim.hybrid.ram_cpld_cpu import RamCpldCpu
+from simulators.cyclesim.hybrid.ram_no1502 import RamNo1502Cpu, PageDecode74
 from simulators.cyclesim.hybrid.ram_isa import RamReference
 from simulators.cyclesim.hybrid.ram_programs import (
     RP, ERROR, pointer_copy, iterative_fibonacci, recursive_fibonacci, stack_boundary,
 )
 from simulators.cyclesim.hybrid.ram_ttl import RamTtlCpu
+
+
+@pytest.fixture(autouse=True, params=[RamCpldCpu,RamNo1502Cpu],
+                ids=['three_cpld','two_cpld'])
+def cpu_implementation(request,monkeypatch):
+    # Run the same ISA, bus, reset and fault tests on both physical partitions.
+    monkeypatch.setitem(globals(),'RamCpldCpu',request.param)
 
 
 def state(cpu):
@@ -146,8 +154,11 @@ def test_ram_cpld_external_alu_and_cupl_state_are_executed():
 def test_ram_cpld_address_driver_loss_is_detected():
     cpu,_=pair(bytes([0,1]))
     for _ in range(5):cpu.clock()
-    cpu.page.comb=dict(cpu.page.comb)
-    cpu.page.comb['addr8_oe']=compile('0','<disabled address driver>','eval')
+    if isinstance(cpu.page,PageDecode74):
+        cpu.page.forced['addr8_oe']=0
+    else:
+        cpu.page.comb=dict(cpu.page.comb)
+        cpu.page.comb['addr8_oe']=compile('0','<disabled address driver>','eval')
     with pytest.raises(AssertionError,match='address bus ownership'):
         cpu.clock()
 

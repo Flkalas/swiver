@@ -349,6 +349,8 @@ CPLD bitstream **Design fits pending**. 이전 P12 pipe 설계와 동결 ns 값�
 
 같은 새 ISA의 [CPLD 분할 실험](simulators/cyclesim/hybrid/ram-cpld.md)은 외부 ALU 12칩을 유지하고 ATF1504×2 + ATF1502×1을 사용해 메모리 포함 **18 IC**로 줄였습니다. 세 블록의 vendor fit과 연결된 CUPL 식 실행을 확인했으며, 정본 v1.0 CU나 실물 타이밍 합격을 뜻하지 않습니다.
 
+ATF1502를 쓰지 않는 직접 대체안은 ATF1504×2와 페이지 저장·디코더용 74HC 7개를 사용해 **24 IC**입니다. 같은 실험 ISA·6클록 동작을 유지하며, 두 CPLD의 fit과 외부 74 연결 모델 실행을 확인했습니다. 상세 비교는 위 CPLD 실험 문서를 따릅니다.
+
 ### 6.3 실행 모델
 
 1. **FETCH_OPCODE** — shared bus: PC → 현재 맵의 Flash/RAM → IR

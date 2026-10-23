@@ -116,3 +116,52 @@ PLD/TT2/FIT/JED는 `simulators\cyclesim\build\hybrid-partition\ramcu`, `ramaddrf
 [ram-cpld-evidence.json](ram-cpld-evidence.json)에 수량·자원·최종 핀 배치·프로그램 실행 결과와
 소스·도구·산출물 SHA-256을 보존한다. [ram_cpld.py](ram_cpld.py)는 CUPL 생성,
 [ram_cpld_cpu.py](ram_cpld_cpu.py)는 연결 실행, [ram_cpld_measure.py](ram_cpld_measure.py)는 재현·집계를 담당한다.
+
+## 1502를 빼는 직접 대체안 — 24 IC
+
+같은 ISA·메모리 맵·WAIT·reset·6클록 동작을 유지하고 **ATF1502 하나를 74HC 7개로 대체**했다.
+총수는 **18 → 24개**, 6개 증가한다. 위와 동일하게 발진기·외부 신호원 등은 제외한다.
+
+| 기능 | 대체 부품 | 수량 |
+|---|---|---:|
+| P 8비트 저장, load enable, reset, 상위 주소 tri-state 출력 | 74HC173 | 2 |
+| 상위 주소 `$FF` 및 하위 주소 `[7:2]` 모두 1 검사 | 74HC30 | 2 |
+| Boot `$0000–$07FF` 검사 | 74HC138 | 1 |
+| 벡터/mailbox 분리 및 RAM 두 뱅크 선택 | 74HC139 | 1 |
+| Boot/Run·ROM·RAM enable 결합 | 74HC00 | 1 |
+| **1502 대신 추가하는 74** | | **7** |
+
+전체는 **외부 ALU 12 + 위 74 7 + ATF1504 2 + 메모리 3 = 24 IC**다.
+173의 입력 enable·출력 enable은 active LOW이므로 주소 CPLD의 `PAGE_LOAD_N`과
+`PAGE_DRIVE_N`을 반전 출력으로 다시 fit했다. 별도 인버터 칩은 필요 없다.
+두 173의 CP는 SYS에 직접 연결하며 외부 조합식으로 클록을 만들지 않는다.
+이 동작은 [173](https://assets.nexperia.com/documents/data-sheet/74HC_HCT173.pdf),
+[139](https://www.ti.com/lit/ds/symlink/sn74hc139.pdf),
+[138](https://www.ti.com/lit/ds/symlink/sn74hc138.pdf)의 제조사 기능표를 따른다.
+
+| CPLD | MC | 일반 I/O, JTAG 제외 | 전용 입력 | 실제 fit |
+|---|---:|---:|---:|---|
+| CU 1504 (`ramcu74`) | 43/64 | 28/28 | 4/4 | 통과 |
+| 주소 1504 (`ramaddr74`) | 63/64 | 28/28 | 3/4 | 통과 |
+
+페이지 저장을 주소 1504로 단순 복귀시킨 6개 노드 분리 후보는 배치 전 67–68 Logic Cell로
+실패했다. 이 결과로 모든 다른 분할이 불가능하다고 단정하지 않는다. **24개는 실행·fit을
+확인한 직접 대체안이며, 1502 없는 설계 전체의 이론적 최소 수량을 뜻하지 않는다.**
+
+3-CPLD 구성과 2-CPLD 구성에 같은 1,140개 CPU 테스트를 각각 적용하고, 외부 74의
+전체 주소 디코딩·load/hold/reset·연결 고장 검사를 더해 **2,284개가 통과**했다.
+디코더는 Boot/Run 각각 65,536개 주소를 독립적인 메모리 영역 정의와 대조했다.
+반복 Fibonacci(13)·페이지 경계 복사·검사 포함 재귀 Fibonacci(3)의 결과와 접근 trace가
+기존 18개 구성 및 독립 해석기와 일치하며 tick도 각각 1,230 / 384 / 4,104로 같다.
+전기적 glitch·setup/hold·최대 클록은 위 18개 구성과 마찬가지로 아직 검증하지 않았다.
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.ram_no1502_measure
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_ram_cpld.py simulators/cyclesim/tests/test_ram_no1502.py
+```
+
+[ram_no1502.py](ram_no1502.py)는 대체 칩 연결과 실행 모델,
+[ram_no1502_measure.py](ram_no1502_measure.py)는 재현 명령이다.
+[ram-no1502-evidence.json](ram-no1502-evidence.json)에 두 fit의 최종 핀 배치와 소스·산출물 해시를 보존했다.
+실행 시 `simulators\cyclesim\build\ram-no1502\comparison.json`, `netlist.json`을 생성하며,
+PLD/TT2/FIT/JED는 `simulators\cyclesim\build\hybrid-partition\ramcu74`, `ramaddr74`에 저장한다.
