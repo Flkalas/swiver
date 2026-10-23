@@ -1,0 +1,92 @@
+{
+  "scope": "Executed INC/DEC ALU wiring and transfer candidate; no revised CUPL fit or board timing",
+  "cu_fit_verified": false,
+  "cases": [
+    {
+      "name": "fib_iterative",
+      "baseline_ticks": 10292,
+      "candidate_ticks": 8920,
+      "saved_ticks": 1372,
+      "reduction_fraction": 0.1333074232413525,
+      "instructions_including_halt": 160,
+      "mips_at_assumed_2mhz": 0.035650224215246634,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "fib_recursive_3",
+      "baseline_ticks": 7568,
+      "candidate_ticks": 6604,
+      "saved_ticks": 964,
+      "reduction_fraction": 0.1273784355179704,
+      "instructions_including_halt": 107,
+      "mips_at_assumed_2mhz": 0.03210175651120533,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "fib_recursive_8",
+      "baseline_ticks": 114160,
+      "candidate_ticks": 99548,
+      "saved_ticks": 14612,
+      "reduction_fraction": 0.1279957953749124,
+      "instructions_including_halt": 1633,
+      "mips_at_assumed_2mhz": 0.03278820267609595,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "add_256",
+      "baseline_ticks": 14372,
+      "candidate_ticks": 12316,
+      "saved_ticks": 2056,
+      "reduction_fraction": 0.14305594210965766,
+      "instructions_including_halt": 257,
+      "mips_at_assumed_2mhz": 0.04157193894121468,
+      "state_and_all_memory_accesses_match": true
+    }
+  ],
+  "alu_packages": {
+    "74HC153": 8,
+    "74HC283": 2,
+    "74HC157": 2
+  },
+  "control_signals": [
+    "ALU_CIN",
+    "ALU_BCTRL_LOW",
+    "ALU_BCTRL_HIGH"
+  ],
+  "control_table": {
+    "ADD": [
+      0,
+      0,
+      1
+    ],
+    "SUB": [
+      1,
+      1,
+      0
+    ],
+    "INC": [
+      1,
+      0,
+      0
+    ],
+    "DEC": [
+      0,
+      1,
+      1
+    ]
+  },
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/incdec.py": "2bb3b039109a80327d4260bf28dec545eb31ccf482f083b3e18342e440a8a9e2",
+    "simulators/cyclesim/hybrid/cpu.py": "375fe743583af2fb765f6b873186d32d60ba2225ca60b4be995e24efc706165a",
+    "simulators/cyclesim/hybrid/compare.py": "8cf10adad32515f25b32b4beb2b3990027f6f76ec4d61187e47786a0964f4f52",
+    "simulators/cyclesim/ttl/netlist.py": "635b8b317f1b5a0bac527be48779a9e240e8aef25ab6477c39d49c00f9d3e105"
+  },
+  "validation": {
+    "new_variant_tests_passed": 550,
+    "shared_netlist_tests_passed": 4,
+    "clock_timing_verified": false,
+    "cu_fit_verified": false,
+    "existing_regression_tests_passed": 2542,
+    "total_tests_passed": 3096
+  }
+}

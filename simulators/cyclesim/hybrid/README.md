@@ -5,6 +5,60 @@
 후속 [기가트론 비교 연구](gigatron-lessons-2026-10-23.md)는 적용 가능한 제어·부품 선택과
 현재 PC/RP 증감 전송 비용을 원본 회로 및 로컬 실행으로 확인한다.
 
+## INC/DEC ALU 제어 연결 — 첫 구현 단계
+
+`incdec.IncDecCpu`는 기존 12칩 ALU의 **INC/DEC를 실제 부품 연결로 구동하는 실행 후보**다.
+아래 절들의 ADD/SUB 전용 `HybridCpu`와 ROM/CUPL fit 조합은 이전 비교 기준으로 유지한다.
+이번 단계에서는 새 ALU 제어와 증감 전송을 구현했으며, 공통 절차형 FSM이나 새 CUPL
+핀 배치·fit까지 완료한 것은 아니다. 이 후보에 과거 32 IC fit 결과를 적용하지 않는다.
+
+- 칩 구성: **153×8 + 283×2 + 157×2 = 12**, 추가 ALU 패키지 없음.
+- `ALU_CIN`, `ALU_BCTRL_LOW`(bctrl0/1), `ALU_BCTRL_HIGH`(bctrl2/3)를 독립 구동한다.
+- PC/RP의 ±1은 `ALU→RESULT→대상 바이트`로 실행하여 `MBR ← 1`을 없앤다.
+- carry/borrow가 있으면 상위 바이트도 INC/DEC로 처리한다. 16비트 wrap을 유지한다.
+- RP −2의 하위 바이트는 MBR=2와 SUB를 유지하고, 상위 borrow만 DEC로 처리한다.
+- RESULT 캡처와 공유 버스 전송, 4-phase hold 검사, 명령 플래그의 갱신 시점은 유지한다.
+
+| 연산 | CIN | bctrl0/1 | bctrl2/3 |
+|---|---:|---:|---:|
+| ADD | 0 | 0 | 1 |
+| SUB | 1 | 1 | 0 |
+| INC | 1 | 0 | 0 |
+| DEC | 0 | 1 | 1 |
+
+제어선은 기존 SUB/SUB_N 두 개에서 독립 세 개로 늘어난다. 현재 `tblaux` 핀을 그대로
+사용하는 배치는 아니므로 향후 CU 분할에서 한 신호를 추가 배정하거나 다시 인코딩해야 한다.
+제어는 현재 Python 시퀀서가 구동하며, ALU 결과는 74 부품 진리표로 계산한다.
+
+### 실제 실행 비교
+
+WAIT 없는 바이트 버스 모델, 제어 ROM 읽기 제외. 두 후보 각각을 기준 `CpuM3b`와 비교하고,
+모든 명령 완료 상태·메모리 내용·접근 주소/값/순서를 확인했다.
+
+| 프로그램 | 이전 tick | INC/DEC tick | tick 감소 | 가정 2 MHz native MIPS |
+|---|---:|---:|---:|---:|
+| 반복 Fibonacci → 233 | 10,292 | 8,920 | 13.33% | 0.03565 |
+| 재귀 Fibonacci(3) | 7,568 | 6,604 | 12.74% | 0.03210 |
+| 재귀 Fibonacci(8) | 114,160 | 99,548 | 12.80% | 0.03279 |
+| ADD 256회 | 14,372 | 12,316 | 14.31% | 0.04157 |
+
+이는 실행된 후보의 tick 감소다. 클록 향상이나 실측 보드 MIPS를 뜻하지 않는다.
+새 후보 테스트는 모든 opcode×두 플래그 조합, PC wrap, RP 경계·오류,
+carry/borrow·MBR 보존·플래그 보존, Boot/Run/MMIO, 재귀·WAIT 및 ALU 고장 전파를 확인한다.
+새 후보의 550개 테스트와 공용 netlist 4개 테스트가 통과했다.
+기존 하이브리드·CUPL·74 CPU·ALU 회귀 2,542개도 통과하여 이번 확인은 총 3,096개다.
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.incdec
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_hybrid_incdec.py
+```
+
+요약과 소스 해시는 [incdec-evidence.json](incdec-evidence.json)에 보존한다.
+재현 출력 `simulators\cyclesim\build\hybrid\incdec-comparison.json`에는
+12칩의 변경된 기능 핀 연결표도 포함된다. CPLD pad와 전기적 타이밍 검증은 포함하지 않는다.
+
+## 이전 ADD/SUB 전용 후보
+
 ATF1504 **2개**를 기본으로, 보유 ATF1502를 메모리 디코더로 추가하는 실험이다.
 현재 정본의 SYS 스케줄과 배선 사양을 교체하지 않는다. **ISA 결과와 메모리 접근
 순서는 유지하지만, 전송용 마이크로클록이 추가되는 후보**다.

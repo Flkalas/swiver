@@ -10,8 +10,8 @@ from simulators.cyclesim.hybrid.cpu import HybridCpu
 from simulators.cyclesim.hybrid.hardware import manifest
 
 
-def paired(blob, ram=None, *, base=0, map_mode=1, r0=0, flags=0):
-    h, ref = HybridCpu(), CpuM3b()
+def paired(blob, ram=None, *, base=0, map_mode=1, r0=0, flags=0, cpu_class=HybridCpu):
+    h, ref = cpu_class(), CpuM3b()
     for mem in (h.mem, ref.mem.sys):
         mem.map_mode = map_mode
         mem.load_bytes(base, blob, target="ram" if map_mode else "rom")

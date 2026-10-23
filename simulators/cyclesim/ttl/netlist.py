@@ -171,7 +171,6 @@ class Circuit:
                 self.registers[index] = (p, qb, db)
 
     def import_alu(self, a, b, cmp):
-        from simulators.cyclesim.export.alu8_netlist import build_alu8_func_netlist
         wiring = {"pwr_gnd": 0, "pwr_vcc": 1, "net_cin": cmp,
                   "net_y_mux_sel": 0}
         wiring.update({f"net_a{i}": a[i] for i in range(8)})
@@ -182,6 +181,26 @@ class Circuit:
         self.group = previous_group
         wiring.update({f"net_bctrl{i}": cmp if i < 2 else ncmp for i in range(4)})
         wiring.update({f"net_lgc{i}": 0 for i in range(4)})
+        return self._import_alu_wiring(wiring)
+
+    def import_arithmetic_alu(self, a, b, cin, bctrl_low, bctrl_high):
+        """Same twelve packages; independent CU controls for ADD/SUB/INC/DEC.
+
+        bctrl_low drives C0/C1 and bctrl_high C2/C3. No added decoder or
+        inverter is hidden here: the caller supplies all three control nets.
+        """
+        if len(a) != 8 or len(b) != 8:
+            raise ValueError("ALU operand widths must be eight")
+        wiring = {"pwr_gnd": 0, "pwr_vcc": 1, "net_cin": cin,
+                  "net_y_mux_sel": 0}
+        wiring.update({f"net_a{i}": a[i] for i in range(8)})
+        wiring.update({f"net_b{i}": b[i] for i in range(8)})
+        wiring.update({f"net_bctrl{i}": bctrl_low if i < 2 else bctrl_high for i in range(4)})
+        wiring.update({f"net_lgc{i}": 0 for i in range(4)})
+        return self._import_alu_wiring(wiring)
+
+    def _import_alu_wiring(self, wiring):
+        from simulators.cyclesim.export.alu8_netlist import build_alu8_func_netlist
         for inst in build_alu8_func_netlist()["instances"]:
             p = self.package(inst["part"], inst["ref"])
             output_names = (["1Y", "2Y"] if p.part == "74HC153" else
