@@ -347,6 +347,8 @@ CPLD bitstream **Design fits pending**. 이전 P12 pipe 설계와 동결 ns 값�
 
 후속 [RAM 명령 중심의 새 ISA 실험](reference/hardware/ram-isa-experiment.md)은 페이지·하위 주소로 RAM을 직접 읽고, RAM→ALU 및 RAM→주소 레지스터 전송을 지원합니다. 명령을 고정 2바이트로 만들고 CALL/RET·스택 검사를 소프트웨어로 옮겨 **74HC 115 → 60개**, Flash·SRAM 3개 포함 **63 IC**로 줄였습니다. 기존 v1.0 바이너리와 호환되지 않는 별도 실행 후보이며, 아래 정본 ISA와 SYS 수치는 유지합니다.
 
+같은 새 ISA의 [CPLD 분할 실험](simulators/cyclesim/hybrid/ram-cpld.md)은 외부 ALU 12칩을 유지하고 ATF1504×2 + ATF1502×1을 사용해 메모리 포함 **18 IC**로 줄였습니다. 세 블록의 vendor fit과 연결된 CUPL 식 실행을 확인했으며, 정본 v1.0 CU나 실물 타이밍 합격을 뜻하지 않습니다.
+
 ### 6.3 실행 모델
 
 1. **FETCH_OPCODE** — shared bus: PC → 현재 맵의 Flash/RAM → IR

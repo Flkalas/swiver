@@ -184,3 +184,17 @@ netlist에는 60개 논리 칩 및 세 메모리의 기능 핀 연결을 넣었�
 실제 공통 버스로 합쳤다. IC 패키지의 물리 pad 번호나 PCB 배치도는 아니다.
 소스·netlist SHA-256을 [보존한 결과](../../simulators/cyclesim/hybrid/ram-ttl-evidence.json)와
 대조하면 집계의 기준 버전을 확인할 수 있다.
+
+## 6. 같은 ISA를 CPLD에 분할한 후속 실험
+
+보유한 ATF1504 두 개와 ATF1502 한 개를 사용한 [CPLD 구성](../../simulators/cyclesim/hybrid/ram-cpld.md)은
+**ALU 74HC 12개 + CPLD 3개 + 메모리 3개 = 18 IC**다. 위 63개 구성에서 45개 줄었다.
+페이지 레지스터를 ATF1502의 메모리 디코더와 함께 배치해 주소부의 용량을 맞췄다.
+세 CPLD 모두 WinCUPL vendor fitter에서 `Design fits successfully`와 정격 안의 자원 보고를 확인했다.
+이 결과는 현재 새 ISA 후보에만 적용한다.
+
+즉시값은 CU가 공통 데이터 버스로 내보내므로 ALU 앞의 operand MUX도 없앤다.
+상위 주소는 fetch capture에서 주소 CPLD, execute capture에서 페이지 CPLD가 구동하며,
+중간 setup 단계는 양쪽이 모두 해제한다. 이 연결로 프로그램의 결과·메모리 trace·tick이
+74 전용 모델 및 독립 해석기와 일치했다. 여전히 명령당 6tick이며 소프트웨어 CALL/RET를 유지한다.
+핀 사용량, 역할 분담, 재현 명령과 물리 검증 경계는 위 CPLD 문서를 따른다.
