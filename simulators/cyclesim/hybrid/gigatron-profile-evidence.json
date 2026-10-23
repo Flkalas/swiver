@@ -1,0 +1,95 @@
+{
+  "scope": "Profile of unchanged HybridCpu, no WAIT; no counter or INC/DEC replacement implemented",
+  "graph_states": 292,
+  "unique_transfer_or_stop_entries": 43,
+  "unit_constant_load_states": 65,
+  "cases": [
+    {
+      "name": "fib_iterative",
+      "transfers": 2573,
+      "ticks": 10292,
+      "adjust_calls": {
+        "PC": 343
+      },
+      "adjust_transfers": {
+        "PC": 1029
+      },
+      "unit_constant_loads": {
+        "PC": 343
+      },
+      "unit_constant_load_ticks": 1372,
+      "unit_constant_load_tick_fraction": 0.1333074232413525,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "fib_recursive_3",
+      "transfers": 1892,
+      "ticks": 7568,
+      "adjust_calls": {
+        "PC": 221,
+        "RP": 25
+      },
+      "adjust_transfers": {
+        "PC": 663,
+        "RP": 75
+      },
+      "unit_constant_loads": {
+        "PC": 221,
+        "RP": 20
+      },
+      "unit_constant_load_ticks": 964,
+      "unit_constant_load_tick_fraction": 0.1273784355179704,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "fib_recursive_8",
+      "transfers": 28540,
+      "ticks": 114160,
+      "adjust_calls": {
+        "PC": 3385,
+        "RP": 335
+      },
+      "adjust_transfers": {
+        "PC": 10155,
+        "RP": 1005
+      },
+      "unit_constant_loads": {
+        "PC": 3385,
+        "RP": 268
+      },
+      "unit_constant_load_ticks": 14612,
+      "unit_constant_load_tick_fraction": 0.1279957953749124,
+      "state_and_all_memory_accesses_match": true
+    },
+    {
+      "name": "add_256",
+      "transfers": 3593,
+      "ticks": 14372,
+      "adjust_calls": {
+        "PC": 512
+      },
+      "adjust_transfers": {
+        "PC": 1542
+      },
+      "unit_constant_loads": {
+        "PC": 514
+      },
+      "unit_constant_load_ticks": 2056,
+      "unit_constant_load_tick_fraction": 0.14305594210965766,
+      "state_and_all_memory_accesses_match": true
+    }
+  ],
+  "interpretation": "Removing unit-constant loads requires new ALU controls and CU fit; measured fraction is removable-work opportunity, not achieved speedup or MC reduction",
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/gigatron_probe.py": "cf5154bf9e0b714d45a793b6e6c40cb92fdd7ac48263a2660aa1b2a89afbb15a",
+    "simulators/cyclesim/hybrid/cpu.py": "375fe743583af2fb765f6b873186d32d60ba2225ca60b4be995e24efc706165a",
+    "simulators/cyclesim/hybrid/cu_fsm.py": "a0b21d45c018201946bcc5092615c702f755fe672f4d41884cca8e6673c16e02",
+    "simulators/cyclesim/hybrid/compare.py": "dcf95ef55d05122ab680520ed4dcd8ee4bdaa82595f985f6c9fd9f2c46d91d0d",
+    "simulators/cyclesim/fixtures/rom_builder.py": "2f946e72f2f3601fb60430c4393b44e37198099d55f2dd2acb720a9fd987dc54"
+  },
+  "validation": {
+    "existing_physical_alu_inc_dec_pytest_cases_passed": 2,
+    "operand_pairs_per_operation": 65536,
+    "modified_cu_fitted": false
+  }
+}
