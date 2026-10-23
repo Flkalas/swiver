@@ -1,6 +1,6 @@
 # 디바이스마트 구매 (2026-08-13 · mixed cart)
 
-Swiver **ATF1504 여분 ×1**. thumb-handle과 같은 카트에 포함됐으나 본 칩은 Swiver용.  
+Swiver **ATF1504 ×1**. thumb-handle과 같은 카트에 포함됐으나 본 칩은 Swiver용.
 **보유:** [parts-on-hand.md](parts-on-hand.md) · **현행 BOM:** [BOM.md](../reference/project/BOM.md)  
 이전 DS: [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md)  
 thumb-handle 쪽 기록: `thumb-handle/docs/hardware/inventory-past-purchases.md` §3.0
@@ -19,7 +19,7 @@ thumb-handle 쪽 기록: `thumb-handle/docs/hardware/inventory-past-purchases.md
 
 | # | 품목 | 수량 | 금액(VAT별) | BOM / 용도 |
 |---|------|-----:|------------:|------------|
-| 1 | **ATF1504AS-10JU44** | **1** | 7,340원 | dual CPLD **여분** (BOM Qty 2는 2·4차로 충족) |
+| 1 | **ATF1504AS-10JU44** | **1** | 7,340원 | dual CPLD용; 취소 정정 후 전체 보유 2개, 여분 없음 |
 
 동일 주문의 ESP32-S3 · GY-85 · TYPE-C · 5.1 kΩ · STM32F042 등은 **thumb-handle** — 여기 수량에 넣지 않음.
 
@@ -29,7 +29,10 @@ thumb-handle 쪽 기록: `thumb-handle/docs/hardware/inventory-past-purchases.md
 
 | MPN | 이전 | 본 문서 | 누적 | 비고 |
 |-----|------|---------|------|------|
-| ATF1504AS-10JU44 | 2 (2차 A + 4차 D) | +1 | **3** | BOM ×2 · **여유 1** |
+| ATF1504AS-10JU44 | 과거 주문상 2 | +1 | **2** | 전체 주문 3개 중 품절 취소 1개 차감 (2026-10-23 사용자 확인) |
+
+ATF1502×1을 대체 구매했다. 취소된 ATF1504의 원주문 번호는 특정하지 않는다.
+과거 변경 이력의 '여분' 표현은 이번 보유 수량 정정으로 대체한다.
 
 ---
 

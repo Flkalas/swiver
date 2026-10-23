@@ -11,7 +11,11 @@
 
 ## v1.0 breadboard (목표 구성)
 
-CPLD **2×** `ATF1504AS-10JU44` + **2×** PLCC→DIP (#13); Flash PDIP 직결; SRAM SOP28×2; **2.000 MHz** `CLK_SYS`. **Dual CPLD / pipe CU.**
+CPLD **2×** `ATF1504AS-10JU44` + **2×** PLCC→DIP (#13); Flash PDIP 직결; SRAM SOP28×2; **2.000 MHz** `CLK_SYS`. **Dual CPLD / sequential CU.**
+
+**2026-10-23 사용자 확인:** ATF1504 1개는 재고 부족으로 취소되어 ATF1502를 대체
+구매했다. 이번 설계는 보유 ATF1504 **2개만** 사용하며 ATF1502는 별도 보유품이다.
+아래 과거 발주 이력은 주문 기록이며, 취소 원주문 번호·환불액은 미확정이다.
 
 ---
 
@@ -28,7 +32,7 @@ CPLD **2×** `ATF1504AS-10JU44` + **2×** PLCC→DIP (#13); Flash PDIP 직결; S
 | **4차 D·E·F·G** | 2026-07-06·08·13 | 디바이스마트 | ATF1504×1, SIP, 소켓, MB-102×5, OSC 3.6864M, **74HC138×1** — [purchase-2026-07-devicesmart.md](purchase-2026-07-devicesmart.md) |
 | **5차 H** | 2026-08-13 | 디바이스마트 | ATF1504×1 (thumb-handle mixed cart) — [purchase-2026-08-devicesmart.md](purchase-2026-08-devicesmart.md) |
 
-누적: **ATF1504 ×3** · **PLCC ×2** · **74HC138 ×2** — 코어 BOM 수량 충족 (ATF 여유 1).
+취소 반영 보유: **ATF1504 ×2 + ATF1502 ×1** · **PLCC ×2** · **74HC138 ×2** — ATF1504 여유 없음.
 
 ---
 
@@ -48,7 +52,8 @@ Flash (#16)는 **PDIP-32** — 빵판에 **직결** (SIC-DIP-32 보유).
 
 | BOM # | MPN | Package | Qty | 역할 / 비고 |
 |-------|-----|---------|-----|-------------|
-| 12 | ATF1504AS-10JU44 | PLCC-44 | **3** | 2차 A + DS 4차 D + DS 5차 H `2026081318371118368` (여유 1) |
+| 12 | ATF1504AS-10JU44 | PLCC-44 | **2** | 기존 주문 합계 3개에서 품절 취소 1개 차감; 사용자 확인 |
+| — | ATF1502AS-10JU44 | PLCC-44 | **1** | 대체 구매 `2026071704313217557`, 배송완료; 이번 CPU에는 미사용 |
 | 13 | PLCC-44→DIP 어댑터 | — | **2** | Sinstar + Upmall `1121526644275950` |
 | 16 | SST39SF010A-70-4C-PHE | PDIP-32 | **2** | 부트·program ROM (1차; BOM 1 · 여유 1) |
 | 17 | IS62C256AL-45ULI-TR | SOP | **2** | 64 KB RAM (1차 1 + 2차 B 1) |
