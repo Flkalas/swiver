@@ -1,0 +1,30 @@
+{
+  "dpguard": {
+    "source_sha256": "16e8adceca787c2bd057d437fb889891c045c6f1688980b4011fe31332d13f01",
+    "compile_exit": 0,
+    "design_fits": true,
+    "fit_exit": 0,
+    "macrocells": 61,
+    "io_including_jtag": 29,
+    "dedicated_inputs": 3,
+    "fit_output": "Atmel ATF1504 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n Design fits successfully\n \n",
+    "device": "ATF1504AS",
+    "package": "PLCC44",
+    "jtag": "ON",
+    "requested_tpd_ns": 10,
+    "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+  },
+  "cuguard": {
+    "source_sha256": "eeb44cc082c87c7e53087b89366cd5050bf7d705b5ebd848ff4c08f7b2945d41",
+    "compile_exit": 0,
+    "design_fits": false,
+    "fit_exit": 402,
+    "preplacement_logic_cells": 239,
+    "fit_output": "Atmel ATF1504 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n ## Warning : Design is large \n---------------------------------------------------------\n Fitter_Pass 2, Preassign = KEEP, LOGIC_DOUBLING : ON \n ... \n ## Warning : Even with doubling, design is still large \n Design does not fit \n \n",
+    "device": "ATF1504AS",
+    "package": "PLCC44",
+    "jtag": "ON",
+    "requested_tpd_ns": 10,
+    "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+  }
+}

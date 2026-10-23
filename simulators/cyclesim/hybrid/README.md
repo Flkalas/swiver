@@ -102,6 +102,32 @@ WinCUPL compiler와 FIT1504/FIT1502에 **PLCC44, JTAG ON, tPD 요청 10ns**를 �
 시뮬레이션과 post-fit 검증은 수행하지 않았다. reset-vector 부팅도 기존 후보처럼
 미구현이다. 이 실패는 직접 전개 방식에 대한 결과이며, ISA 자체의 수용 불가능 증명이 아니다.
 
+### 스택 검사 분리 실험
+
+`python -m simulators.cyclesim.hybrid.partition_probe`는 원본 후보를 유지하면서
+스택 검사를 DP에 통합한 별도 후보를 생성·피팅한다. RP 하위 바이트가 이미 DP에
+있으므로 CU의 odd/above/equal/zero 기억 비트를 없애고, DP가 RP_LO와 DBUS의
+상위 바이트를 직접 비교한다. CU는 검사 enable과 CALL/RET 구분을 보내고,
+DP는 sticky fault를 CU 전용 입력 44번으로 돌려준다. CU 출력 핀을 확보하기 위해
+SUB 반전 출력도 DP로 옮긴다. 새로운 IC를 추가하는 실험은 아니다.
+
+| 블록 | 원본 | 검사 분리 후 | 결과 |
+|---|---:|---:|---|
+| DP | 57/64 MC | **61/64 MC** | 실제 Design fits |
+| DP 일반 I/O (JTAG 제외) | 20/28 | **25/28** | 전용 입력 3/4도 사용 |
+| CU 배치 전 논리 셀 | 251 | **239** | 여전히 Design does not fit |
+| CU 핀 예산 | 일반 27, 전용 3 | 일반 **28**, 전용 **4** | 실패로 실제 CU 배치 미확정 |
+
+실험 결과는 [partition-fit-evidence.json](partition-fit-evidence.json)에 기록한다.
+생성된 검사 논리식은 모든 65,536개 RP × CALL/RET에 대해 독립적인 범위 검사와
+비교한다. 핀 단위 통합·타이밍 검증은 별도다.
+
+이 분리만으로 CU가 수용되지는 않는다. 직접 전개 FSM의 292개 상태는 서로 다른
+전송 43종류를 반복한다. 특히 PC 증감 시퀀스가 호출 위치별로 복제되어 있다.
+큰 축소 대상은 **다음 상태 선택과 전송 제어표**다. 공통 마이크로시퀀스와 복귀 상태로
+재구성하거나 해당 표를 제어 ROM으로 옮기는 후보가 이에 해당한다. ROM 후보는
+주소·데이터·제어 핀과 추가 래치까지 설계·피팅하지 않았으므로 칩 수나 fit을 확정하지 않는다.
+
 ## 실행 검증과 속도
 
 289개 테스트: 모든 opcode 바이트, CALL/RET 경계·carry·잘못된 RP, PC wrap,
