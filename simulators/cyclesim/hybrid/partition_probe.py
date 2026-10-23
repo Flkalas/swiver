@@ -47,7 +47,7 @@ def cu_without_guard_source():
                                    break_on_hyphens=False) for s in result) + "\n"
 
 
-def fit(name, source, root, installed):
+def fit(name, source, root, installed, device="1504", strategies=()):
     out = root / "simulators/cyclesim/build/hybrid-partition" / name
     out.mkdir(parents=True, exist_ok=True)
     for filename in (name + ".tt2", name + "_fit.fit", name + "_fit.jed", "summary.json"):
@@ -62,9 +62,9 @@ def fit(name, source, root, installed):
     summary = dict(source_sha256=hashlib.sha256(source.encode("ascii")).hexdigest(),
                    compile_exit=compiled.returncode, design_fits=False)
     if compiled.returncode == 0 and (out / (name + ".tt2")).exists():
-        fitted = subprocess.run([str(installed / "Fitters/fit1504.exe"), str(out / (name + ".tt2")),
+        fitted = subprocess.run([str(installed / f"Fitters/fit{device}.exe"), str(out / (name + ".tt2")),
             "-o", str(out / (name + "_fit")), "-device", "PLCC44", "-strategy", "JTAG", "ON",
-            "-strategy", "tPD", "10"], cwd=installed / "Fitters", capture_output=True, timeout=180)
+            "-strategy", "tPD", "10"] + [item for key, value in strategies for item in ("-strategy", key, value)], cwd=installed / "Fitters", capture_output=True, timeout=180)
         (out / "fit.log").write_bytes(fitted.stdout + fitted.stderr)
         report = (out / (name + "_fit.fit")).read_text(errors="replace")
         summary.update(fit_exit=fitted.returncode,
@@ -72,13 +72,14 @@ def fit(name, source, root, installed):
         abort = re.search(r"# Aborting : Design is large, it contains (\d+) Logic Cell", report)
         if abort: summary["preplacement_logic_cells"] = int(abort[1])
         if summary["design_fits"]:
-            for key, pattern in (("macrocells", r"Total Macro cells used\s+(\d+)/64"),
+            for key, pattern in (("macrocells", r"Total Macro cells used\s+(\d+)/\d+"),
                                  ("io_including_jtag", r"Total I/O pins used\s+(\d+)/32"),
                                  ("dedicated_inputs", r"Total dedicated input used:\s+(\d+)/4")):
                 summary[key] = int(re.search(pattern, report)[1])
+        summary["resource_report_consistent"] = bool(summary["design_fits"] and summary["macrocells"] <= (64 if device == "1504" else 32))
         summary["fit_output"] = (fitted.stdout + fitted.stderr).decode(errors="replace").replace("\r", "")
     else: summary["compile_output"] = compiled.stdout.decode(errors="replace")
-    summary.update(device="ATF1504AS", package="PLCC44", jtag="ON", requested_tpd_ns=10,
+    summary.update(strategies=list(strategies), device=f"ATF{device}AS", package="PLCC44", jtag="ON", requested_tpd_ns=10,
                    validation_boundary="Partition fit experiment only; no pin-level CPU simulation or timing acceptance")
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(name, json.dumps(summary), flush=True)
