@@ -57,3 +57,11 @@ trace 관측 신호는 진단 목적도 포함한다. 기능에 필요한 오류
 보고서 v2는 이를 `model_group_cuts`로 명명하고 `is_hybrid_bom=false`,
 `hybrid_bom_count=null`을 기록한다. 정확한 CPLD 통합 수량은 데이터패스 분할,
 핀 연결 및 합성/fit을 마친 뒤 산출해야 한다.
+
+## 후속 hi/lo 실행 후보
+
+[공통 8비트 버스 모델](../../simulators/cyclesim/hybrid/README.md)을 추가했다.
+이번 후보의 명시적 부품 집계는 ATF1504×2 기본안 34개, ATF1502 디코더 추가안 25개다.
+발진기·어댑터는 별도다. DP와 1502 디코더의 생성 CUPL은 PLCC44/JTAG ON으로
+Design fits를 확인했지만 전체 CU는 아직 Python 시퀀서이므로 전체 CPU fit 증거가 아니다.
+이전 문단의 '구현 없음'은 감사 당시 정본 통합 회로에 대한 설명이며 이 실험 후보와 구분한다.

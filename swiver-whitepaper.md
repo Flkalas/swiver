@@ -175,6 +175,9 @@ v1.0 sequential은 **통합 64 KiB 주소 공간과 공유 명령·데이터 버
 DP의 현재 정의는 R0뿐이며 전체 데이터패스의 CPLD 통합을 뜻하지 않습니다.
 구현 공백과 부품 집계 범위는 [통합 구현 감사](reference/hardware/cpld-integration-audit.md)를 참고합니다.
 
+공통 8비트 hi/lo 전송과 ALU 재사용을 실행하는 [하이브리드 실험 모델](simulators/cyclesim/hybrid/README.md)은
+별도 후보입니다. 명령 결과는 비교하지만 추가 전송 클록을 사용하므로 아래 정본 SYS 비용을 대체하지 않습니다.
+
 ### 3.3 검증 (학습자 경로)
 
 

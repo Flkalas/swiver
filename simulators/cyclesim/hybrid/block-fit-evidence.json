@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-23",
+  "scope": "DP and decoder only; full CU not fitted",
+  "blocks": {
+    "bytedp": {
+      "compile_exit": 0,
+      "fit_exit": 0,
+      "design_fits": true,
+      "source_sha256": "a5a33e5ca46918cdc075ccbd4c9997f68215479d84670f04b6ebfaa6f8964dda",
+      "tool_sha256": "8e92e38ed42003d47a3a3a55eddbe1b5ad947225ce14c6ea55ca8afed9cafdba",
+      "package": "PLCC44",
+      "jtag": "ON",
+      "requested_tpd_ns": 10,
+      "fit_output": "Atmel ATF1504 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n Design fits successfully",
+      "scope": "DP register bank"
+    },
+    "bytedec": {
+      "compile_exit": 0,
+      "fit_exit": 0,
+      "design_fits": true,
+      "source_sha256": "0aa2a5e8ab4fc215a72195b3ffe319d6a3fbb2867d120780ae608e19bd5b3ed6",
+      "tool_sha256": "57c898da61e6b03dacb2fd22878543b6d510d573981526b5fd0c850fa45f06fe",
+      "package": "PLCC44",
+      "jtag": "ON",
+      "requested_tpd_ns": 10,
+      "fit_output": "Atmel ATF1502 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n Design fits successfully",
+      "scope": "memory decoder"
+    }
+  }
+}

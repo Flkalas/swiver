@@ -1,0 +1,108 @@
+# 공통 8비트 hi/lo 버스 하이브리드 비교 모델
+
+ATF1504 **2개**를 기본으로, 보유 ATF1502를 메모리 디코더로 추가하는 실험이다.
+현재 정본의 SYS 스케줄과 배선 사양을 교체하지 않는다. **ISA 결과와 메모리 접근
+순서는 유지하지만, 전송용 마이크로클록이 추가되는 후보**다.
+
+## 실행과 재현
+
+저장소 루트에서:
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.fit_blocks
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.compare
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_hybrid_cpu.py
+```
+
+첫 명령은 설치된 `cpld\tools\wincupl-ii`를 사용한다. 아카이브 HDL을 복원하지 않고
+DP·디코더 CUPL을 현재 모델에서 생성한다. 출력은 gitignored
+`simulators\cyclesim\build\hybrid-fit`에 PLD/TT2/JED/fit 로그와 `summary.json`,
+`simulators\cyclesim\build\hybrid`에 `comparison.json`으로 저장한다.
+소스 해시가 다르면 예전 fit 결과를 비교 보고서에 합치지 않는다.
+
+## 실제로 바꾼 데이터 경로
+
+- DP 저장 상태: R0 8비트 + PC 16비트 + 임시 RP 16비트 = **40비트**.
+- DP는 선택한 바이트를 ALU A와 공통 DBUS로 출력한다. 16비트 주소 출력은 없다.
+- PC/RP 증감은 **기존 12칩 ALU**를 바이트별로 재사용한다. 별도 16비트 가산기나
+  Python의 PC/RP 정수 덧셈으로 실행하지 않는다.
+- 주소 low/high는 DBUS로 전송해 외부 574 두 개에 저장한다. 주소를 유지하면서
+  같은 DBUS로 메모리 데이터를 읽고 쓴다.
+- TMP low/high 두 래치는 분기 대상과 RET 복귀 주소를 재사용한다. CALL target을
+  보존하는 동안 반환 PC는 DP에 남아 있으며, RP는 별도 DP 상태에 저장한다.
+- MBR 574 하나는 ALU B 입력이다. 내부 증감이 MBR을 덮어쓰므로 operand fetch
+  전에 PC 증가를 끝내고, 주소 래치가 그동안 원래 fetch 주소를 유지한다.
+- **RESULT 574 하나**가 ALU 결과를 잡은 뒤 DBUS를 구동한다. 직접 ALU→R0 쓰기는
+  capture 직후 ALU A가 바뀌어 hold 중 소스가 달라지므로 사용하지 않는다.
+  이 래치가 버스 OE도 맡아 ALU용 245를 별도로 세지 않는다.
+
+574는 enable/reset이 있다고 가정하지 않는다. 각 적재는 CU의 등록된 클록 펄스로
+setup → capture → hold → release **4 tick**을 소비한다. 입력 유지 MUX를 숨기지
+않으며, 조합 논리로 클록을 단순 AND하지 않는다. 아날로그 setup/hold·skew와
+전원 투입 reset은 여전히 실물 검증 대상이다.
+
+## 생성된 부품 수
+
+| 기능 | ATF1504×2 | ATF1504×2 + ATF1502×1 |
+|---|---:|---:|
+| ALU: 153×8 + 283×2 + 157×2 | 12 | 12 |
+| 574: 주소×2, TMP×2, MBR, RESULT | 6 | 6 |
+| 클록·리셋 정형 74HC14 | 1 | 1 |
+| CU/DP ATF1504 | 2 | 2 |
+| 메모리 선택 | 10개 74HC | 1개 ATF1502 |
+| SRAM×2 + Flash×1 | 3 | 3 |
+| **IC 합계** | **34** | **25** |
+| 별도 발진기 모듈 포함 | **35** | **26** |
+
+수량은 `hardware.manifest()`의 실제 후보 목록에서 계산한다. 두 칩 기본안의
+디코더는 **04×3 + 08×6 + 32×1**로 생성·실행한 gate-only 회로다. 기존 138 BOM을
+그대로 더한 값이나 최소 디코더 수량이 아니다. 1502안은 같은 디코드식을 통합한다.
+어댑터·전원·수동부품·메일박스 코프로세서는 위 IC 합계에서 제외한다.
+
+기록된 재고 기준 1502안의 IC 수량은 모두 보유 범위다. 574는 7개 중 6개를 사용한다.
+PLCC44 어댑터는 2개뿐이므로 **1502 장착용 1개가 추가로 필요**하다.
+34개 기본안은 HC08 6개가 필요해 보유 2개보다 4개 많다.
+
+## 핀과 fit 근거
+
+| 블록 | 일반 I/O 사용 / JTAG 유지 시 예산 | 전용 입력 | 확인 |
+|---|---:|---|---|
+| CU 1504 | **27 / 28** | CLK, RESET, WAIT | 포트 예산만 확인; 전체 CU HDL 미구현 |
+| DP 1504 | **21 / 28** | CLK, RESET | 생성한 40비트 bank + ALU A/DBUS mux가 **Design fits successfully** |
+| 디코더 1502 | **23 / 28** | 없음 | 생성한 메모리 디코드가 **Design fits successfully** |
+
+DP의 21핀 = DBUS 8 + ALU A 8 + 선택 3 + WE 1 + OE 1.
+CU의 27핀 = DBUS 8 + DP 제어 5 + 래치 클록 6 + TMP OE 2 + SUB/SUB_N 2 +
+RESULT OE 1 + MEM_RD/MEM_WR 2 + ALU carry 1.
+디코더의 23핀 = 주소 A2..A15 14 + MAP 1 + RD/WR 2 + CE 4 + OE/WE 2.
+
+WinCUPL compiler와 FIT1504/FIT1502에 **PLCC44, JTAG ON, tPD 요청 10ns**를 지정했다.
+이는 칩 내부 블록 fit 근거이며 전체 CPU 2MHz 동작 합격이나 보드 타이밍 근거가 아니다.
+관측 로그와 소스 해시는 [block-fit-evidence.json](block-fit-evidence.json)에 보관했다.
+제품의 MC 정격과 JTAG 핀 공유는
+[1504 데이터시트](https://ww1.microchip.com/downloads/en/DeviceDoc/ATF1504AS%28L%29-5V-64-Macrocell-CPLD-Data-Sheet-20006580A.pdf),
+[1502 데이터시트](https://ww1.microchip.com/downloads/aemDocuments/documents/MPD/ProductDocuments/DataSheets/ATF1502AS-ATF1502ASL-5V-32-Macrocell-CPLD-Data-Sheet-20006619A.pdf)를 따른다.
+
+**전체 CU는 Python 전송 시퀀서다.** IR·플래그·carry·스택 검사 사실·전송 phase·
+마이크로주소·등록 출력까지 포함한 사전 예산은 **58~70 MC**이며 64를 넘을 수 있다.
+마이크로주소 6비트는 아직 컴파일한 상태 수가 아니라 배정 목표다. 따라서 25개는
+**CU까지 한 칩에 수용할 때의 후보 부품 수**다. 전체 하이브리드 fit 완료로 표시하지 않는다.
+
+## 실행 검증과 속도
+
+289개 테스트: 모든 opcode 바이트, CALL/RET 경계·carry·잘못된 RP, PC wrap,
+Boot/Run·MMIO·RAM 실행, WAIT 삽입, ALU 고장 전파, 주소 래치 유지,
+모든 메모리 디코드 주소 조합을 확인했다. 기존 `CpuM3b`와 명령 완료 상태와
+**메모리 읽기/쓰기의 주소·값·순서 전체**를 비교한다. SYS별 trace 일치를 주장하지 않는다.
+
+| 프로그램 | 후보 tick | 기존 SYS | 가정 2MHz native MIPS |
+|---|---:|---:|---:|
+| 반복 Fibonacci → 233 | 10,292 | 504 | 0.0309 |
+| 재귀 Fibonacci(3) | 7,568 | 379 | 0.0280 |
+| 재귀 Fibonacci(8) | 114,160 | 5,689 | 0.0286 |
+| ADD 256회 | 14,372 | 770 | 0.0356 |
+
+분자는 HALT를 제외한 명령 수, 분모는 HALT까지 모든 후보 tick이다. 2MHz는 가정이다.
+이 첫 구현은 배선·상태 수 절감을 우선해 매 전송에 네 phase를 사용하는 느린 후보다.
+이 수치를 기존 0.6 MIPS와 혼용하지 않는다. 초기 PC·레지스터 값은 테스트 fixture이고,
+reset-vector를 실제 버스로 읽는 초기화 시퀀스는 이 후보에서 아직 구현하지 않았다.

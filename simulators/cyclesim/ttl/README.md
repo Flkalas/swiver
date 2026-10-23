@@ -5,6 +5,9 @@
 [순차 CU 계약](../../../reference/hardware/cpld-sequential-cu.md)과 독립적인
 `CpuM3b` 기능 모델이다. 기존 ALU 뷰어는 ALU 전용으로 유지한다.
 
+공통 8비트 hi/lo 버스로 CPLD를 연결하는 후보와 칩 수는
+[hybrid 모델](../hybrid/README.md)에서 별도로 구현·검증한다.
+
 ## 실행
 
 저장소 루트의 Windows PowerShell에서 실행한다.
