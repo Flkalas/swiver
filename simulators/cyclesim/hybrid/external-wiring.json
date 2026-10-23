@@ -1,0 +1,1741 @@
+{
+  "schema": "swiver-external-register-fit-v1",
+  "total_ic": 32,
+  "part_totals": {
+    "74HC153": 8,
+    "74HC283": 2,
+    "74HC157": 2,
+    "74HC574": 11,
+    "74HC14": 1,
+    "IS62C256": 2,
+    "SST39SF010A": 3,
+    "ATF1504AS-10JU44": 2,
+    "ATF1502AS-10JU44": 1
+  },
+  "packages": [
+    {
+      "ref": "U_ALU_153_0",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[0]",
+        "B": "MBR[0]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic0",
+        "2Y": "net_b_add0"
+      }
+    },
+    {
+      "ref": "U_ALU_153_1",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[1]",
+        "B": "MBR[1]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic1",
+        "2Y": "net_b_add1"
+      }
+    },
+    {
+      "ref": "U_ALU_153_2",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[2]",
+        "B": "MBR[2]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic2",
+        "2Y": "net_b_add2"
+      }
+    },
+    {
+      "ref": "U_ALU_153_3",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[3]",
+        "B": "MBR[3]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic3",
+        "2Y": "net_b_add3"
+      }
+    },
+    {
+      "ref": "U_ALU_153_4",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[4]",
+        "B": "MBR[4]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic4",
+        "2Y": "net_b_add4"
+      }
+    },
+    {
+      "ref": "U_ALU_153_5",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[5]",
+        "B": "MBR[5]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic5",
+        "2Y": "net_b_add5"
+      }
+    },
+    {
+      "ref": "U_ALU_153_6",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[6]",
+        "B": "MBR[6]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic6",
+        "2Y": "net_b_add6"
+      }
+    },
+    {
+      "ref": "U_ALU_153_7",
+      "part": "74HC153",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "A": "DBUS[7]",
+        "B": "MBR[7]",
+        "1G": "GND",
+        "2G": "GND",
+        "1C0": "GND",
+        "1C1": "GND",
+        "1C2": "GND",
+        "1C3": "GND",
+        "2C0": "SUB",
+        "2C1": "SUB",
+        "2C2": "SUB_N",
+        "2C3": "SUB_N",
+        "1Y": "net_y_logic7",
+        "2Y": "net_b_add7"
+      }
+    },
+    {
+      "ref": "U_ALU_283_LO",
+      "part": "74HC283",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "CIN": "SUB",
+        "COUT": "net_c_lo",
+        "A0": "DBUS[0]",
+        "B0": "net_b_add0",
+        "S0": "net_sum0",
+        "A1": "DBUS[1]",
+        "B1": "net_b_add1",
+        "S1": "net_sum1",
+        "A2": "DBUS[2]",
+        "B2": "net_b_add2",
+        "S2": "net_sum2",
+        "A3": "DBUS[3]",
+        "B3": "net_b_add3",
+        "S3": "net_sum3"
+      }
+    },
+    {
+      "ref": "U_ALU_283_HI",
+      "part": "74HC283",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "CIN": "net_c_lo",
+        "COUT": "ALU_C",
+        "A0": "DBUS[4]",
+        "B0": "net_b_add4",
+        "S0": "net_sum4",
+        "A1": "DBUS[5]",
+        "B1": "net_b_add5",
+        "S1": "net_sum5",
+        "A2": "DBUS[6]",
+        "B2": "net_b_add6",
+        "S2": "net_sum6",
+        "A3": "DBUS[7]",
+        "B3": "net_b_add7",
+        "S3": "net_sum7"
+      }
+    },
+    {
+      "ref": "U_ALU_157_YBP_0",
+      "part": "74HC157",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "S": "GND",
+        "G": "GND",
+        "1A": "net_sum0",
+        "1B": "net_y_logic0",
+        "1Y": "ALU_Y[0]",
+        "2A": "net_sum1",
+        "2B": "net_y_logic1",
+        "2Y": "ALU_Y[1]",
+        "3A": "net_sum2",
+        "3B": "net_y_logic2",
+        "3Y": "ALU_Y[2]",
+        "4A": "net_sum3",
+        "4B": "net_y_logic3",
+        "4Y": "ALU_Y[3]"
+      }
+    },
+    {
+      "ref": "U_ALU_157_YBP_1",
+      "part": "74HC157",
+      "role": "ALU",
+      "pins": {
+        "VCC": "VCC",
+        "GND": "GND",
+        "S": "GND",
+        "G": "GND",
+        "1A": "net_sum4",
+        "1B": "net_y_logic4",
+        "1Y": "ALU_Y[4]",
+        "2A": "net_sum5",
+        "2B": "net_y_logic5",
+        "2Y": "ALU_Y[5]",
+        "3A": "net_sum6",
+        "3B": "net_y_logic6",
+        "3Y": "ALU_Y[6]",
+        "4A": "net_sum7",
+        "4B": "net_y_logic7",
+        "4Y": "ALU_Y[7]"
+      }
+    },
+    {
+      "ref": "ADDR_LO",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "ADDRESS[0]",
+        "Q1": "ADDRESS[1]",
+        "Q2": "ADDRESS[2]",
+        "Q3": "ADDRESS[3]",
+        "Q4": "ADDRESS[4]",
+        "Q5": "ADDRESS[5]",
+        "Q6": "ADDRESS[6]",
+        "Q7": "ADDRESS[7]",
+        "CLK": "LCLK_ADDR_LO",
+        "OE_N": "GND"
+      }
+    },
+    {
+      "ref": "ADDR_HI",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "ADDRESS[8]",
+        "Q1": "ADDRESS[9]",
+        "Q2": "ADDRESS[10]",
+        "Q3": "ADDRESS[11]",
+        "Q4": "ADDRESS[12]",
+        "Q5": "ADDRESS[13]",
+        "Q6": "ADDRESS[14]",
+        "Q7": "ADDRESS[15]",
+        "CLK": "LCLK_ADDR_HI",
+        "OE_N": "GND"
+      }
+    },
+    {
+      "ref": "MBR",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "MBR[0]",
+        "Q1": "MBR[1]",
+        "Q2": "MBR[2]",
+        "Q3": "MBR[3]",
+        "Q4": "MBR[4]",
+        "Q5": "MBR[5]",
+        "Q6": "MBR[6]",
+        "Q7": "MBR[7]",
+        "CLK": "LCLK_MBR",
+        "OE_N": "GND"
+      }
+    },
+    {
+      "ref": "TMP_LO",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "LCLK_TMP_LO",
+        "OE_N": "OE_TMP_LO"
+      }
+    },
+    {
+      "ref": "TMP_HI",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "LCLK_TMP_HI",
+        "OE_N": "OE_TMP_HI"
+      }
+    },
+    {
+      "ref": "RESULT",
+      "part": "74HC574",
+      "role": "external_latch",
+      "pins": {
+        "D0": "ALU_Y[0]",
+        "D1": "ALU_Y[1]",
+        "D2": "ALU_Y[2]",
+        "D3": "ALU_Y[3]",
+        "D4": "ALU_Y[4]",
+        "D5": "ALU_Y[5]",
+        "D6": "ALU_Y[6]",
+        "D7": "ALU_Y[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "LCLK_RESULT",
+        "OE_N": "OE_RESULT"
+      }
+    },
+    {
+      "ref": "CLOCK_RESET",
+      "part": "74HC14",
+      "role": "clock_reset_conditioning",
+      "pins": {
+        "1A": "OSC",
+        "1Y": "CLK",
+        "2A": "RESET_RAW_N",
+        "2Y": "RESET",
+        "3A": "MEM_RD",
+        "3Y": "MEM_OE_N"
+      }
+    },
+    {
+      "ref": "RAM0",
+      "part": "IS62C256",
+      "role": "memory",
+      "pins": {
+        "A0": "ADDRESS[0]",
+        "A1": "ADDRESS[1]",
+        "A2": "ADDRESS[2]",
+        "A3": "ADDRESS[3]",
+        "A4": "ADDRESS[4]",
+        "A5": "ADDRESS[5]",
+        "A6": "ADDRESS[6]",
+        "A7": "ADDRESS[7]",
+        "A8": "ADDRESS[8]",
+        "A9": "ADDRESS[9]",
+        "A10": "ADDRESS[10]",
+        "A11": "ADDRESS[11]",
+        "A12": "ADDRESS[12]",
+        "A13": "ADDRESS[13]",
+        "A14": "ADDRESS[14]",
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "CE_N": "RAM0_N",
+        "OE_N": "MEM_OE_N",
+        "WE_N": "MEM_WE_N"
+      }
+    },
+    {
+      "ref": "RAM1",
+      "part": "IS62C256",
+      "role": "memory",
+      "pins": {
+        "A0": "ADDRESS[0]",
+        "A1": "ADDRESS[1]",
+        "A2": "ADDRESS[2]",
+        "A3": "ADDRESS[3]",
+        "A4": "ADDRESS[4]",
+        "A5": "ADDRESS[5]",
+        "A6": "ADDRESS[6]",
+        "A7": "ADDRESS[7]",
+        "A8": "ADDRESS[8]",
+        "A9": "ADDRESS[9]",
+        "A10": "ADDRESS[10]",
+        "A11": "ADDRESS[11]",
+        "A12": "ADDRESS[12]",
+        "A13": "ADDRESS[13]",
+        "A14": "ADDRESS[14]",
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "CE_N": "RAM1_N",
+        "OE_N": "MEM_OE_N",
+        "WE_N": "MEM_WE_N"
+      }
+    },
+    {
+      "ref": "ROM",
+      "part": "SST39SF010A",
+      "role": "memory",
+      "pins": {
+        "A0": "ADDRESS[0]",
+        "A1": "ADDRESS[1]",
+        "A2": "ADDRESS[2]",
+        "A3": "ADDRESS[3]",
+        "A4": "ADDRESS[4]",
+        "A5": "ADDRESS[5]",
+        "A6": "ADDRESS[6]",
+        "A7": "ADDRESS[7]",
+        "A8": "ADDRESS[8]",
+        "A9": "ADDRESS[9]",
+        "A10": "ADDRESS[10]",
+        "A11": "ADDRESS[11]",
+        "A12": "ADDRESS[12]",
+        "A13": "ADDRESS[13]",
+        "A14": "ADDRESS[14]",
+        "A15": "ADDRESS[15]",
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "CE_N": "SYS_ROM_N",
+        "OE_N": "MEM_OE_N",
+        "WE_N": "VCC",
+        "A16": "GND"
+      }
+    },
+    {
+      "ref": "REG_R0",
+      "part": "74HC574",
+      "role": "external_register",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "RCLK_R0",
+        "OE_N": "ROEN_R0"
+      }
+    },
+    {
+      "ref": "REG_PC_LO",
+      "part": "74HC574",
+      "role": "external_register",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "RCLK_PC_LO",
+        "OE_N": "ROEN_PC_LO"
+      }
+    },
+    {
+      "ref": "REG_PC_HI",
+      "part": "74HC574",
+      "role": "external_register",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "RCLK_PC_HI",
+        "OE_N": "ROEN_PC_HI"
+      }
+    },
+    {
+      "ref": "REG_RP_LO",
+      "part": "74HC574",
+      "role": "external_register",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "RCLK_RP_LO",
+        "OE_N": "ROEN_RP_LO"
+      }
+    },
+    {
+      "ref": "REG_RP_HI",
+      "part": "74HC574",
+      "role": "external_register",
+      "pins": {
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "Q0": "DBUS[0]",
+        "Q1": "DBUS[1]",
+        "Q2": "DBUS[2]",
+        "Q3": "DBUS[3]",
+        "Q4": "DBUS[4]",
+        "Q5": "DBUS[5]",
+        "Q6": "DBUS[6]",
+        "Q7": "DBUS[7]",
+        "CLK": "RCLK_RP_HI",
+        "OE_N": "ROEN_RP_HI"
+      }
+    },
+    {
+      "ref": "extseq",
+      "part": "ATF1504AS-10JU44",
+      "role": "fitted_control",
+      "pins": {
+        "u3": "MICRO_ADDR[3]",
+        "u2": "MICRO_ADDR[2]",
+        "u8": "MICRO_ADDR[8]",
+        "u5": "MICRO_ADDR[5]",
+        "u1": "MICRO_ADDR[1]",
+        "u0": "MICRO_ADDR[0]",
+        "p0": "PHASE[0]",
+        "cmd3": "COMMAND[3]",
+        "cmd1": "COMMAND[1]",
+        "cmd2": "COMMAND[2]",
+        "cmd0": "COMMAND[0]",
+        "u7": "MICRO_ADDR[7]",
+        "u6": "MICRO_ADDR[6]",
+        "u4": "MICRO_ADDR[4]",
+        "db3": "DBUS[3]",
+        "db1": "DBUS[1]",
+        "wc": "WC",
+        "cmd5": "COMMAND[5]",
+        "cmd4": "COMMAND[4]",
+        "p1": "PHASE[1]",
+        "db0": "DBUS[0]",
+        "db4": "DBUS[4]",
+        "db5": "DBUS[5]",
+        "db6": "DBUS[6]",
+        "db7": "DBUS[7]",
+        "fault": "FAULT",
+        "db2": "DBUS[2]",
+        "waitin": "WAITIN",
+        "reset": "RESET",
+        "zf": "ZF",
+        "clk": "CLK"
+      },
+      "physical_signal_pads": {
+        "u3": 12,
+        "u2": 11,
+        "u8": 9,
+        "u5": 8,
+        "u1": 6,
+        "u0": 5,
+        "p0": 4,
+        "cmd3": 21,
+        "cmd1": 20,
+        "cmd2": 19,
+        "cmd0": 18,
+        "u7": 17,
+        "u6": 16,
+        "u4": 14,
+        "db3": 24,
+        "db1": 25,
+        "wc": 26,
+        "cmd5": 28,
+        "cmd4": 29,
+        "p1": 31,
+        "db0": 33,
+        "db4": 34,
+        "db5": 36,
+        "db6": 37,
+        "db7": 39,
+        "fault": 40,
+        "db2": 41,
+        "waitin": 2,
+        "reset": 1,
+        "zf": 44,
+        "clk": 43
+      }
+    },
+    {
+      "ref": "tblaux",
+      "part": "ATF1504AS-10JU44",
+      "role": "fitted_control",
+      "pins": {
+        "romen_n": "CTRL_ROM_N",
+        "db6": "DBUS[6]",
+        "subn": "SUB_N",
+        "rd": "MEM_RD",
+        "fault": "FAULT",
+        "thien": "OE_TMP_HI",
+        "tloen": "OE_TMP_LO",
+        "db4": "DBUS[4]",
+        "db5": "DBUS[5]",
+        "db7": "DBUS[7]",
+        "sub": "SUB",
+        "db2": "DBUS[2]",
+        "db3": "DBUS[3]",
+        "db0": "DBUS[0]",
+        "cmd0": "COMMAND[0]",
+        "cmd1": "COMMAND[1]",
+        "wen_n": "MEM_WE_N",
+        "zf": "ZF",
+        "resen": "OE_RESULT",
+        "db1": "DBUS[1]",
+        "wc": "WC",
+        "cmd2": "COMMAND[2]",
+        "cmd3": "COMMAND[3]",
+        "cmd4": "COMMAND[4]",
+        "cmd5": "COMMAND[5]",
+        "p0": "PHASE[0]",
+        "p1": "PHASE[1]",
+        "romn": "SYS_ROM_N",
+        "waitin": "WAITIN",
+        "reset": "RESET",
+        "ac": "ALU_C",
+        "clk": "CLK"
+      },
+      "physical_signal_pads": {
+        "romen_n": 12,
+        "db6": 11,
+        "subn": 9,
+        "rd": 8,
+        "fault": 6,
+        "thien": 5,
+        "tloen": 4,
+        "db4": 21,
+        "db5": 20,
+        "db7": 19,
+        "sub": 18,
+        "db2": 17,
+        "db3": 16,
+        "db0": 14,
+        "cmd0": 24,
+        "cmd1": 25,
+        "wen_n": 26,
+        "zf": 27,
+        "resen": 28,
+        "db1": 29,
+        "wc": 31,
+        "cmd2": 33,
+        "cmd3": 34,
+        "cmd4": 36,
+        "cmd5": 37,
+        "p0": 39,
+        "p1": 40,
+        "romn": 41,
+        "waitin": 2,
+        "reset": 1,
+        "ac": 44,
+        "clk": 43
+      }
+    },
+    {
+      "ref": "extctrl",
+      "part": "ATF1502AS-10JU44",
+      "role": "fitted_control",
+      "pins": {
+        "lc3": "LCLK_TMP_LO",
+        "lc2": "LCLK_MBR",
+        "dc4": "RCLK_RP_HI",
+        "den4": "ROEN_RP_HI",
+        "den2": "ROEN_PC_HI",
+        "den3": "ROEN_RP_LO",
+        "den0": "ROEN_R0",
+        "lc0": "LCLK_ADDR_LO",
+        "lc1": "LCLK_ADDR_HI",
+        "dc3": "RCLK_RP_LO",
+        "dc0": "RCLK_R0",
+        "lc5": "LCLK_RESULT",
+        "lc4": "LCLK_TMP_HI",
+        "den1": "ROEN_PC_LO",
+        "cmd0": "COMMAND[0]",
+        "cmd2": "COMMAND[2]",
+        "cmd3": "COMMAND[3]",
+        "cmd4": "COMMAND[4]",
+        "cmd5": "COMMAND[5]",
+        "p1": "PHASE[1]",
+        "p0": "PHASE[0]",
+        "cmd1": "COMMAND[1]",
+        "dc2": "RCLK_PC_HI",
+        "dc1": "RCLK_PC_LO",
+        "reset": "RESET",
+        "waitin": "WAITIN",
+        "clk": "CLK"
+      },
+      "physical_signal_pads": {
+        "lc3": 4,
+        "lc2": 5,
+        "dc4": 6,
+        "den4": 8,
+        "den2": 9,
+        "den3": 11,
+        "den0": 12,
+        "lc0": 14,
+        "lc1": 16,
+        "dc3": 17,
+        "dc0": 18,
+        "lc5": 19,
+        "lc4": 20,
+        "den1": 21,
+        "cmd0": 41,
+        "cmd2": 40,
+        "cmd3": 39,
+        "cmd4": 37,
+        "cmd5": 36,
+        "p1": 34,
+        "p0": 33,
+        "cmd1": 31,
+        "dc2": 25,
+        "dc1": 24,
+        "reset": 1,
+        "waitin": 44,
+        "clk": 43
+      }
+    },
+    {
+      "ref": "CONTROL_ROM",
+      "part": "SST39SF010A",
+      "role": "microcode_rom",
+      "pins": {
+        "A0": "PHASE[0]",
+        "A1": "PHASE[1]",
+        "A2": "MICRO_ADDR[0]",
+        "A3": "MICRO_ADDR[1]",
+        "A4": "MICRO_ADDR[2]",
+        "A5": "MICRO_ADDR[3]",
+        "A6": "MICRO_ADDR[4]",
+        "A7": "MICRO_ADDR[5]",
+        "A8": "MICRO_ADDR[6]",
+        "A9": "MICRO_ADDR[7]",
+        "A10": "MICRO_ADDR[8]",
+        "A11": "GND",
+        "A12": "GND",
+        "A13": "GND",
+        "A14": "GND",
+        "A15": "GND",
+        "A16": "GND",
+        "D0": "DBUS[0]",
+        "D1": "DBUS[1]",
+        "D2": "DBUS[2]",
+        "D3": "DBUS[3]",
+        "D4": "DBUS[4]",
+        "D5": "DBUS[5]",
+        "D6": "DBUS[6]",
+        "D7": "DBUS[7]",
+        "CE_N": "CTRL_ROM_N",
+        "OE_N": "GND",
+        "WE_N": "VCC"
+      }
+    },
+    {
+      "ref": "DECODE_ROM",
+      "part": "SST39SF010A",
+      "role": "memory_decode_rom",
+      "pins": {
+        "A0": "ADDRESS[2]",
+        "A1": "ADDRESS[3]",
+        "A2": "ADDRESS[4]",
+        "A3": "ADDRESS[5]",
+        "A4": "ADDRESS[6]",
+        "A5": "ADDRESS[7]",
+        "A6": "ADDRESS[8]",
+        "A7": "ADDRESS[9]",
+        "A8": "ADDRESS[10]",
+        "A9": "ADDRESS[11]",
+        "A10": "ADDRESS[12]",
+        "A11": "ADDRESS[13]",
+        "A12": "ADDRESS[14]",
+        "A13": "ADDRESS[15]",
+        "A14": "MAP",
+        "A15": "GND",
+        "A16": "GND",
+        "D0": "RAM0_N",
+        "D1": "RAM1_N",
+        "D2": "SYS_ROM_N",
+        "D3": "MAILBOX_CE_N",
+        "D4": "NC",
+        "D5": "NC",
+        "D6": "NC",
+        "D7": "NC",
+        "CE_N": "GND",
+        "OE_N": "GND",
+        "WE_N": "VCC"
+      }
+    }
+  ],
+  "signal_nets": {
+    "DBUS[0]": [
+      "U_ALU_153_0.A",
+      "U_ALU_283_LO.A0",
+      "ADDR_LO.D0",
+      "ADDR_HI.D0",
+      "MBR.D0",
+      "TMP_LO.D0",
+      "TMP_LO.Q0",
+      "TMP_HI.D0",
+      "TMP_HI.Q0",
+      "RESULT.Q0",
+      "RAM0.D0",
+      "RAM1.D0",
+      "ROM.D0",
+      "REG_R0.D0",
+      "REG_R0.Q0",
+      "REG_PC_LO.D0",
+      "REG_PC_LO.Q0",
+      "REG_PC_HI.D0",
+      "REG_PC_HI.Q0",
+      "REG_RP_LO.D0",
+      "REG_RP_LO.Q0",
+      "REG_RP_HI.D0",
+      "REG_RP_HI.Q0",
+      "extseq.db0",
+      "tblaux.db0",
+      "CONTROL_ROM.D0"
+    ],
+    "MBR[0]": [
+      "U_ALU_153_0.B",
+      "MBR.Q0"
+    ],
+    "SUB": [
+      "U_ALU_153_0.2C0",
+      "U_ALU_153_0.2C1",
+      "U_ALU_153_1.2C0",
+      "U_ALU_153_1.2C1",
+      "U_ALU_153_2.2C0",
+      "U_ALU_153_2.2C1",
+      "U_ALU_153_3.2C0",
+      "U_ALU_153_3.2C1",
+      "U_ALU_153_4.2C0",
+      "U_ALU_153_4.2C1",
+      "U_ALU_153_5.2C0",
+      "U_ALU_153_5.2C1",
+      "U_ALU_153_6.2C0",
+      "U_ALU_153_6.2C1",
+      "U_ALU_153_7.2C0",
+      "U_ALU_153_7.2C1",
+      "U_ALU_283_LO.CIN",
+      "tblaux.sub"
+    ],
+    "SUB_N": [
+      "U_ALU_153_0.2C2",
+      "U_ALU_153_0.2C3",
+      "U_ALU_153_1.2C2",
+      "U_ALU_153_1.2C3",
+      "U_ALU_153_2.2C2",
+      "U_ALU_153_2.2C3",
+      "U_ALU_153_3.2C2",
+      "U_ALU_153_3.2C3",
+      "U_ALU_153_4.2C2",
+      "U_ALU_153_4.2C3",
+      "U_ALU_153_5.2C2",
+      "U_ALU_153_5.2C3",
+      "U_ALU_153_6.2C2",
+      "U_ALU_153_6.2C3",
+      "U_ALU_153_7.2C2",
+      "U_ALU_153_7.2C3",
+      "tblaux.subn"
+    ],
+    "net_y_logic0": [
+      "U_ALU_153_0.1Y",
+      "U_ALU_157_YBP_0.1B"
+    ],
+    "net_b_add0": [
+      "U_ALU_153_0.2Y",
+      "U_ALU_283_LO.B0"
+    ],
+    "DBUS[1]": [
+      "U_ALU_153_1.A",
+      "U_ALU_283_LO.A1",
+      "ADDR_LO.D1",
+      "ADDR_HI.D1",
+      "MBR.D1",
+      "TMP_LO.D1",
+      "TMP_LO.Q1",
+      "TMP_HI.D1",
+      "TMP_HI.Q1",
+      "RESULT.Q1",
+      "RAM0.D1",
+      "RAM1.D1",
+      "ROM.D1",
+      "REG_R0.D1",
+      "REG_R0.Q1",
+      "REG_PC_LO.D1",
+      "REG_PC_LO.Q1",
+      "REG_PC_HI.D1",
+      "REG_PC_HI.Q1",
+      "REG_RP_LO.D1",
+      "REG_RP_LO.Q1",
+      "REG_RP_HI.D1",
+      "REG_RP_HI.Q1",
+      "extseq.db1",
+      "tblaux.db1",
+      "CONTROL_ROM.D1"
+    ],
+    "MBR[1]": [
+      "U_ALU_153_1.B",
+      "MBR.Q1"
+    ],
+    "net_y_logic1": [
+      "U_ALU_153_1.1Y",
+      "U_ALU_157_YBP_0.2B"
+    ],
+    "net_b_add1": [
+      "U_ALU_153_1.2Y",
+      "U_ALU_283_LO.B1"
+    ],
+    "DBUS[2]": [
+      "U_ALU_153_2.A",
+      "U_ALU_283_LO.A2",
+      "ADDR_LO.D2",
+      "ADDR_HI.D2",
+      "MBR.D2",
+      "TMP_LO.D2",
+      "TMP_LO.Q2",
+      "TMP_HI.D2",
+      "TMP_HI.Q2",
+      "RESULT.Q2",
+      "RAM0.D2",
+      "RAM1.D2",
+      "ROM.D2",
+      "REG_R0.D2",
+      "REG_R0.Q2",
+      "REG_PC_LO.D2",
+      "REG_PC_LO.Q2",
+      "REG_PC_HI.D2",
+      "REG_PC_HI.Q2",
+      "REG_RP_LO.D2",
+      "REG_RP_LO.Q2",
+      "REG_RP_HI.D2",
+      "REG_RP_HI.Q2",
+      "extseq.db2",
+      "tblaux.db2",
+      "CONTROL_ROM.D2"
+    ],
+    "MBR[2]": [
+      "U_ALU_153_2.B",
+      "MBR.Q2"
+    ],
+    "net_y_logic2": [
+      "U_ALU_153_2.1Y",
+      "U_ALU_157_YBP_0.3B"
+    ],
+    "net_b_add2": [
+      "U_ALU_153_2.2Y",
+      "U_ALU_283_LO.B2"
+    ],
+    "DBUS[3]": [
+      "U_ALU_153_3.A",
+      "U_ALU_283_LO.A3",
+      "ADDR_LO.D3",
+      "ADDR_HI.D3",
+      "MBR.D3",
+      "TMP_LO.D3",
+      "TMP_LO.Q3",
+      "TMP_HI.D3",
+      "TMP_HI.Q3",
+      "RESULT.Q3",
+      "RAM0.D3",
+      "RAM1.D3",
+      "ROM.D3",
+      "REG_R0.D3",
+      "REG_R0.Q3",
+      "REG_PC_LO.D3",
+      "REG_PC_LO.Q3",
+      "REG_PC_HI.D3",
+      "REG_PC_HI.Q3",
+      "REG_RP_LO.D3",
+      "REG_RP_LO.Q3",
+      "REG_RP_HI.D3",
+      "REG_RP_HI.Q3",
+      "extseq.db3",
+      "tblaux.db3",
+      "CONTROL_ROM.D3"
+    ],
+    "MBR[3]": [
+      "U_ALU_153_3.B",
+      "MBR.Q3"
+    ],
+    "net_y_logic3": [
+      "U_ALU_153_3.1Y",
+      "U_ALU_157_YBP_0.4B"
+    ],
+    "net_b_add3": [
+      "U_ALU_153_3.2Y",
+      "U_ALU_283_LO.B3"
+    ],
+    "DBUS[4]": [
+      "U_ALU_153_4.A",
+      "U_ALU_283_HI.A0",
+      "ADDR_LO.D4",
+      "ADDR_HI.D4",
+      "MBR.D4",
+      "TMP_LO.D4",
+      "TMP_LO.Q4",
+      "TMP_HI.D4",
+      "TMP_HI.Q4",
+      "RESULT.Q4",
+      "RAM0.D4",
+      "RAM1.D4",
+      "ROM.D4",
+      "REG_R0.D4",
+      "REG_R0.Q4",
+      "REG_PC_LO.D4",
+      "REG_PC_LO.Q4",
+      "REG_PC_HI.D4",
+      "REG_PC_HI.Q4",
+      "REG_RP_LO.D4",
+      "REG_RP_LO.Q4",
+      "REG_RP_HI.D4",
+      "REG_RP_HI.Q4",
+      "extseq.db4",
+      "tblaux.db4",
+      "CONTROL_ROM.D4"
+    ],
+    "MBR[4]": [
+      "U_ALU_153_4.B",
+      "MBR.Q4"
+    ],
+    "net_y_logic4": [
+      "U_ALU_153_4.1Y",
+      "U_ALU_157_YBP_1.1B"
+    ],
+    "net_b_add4": [
+      "U_ALU_153_4.2Y",
+      "U_ALU_283_HI.B0"
+    ],
+    "DBUS[5]": [
+      "U_ALU_153_5.A",
+      "U_ALU_283_HI.A1",
+      "ADDR_LO.D5",
+      "ADDR_HI.D5",
+      "MBR.D5",
+      "TMP_LO.D5",
+      "TMP_LO.Q5",
+      "TMP_HI.D5",
+      "TMP_HI.Q5",
+      "RESULT.Q5",
+      "RAM0.D5",
+      "RAM1.D5",
+      "ROM.D5",
+      "REG_R0.D5",
+      "REG_R0.Q5",
+      "REG_PC_LO.D5",
+      "REG_PC_LO.Q5",
+      "REG_PC_HI.D5",
+      "REG_PC_HI.Q5",
+      "REG_RP_LO.D5",
+      "REG_RP_LO.Q5",
+      "REG_RP_HI.D5",
+      "REG_RP_HI.Q5",
+      "extseq.db5",
+      "tblaux.db5",
+      "CONTROL_ROM.D5"
+    ],
+    "MBR[5]": [
+      "U_ALU_153_5.B",
+      "MBR.Q5"
+    ],
+    "net_y_logic5": [
+      "U_ALU_153_5.1Y",
+      "U_ALU_157_YBP_1.2B"
+    ],
+    "net_b_add5": [
+      "U_ALU_153_5.2Y",
+      "U_ALU_283_HI.B1"
+    ],
+    "DBUS[6]": [
+      "U_ALU_153_6.A",
+      "U_ALU_283_HI.A2",
+      "ADDR_LO.D6",
+      "ADDR_HI.D6",
+      "MBR.D6",
+      "TMP_LO.D6",
+      "TMP_LO.Q6",
+      "TMP_HI.D6",
+      "TMP_HI.Q6",
+      "RESULT.Q6",
+      "RAM0.D6",
+      "RAM1.D6",
+      "ROM.D6",
+      "REG_R0.D6",
+      "REG_R0.Q6",
+      "REG_PC_LO.D6",
+      "REG_PC_LO.Q6",
+      "REG_PC_HI.D6",
+      "REG_PC_HI.Q6",
+      "REG_RP_LO.D6",
+      "REG_RP_LO.Q6",
+      "REG_RP_HI.D6",
+      "REG_RP_HI.Q6",
+      "extseq.db6",
+      "tblaux.db6",
+      "CONTROL_ROM.D6"
+    ],
+    "MBR[6]": [
+      "U_ALU_153_6.B",
+      "MBR.Q6"
+    ],
+    "net_y_logic6": [
+      "U_ALU_153_6.1Y",
+      "U_ALU_157_YBP_1.3B"
+    ],
+    "net_b_add6": [
+      "U_ALU_153_6.2Y",
+      "U_ALU_283_HI.B2"
+    ],
+    "DBUS[7]": [
+      "U_ALU_153_7.A",
+      "U_ALU_283_HI.A3",
+      "ADDR_LO.D7",
+      "ADDR_HI.D7",
+      "MBR.D7",
+      "TMP_LO.D7",
+      "TMP_LO.Q7",
+      "TMP_HI.D7",
+      "TMP_HI.Q7",
+      "RESULT.Q7",
+      "RAM0.D7",
+      "RAM1.D7",
+      "ROM.D7",
+      "REG_R0.D7",
+      "REG_R0.Q7",
+      "REG_PC_LO.D7",
+      "REG_PC_LO.Q7",
+      "REG_PC_HI.D7",
+      "REG_PC_HI.Q7",
+      "REG_RP_LO.D7",
+      "REG_RP_LO.Q7",
+      "REG_RP_HI.D7",
+      "REG_RP_HI.Q7",
+      "extseq.db7",
+      "tblaux.db7",
+      "CONTROL_ROM.D7"
+    ],
+    "MBR[7]": [
+      "U_ALU_153_7.B",
+      "MBR.Q7"
+    ],
+    "net_y_logic7": [
+      "U_ALU_153_7.1Y",
+      "U_ALU_157_YBP_1.4B"
+    ],
+    "net_b_add7": [
+      "U_ALU_153_7.2Y",
+      "U_ALU_283_HI.B3"
+    ],
+    "net_c_lo": [
+      "U_ALU_283_LO.COUT",
+      "U_ALU_283_HI.CIN"
+    ],
+    "net_sum0": [
+      "U_ALU_283_LO.S0",
+      "U_ALU_157_YBP_0.1A"
+    ],
+    "net_sum1": [
+      "U_ALU_283_LO.S1",
+      "U_ALU_157_YBP_0.2A"
+    ],
+    "net_sum2": [
+      "U_ALU_283_LO.S2",
+      "U_ALU_157_YBP_0.3A"
+    ],
+    "net_sum3": [
+      "U_ALU_283_LO.S3",
+      "U_ALU_157_YBP_0.4A"
+    ],
+    "ALU_C": [
+      "U_ALU_283_HI.COUT",
+      "tblaux.ac"
+    ],
+    "net_sum4": [
+      "U_ALU_283_HI.S0",
+      "U_ALU_157_YBP_1.1A"
+    ],
+    "net_sum5": [
+      "U_ALU_283_HI.S1",
+      "U_ALU_157_YBP_1.2A"
+    ],
+    "net_sum6": [
+      "U_ALU_283_HI.S2",
+      "U_ALU_157_YBP_1.3A"
+    ],
+    "net_sum7": [
+      "U_ALU_283_HI.S3",
+      "U_ALU_157_YBP_1.4A"
+    ],
+    "ALU_Y[0]": [
+      "U_ALU_157_YBP_0.1Y",
+      "RESULT.D0"
+    ],
+    "ALU_Y[1]": [
+      "U_ALU_157_YBP_0.2Y",
+      "RESULT.D1"
+    ],
+    "ALU_Y[2]": [
+      "U_ALU_157_YBP_0.3Y",
+      "RESULT.D2"
+    ],
+    "ALU_Y[3]": [
+      "U_ALU_157_YBP_0.4Y",
+      "RESULT.D3"
+    ],
+    "ALU_Y[4]": [
+      "U_ALU_157_YBP_1.1Y",
+      "RESULT.D4"
+    ],
+    "ALU_Y[5]": [
+      "U_ALU_157_YBP_1.2Y",
+      "RESULT.D5"
+    ],
+    "ALU_Y[6]": [
+      "U_ALU_157_YBP_1.3Y",
+      "RESULT.D6"
+    ],
+    "ALU_Y[7]": [
+      "U_ALU_157_YBP_1.4Y",
+      "RESULT.D7"
+    ],
+    "ADDRESS[0]": [
+      "ADDR_LO.Q0",
+      "RAM0.A0",
+      "RAM1.A0",
+      "ROM.A0"
+    ],
+    "ADDRESS[1]": [
+      "ADDR_LO.Q1",
+      "RAM0.A1",
+      "RAM1.A1",
+      "ROM.A1"
+    ],
+    "ADDRESS[2]": [
+      "ADDR_LO.Q2",
+      "RAM0.A2",
+      "RAM1.A2",
+      "ROM.A2",
+      "DECODE_ROM.A0"
+    ],
+    "ADDRESS[3]": [
+      "ADDR_LO.Q3",
+      "RAM0.A3",
+      "RAM1.A3",
+      "ROM.A3",
+      "DECODE_ROM.A1"
+    ],
+    "ADDRESS[4]": [
+      "ADDR_LO.Q4",
+      "RAM0.A4",
+      "RAM1.A4",
+      "ROM.A4",
+      "DECODE_ROM.A2"
+    ],
+    "ADDRESS[5]": [
+      "ADDR_LO.Q5",
+      "RAM0.A5",
+      "RAM1.A5",
+      "ROM.A5",
+      "DECODE_ROM.A3"
+    ],
+    "ADDRESS[6]": [
+      "ADDR_LO.Q6",
+      "RAM0.A6",
+      "RAM1.A6",
+      "ROM.A6",
+      "DECODE_ROM.A4"
+    ],
+    "ADDRESS[7]": [
+      "ADDR_LO.Q7",
+      "RAM0.A7",
+      "RAM1.A7",
+      "ROM.A7",
+      "DECODE_ROM.A5"
+    ],
+    "LCLK_ADDR_LO": [
+      "ADDR_LO.CLK",
+      "extctrl.lc0"
+    ],
+    "ADDRESS[8]": [
+      "ADDR_HI.Q0",
+      "RAM0.A8",
+      "RAM1.A8",
+      "ROM.A8",
+      "DECODE_ROM.A6"
+    ],
+    "ADDRESS[9]": [
+      "ADDR_HI.Q1",
+      "RAM0.A9",
+      "RAM1.A9",
+      "ROM.A9",
+      "DECODE_ROM.A7"
+    ],
+    "ADDRESS[10]": [
+      "ADDR_HI.Q2",
+      "RAM0.A10",
+      "RAM1.A10",
+      "ROM.A10",
+      "DECODE_ROM.A8"
+    ],
+    "ADDRESS[11]": [
+      "ADDR_HI.Q3",
+      "RAM0.A11",
+      "RAM1.A11",
+      "ROM.A11",
+      "DECODE_ROM.A9"
+    ],
+    "ADDRESS[12]": [
+      "ADDR_HI.Q4",
+      "RAM0.A12",
+      "RAM1.A12",
+      "ROM.A12",
+      "DECODE_ROM.A10"
+    ],
+    "ADDRESS[13]": [
+      "ADDR_HI.Q5",
+      "RAM0.A13",
+      "RAM1.A13",
+      "ROM.A13",
+      "DECODE_ROM.A11"
+    ],
+    "ADDRESS[14]": [
+      "ADDR_HI.Q6",
+      "RAM0.A14",
+      "RAM1.A14",
+      "ROM.A14",
+      "DECODE_ROM.A12"
+    ],
+    "ADDRESS[15]": [
+      "ADDR_HI.Q7",
+      "ROM.A15",
+      "DECODE_ROM.A13"
+    ],
+    "LCLK_ADDR_HI": [
+      "ADDR_HI.CLK",
+      "extctrl.lc1"
+    ],
+    "LCLK_MBR": [
+      "MBR.CLK",
+      "extctrl.lc2"
+    ],
+    "LCLK_TMP_LO": [
+      "TMP_LO.CLK",
+      "extctrl.lc3"
+    ],
+    "OE_TMP_LO": [
+      "TMP_LO.OE_N",
+      "tblaux.tloen"
+    ],
+    "LCLK_TMP_HI": [
+      "TMP_HI.CLK",
+      "extctrl.lc4"
+    ],
+    "OE_TMP_HI": [
+      "TMP_HI.OE_N",
+      "tblaux.thien"
+    ],
+    "LCLK_RESULT": [
+      "RESULT.CLK",
+      "extctrl.lc5"
+    ],
+    "OE_RESULT": [
+      "RESULT.OE_N",
+      "tblaux.resen"
+    ],
+    "OSC": [
+      "CLOCK_RESET.1A"
+    ],
+    "CLK": [
+      "CLOCK_RESET.1Y",
+      "extseq.clk",
+      "tblaux.clk",
+      "extctrl.clk"
+    ],
+    "RESET_RAW_N": [
+      "CLOCK_RESET.2A"
+    ],
+    "RESET": [
+      "CLOCK_RESET.2Y",
+      "extseq.reset",
+      "tblaux.reset",
+      "extctrl.reset"
+    ],
+    "MEM_RD": [
+      "CLOCK_RESET.3A",
+      "tblaux.rd"
+    ],
+    "MEM_OE_N": [
+      "CLOCK_RESET.3Y",
+      "RAM0.OE_N",
+      "RAM1.OE_N",
+      "ROM.OE_N"
+    ],
+    "RAM0_N": [
+      "RAM0.CE_N",
+      "DECODE_ROM.D0"
+    ],
+    "MEM_WE_N": [
+      "RAM0.WE_N",
+      "RAM1.WE_N",
+      "tblaux.wen_n"
+    ],
+    "RAM1_N": [
+      "RAM1.CE_N",
+      "DECODE_ROM.D1"
+    ],
+    "SYS_ROM_N": [
+      "ROM.CE_N",
+      "tblaux.romn",
+      "DECODE_ROM.D2"
+    ],
+    "RCLK_R0": [
+      "REG_R0.CLK",
+      "extctrl.dc0"
+    ],
+    "ROEN_R0": [
+      "REG_R0.OE_N",
+      "extctrl.den0"
+    ],
+    "RCLK_PC_LO": [
+      "REG_PC_LO.CLK",
+      "extctrl.dc1"
+    ],
+    "ROEN_PC_LO": [
+      "REG_PC_LO.OE_N",
+      "extctrl.den1"
+    ],
+    "RCLK_PC_HI": [
+      "REG_PC_HI.CLK",
+      "extctrl.dc2"
+    ],
+    "ROEN_PC_HI": [
+      "REG_PC_HI.OE_N",
+      "extctrl.den2"
+    ],
+    "RCLK_RP_LO": [
+      "REG_RP_LO.CLK",
+      "extctrl.dc3"
+    ],
+    "ROEN_RP_LO": [
+      "REG_RP_LO.OE_N",
+      "extctrl.den3"
+    ],
+    "RCLK_RP_HI": [
+      "REG_RP_HI.CLK",
+      "extctrl.dc4"
+    ],
+    "ROEN_RP_HI": [
+      "REG_RP_HI.OE_N",
+      "extctrl.den4"
+    ],
+    "MICRO_ADDR[3]": [
+      "extseq.u3",
+      "CONTROL_ROM.A5"
+    ],
+    "MICRO_ADDR[2]": [
+      "extseq.u2",
+      "CONTROL_ROM.A4"
+    ],
+    "MICRO_ADDR[8]": [
+      "extseq.u8",
+      "CONTROL_ROM.A10"
+    ],
+    "MICRO_ADDR[5]": [
+      "extseq.u5",
+      "CONTROL_ROM.A7"
+    ],
+    "MICRO_ADDR[1]": [
+      "extseq.u1",
+      "CONTROL_ROM.A3"
+    ],
+    "MICRO_ADDR[0]": [
+      "extseq.u0",
+      "CONTROL_ROM.A2"
+    ],
+    "PHASE[0]": [
+      "extseq.p0",
+      "tblaux.p0",
+      "extctrl.p0",
+      "CONTROL_ROM.A0"
+    ],
+    "COMMAND[3]": [
+      "extseq.cmd3",
+      "tblaux.cmd3",
+      "extctrl.cmd3"
+    ],
+    "COMMAND[1]": [
+      "extseq.cmd1",
+      "tblaux.cmd1",
+      "extctrl.cmd1"
+    ],
+    "COMMAND[2]": [
+      "extseq.cmd2",
+      "tblaux.cmd2",
+      "extctrl.cmd2"
+    ],
+    "COMMAND[0]": [
+      "extseq.cmd0",
+      "tblaux.cmd0",
+      "extctrl.cmd0"
+    ],
+    "MICRO_ADDR[7]": [
+      "extseq.u7",
+      "CONTROL_ROM.A9"
+    ],
+    "MICRO_ADDR[6]": [
+      "extseq.u6",
+      "CONTROL_ROM.A8"
+    ],
+    "MICRO_ADDR[4]": [
+      "extseq.u4",
+      "CONTROL_ROM.A6"
+    ],
+    "WC": [
+      "extseq.wc",
+      "tblaux.wc"
+    ],
+    "COMMAND[5]": [
+      "extseq.cmd5",
+      "tblaux.cmd5",
+      "extctrl.cmd5"
+    ],
+    "COMMAND[4]": [
+      "extseq.cmd4",
+      "tblaux.cmd4",
+      "extctrl.cmd4"
+    ],
+    "PHASE[1]": [
+      "extseq.p1",
+      "tblaux.p1",
+      "extctrl.p1",
+      "CONTROL_ROM.A1"
+    ],
+    "FAULT": [
+      "extseq.fault",
+      "tblaux.fault"
+    ],
+    "WAITIN": [
+      "extseq.waitin",
+      "tblaux.waitin",
+      "extctrl.waitin"
+    ],
+    "ZF": [
+      "extseq.zf",
+      "tblaux.zf"
+    ],
+    "CTRL_ROM_N": [
+      "tblaux.romen_n",
+      "CONTROL_ROM.CE_N"
+    ],
+    "MAP": [
+      "DECODE_ROM.A14"
+    ],
+    "MAILBOX_CE_N": [
+      "DECODE_ROM.D3"
+    ]
+  },
+  "unique_signal_nets": 121,
+  "functional_signal_endpoints": 524,
+  "excluded": [
+    "oscillator module (1)",
+    "PLCC adapters",
+    "passives",
+    "mailbox coprocessor"
+  ],
+  "limitations": [
+    "Signal interconnect, not PCB layout or wire-length estimate",
+    "Power and unused-pin termination require board design",
+    "Fixture initialization; reset-vector boot not implemented",
+    "Pre-fit Boolean clock-edge tests, not post-fit or electrical timing"
+  ]
+}

@@ -147,7 +147,10 @@ Boot/Run·MMIO·RAM 실행, WAIT 삽입, ALU 고장 전파, 주소 래치 유지
 이 수치를 기존 0.6 MIPS와 혼용하지 않는다. 초기 PC·레지스터 값은 테스트 fixture이고,
 reset-vector를 실제 버스로 읽는 초기화 시퀀스는 이 후보에서 아직 구현하지 않았다.
 
-## 로컬 기능 배치 탐색 — 외부 레지스터 후보
+## 이전 탐색 기록 — 미채택 CPLD ALU 실험
+
+**아래 CPLD ALU 후보는 사용자의 74 ALU 유지 조건에 따라 채택하지 않는다.**
+현재 조건에 맞는 fit 조합은 다음 절의 외부 래치 + 74 ALU 구성이다.
 
 인터넷 사례 수집 대신 `python -m simulators.cyclesim.hybrid.local_search`로
 14개 블록 후보의 CUPL 생성·컴파일·실제 fit을 반복한다. 현재 ISA와 공통 DBUS를
@@ -196,3 +199,82 @@ CPU와 일치했다. 생성한 CU/출력 디코더의 핀 단위 통합 검증�
 
 관련 네 pytest 파일에서 **1,372개 테스트가 통과**했다. reset-vector 부팅, post-fit
 시뮬레이션, 실제 보드 클록/hold 타이밍은 이 결과에 포함하지 않는다.
+
+
+## 74 ALU 유지: 세 CPLD가 모두 fit되는 외부 래치 구성
+
+`external_partition.py`는 **기존 12-chip 74 ALU를 그대로 유지**하고, 단순 저장
+R0/PC_LO/PC_HI/RP_LO/RP_HI를 외부 574로 옮긴다. 기존 여섯 래치를 합쳐
+574는 11개다. DBUS가 ALU A에도 연결되며, ALU 계산 동안 선택한 레지스터가
+DBUS를 구동한다. RESULT는 ALU Y를 별도로 받아 다음 전송에서 DBUS에 출력한다.
+공통 8비트 hi/lo 전송과 기존 ISA·비중첩 실행을 유지한다.
+
+| 실제 조합 | 역할 | MC | 일반 I/O / 28 | 전용 입력 / 4 |
+|---|---|---:|---:|---:|
+| ATF1504 `extseq` | 제어 ROM 주소·다음 상태·opcode 분기·WAIT·HALT | **55/64** | **27** | **4** |
+| ATF1504 `tblaux` | 상수 DBUS·플래그·스택 검사·메모리 쓰기 보호·SUB/OE | **53/64** | **28** | **4** |
+| ATF1502 `extctrl` | 11개 래치의 클록과 레지스터 bank OE | **27/32** | **24** | **3** |
+
+세 장치 모두 **PLCC44, JTAG ON, 실제 Design fits successfully**다. 이전 65/64
+통계 후보를 재사용하지 않는다. 1502는 bank용 클록 5개, OE 5개, 기존 래치 클록
+6개를 직접 출력하므로 외부 bank 선택 디코더가 필요하지 않다. AUX가 TMP/RESULT
+OE를 맡는다. 실제 fitter pad 번호는 [external-wiring.json](external-wiring.json)에 있다.
+
+### IC 수량과 두 조합
+
+| 부품 묶음 | 수량 |
+|---|---:|
+| 74 ALU: 153×8 + 283×2 + 157×2 | 12 |
+| 74HC574 저장 래치 | 11 |
+| ATF1504×2 + ATF1502×1 | 3 |
+| 프로그램 Flash + SRAM×2 | 3 |
+| 제어 ROM | 1 |
+| 메모리 디코드 테이블 ROM | 1 |
+| 74HC14: 클록/리셋 조건화 및 RD 반전 | 1 |
+| **합계** | **32 IC** |
+
+발진기 모듈 1개, 어댑터·수동부품·메일박스 코프로세서는 별도다. 전역 최소나
+재고만으로 제작 가능하다는 주장은 아니다. 프로그램 Flash와 별개로 제어 ROM과
+디코드 ROM이 필요하며, 이 manifest에서는 세 ROM 모두 SST39SF010A로 배정한다.
+
+메모리 디코더를 기존 74 gate-only 회로 10개로 유지하는 조합도 `extseq + extaux +
+extctrl`에서 모두 fit된다. AUX는 52/64 MC, 일반 I/O 27핀이고 **총 41 IC**다.
+디코드 ROM 조합은 여기서 9 IC를 줄인다. 25개였던 과거 후보는 CU fit 실패 상태였으므로
+이 32개와 동등한 검증 수준의 완성 구성으로 비교하지 않는다.
+
+제어 ROM은 2 KiB, 전용 주소선은 uPC 9 + phase 2 = 11선이며 DBUS를 공유한다.
+디코드 ROM은 주소 A2..A15 + MAP의 15선을 입력으로 받아 32 KiB 표에서
+RAM0/RAM1/program-ROM/mailbox CE 네 개를 출력한다. A0/A1은 디코드에 불필요하다.
+ROM 테이블이 WE를 직접 만들지 않고 **AUX의 `wen_n = !(wr & romn)`**이 실제 쓰기
+구간에서만 허용한다. MEM_OE_N은 HC14가 RD를 반전한다. 이로써 주소 변경 중
+ROM 출력 변동만으로 WE가 활성화되지 않는다. 아날로그 글리치/hold 검증은 별도다.
+
+신호 연결표에는 **121개 신호 net, 524개 기능 핀 접점**이 있다. 이는 필요한 점퍼선
+개수나 길이가 아니다. DBUS 공유로 ALU A 전용 8선은 없어지지만, 래치 클록/OE와
+ROM 주소선 및 fan-out이 생기므로 전체 배선이 감소했다고 단정하지 않는다.
+
+### 실제 검증 범위와 재현
+
+`cupl_model.py`는 생성된 세 CUPL 소스의 논리식을 읽고, 각 클록에서 모든 D 식을
+동시에 평가한 뒤 외부 574의 상승 에지 캡처를 수행한다. Python Transfer 실행을
+호출하지 않는다. 74 ALU는 기존 패키지 회로 모델을 사용한다. 각 settle에서 DBUS
+다중 구동과 캡처 전후 값 변화도 검사한다.
+
+- **540개** opcode/flag·WAIT·stack·PC wrap·재귀·Boot/Run 사례에서 명령 완료 상태와
+  메모리 접근 주소·값·순서가 기준 CPU와 일치했다.
+- **10개 추가 검사**에서 테이블 ROM 통합 실행, 전체 주소/모드 디코드, ROM 쓰기 보호,
+  HALT/스택 오류 뒤 정지, ALU 고장 전파, fixture 재초기화, 실제 pad/연결표를 확인했다.
+- 전원 투입 상태는 시험 fixture다. **reset-vector 부팅은 아직 미구현**이며,
+  post-fit 시뮬레이션과 실물 타이밍/동작 클록은 아직 검증하지 않았다.
+  따라서 확인된 것은 **전체 기능 배분의 fit와 pre-fit 클록 에지 모델**이다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.external_partition
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.external_wiring
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_cupl.py -q
+```
+
+생성 PLD/JEDEC/fit 보고서/ROM 이미지는 `simulators\cyclesim\build\hybrid-partition`에
+저장한다. 소스·도구·보고서·JEDEC 해시와 핀 배치는
+[external-fit-evidence.json](external-fit-evidence.json), 기능 연결표는
+[external-wiring.json](external-wiring.json)에 보존한다.
