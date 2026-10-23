@@ -1,5 +1,8 @@
 # 새 RAM ISA의 CPLD 분할 — 18 IC
 
+후속 **두 ATF1504 + 외부 IR·카운터**의 29/35칩 비교는
+[교육용 분할 문서](ram-educational.md)를 따른다. 아래 18/24칩 결과는 비교 기준으로 유지한다.
+
 **2026-10-24 · 실험 결과.** [새 RAM ISA](../../../reference/hardware/ram-isa-experiment.md)의
 74 전용 구성 **63 IC → 18 IC**. 45개, 71.43% 감소했다.
 보유한 **ATF1504AS-10JU44 두 개와 ATF1502AS-10JU44 한 개**를 사용한다.

@@ -351,6 +351,8 @@ CPLD bitstream **Design fits pending**. 이전 P12 pipe 설계와 동결 ns 값�
 
 ATF1502를 쓰지 않는 직접 대체안은 ATF1504×2와 페이지 저장·디코더용 74HC 7개를 사용해 **24 IC**입니다. 같은 실험 ISA·6클록 동작을 유지하며, 두 CPLD의 fit과 외부 74 연결 모델 실행을 확인했습니다. 상세 비교는 위 CPLD 실험 문서를 따릅니다.
 
+교육용으로 IR·실행 단계 카운터를 외부 74에 배치한 [두 1504 비교안](simulators/cyclesim/hybrid/ram-educational.md)은 **29 IC**, PC 카운터까지 외부화하면 **35 IC**입니다. 두 안 모두 AC도 외부에 배치하며, 같은 실험 ISA의 실행 결과와 6클록 동작을 유지합니다. 실제 점퍼 배치와 구분한 신호 연결 수, vendor fit과 기능 검증 근거는 비교 문서에 기록했습니다.
+
 ### 6.3 실행 모델
 
 1. **FETCH_OPCODE** — shared bus: PC → 현재 맵의 Flash/RAM → IR
