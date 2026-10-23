@@ -13,11 +13,14 @@
 # 모든 SYS의 상태·버스 접근·메모리 결과를 두 구현 사이에서 비교
 .\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.ttl.compare
 
+# ALU 12개와 SYS 계약을 유지하면서 게이트·패키지를 최적화한 후보
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.ttl.compare --optimized
+
 # WAIT를 5번째 호스트 tick마다 삽입하여 부작용 중복 여부도 비교
 .\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.ttl.compare --wait-every 5 --output simulators/cyclesim/build/ttl-wait
 
 # 부품 모델 및 CPU 회귀 테스트
-.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_ttl_cpu.py simulators/cyclesim/tests/test_ttl_netlist.py
+.\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_ttl_cpu.py simulators/cyclesim/tests/test_ttl_netlist.py simulators/cyclesim/tests/test_ttl_optimize.py
 ```
 
 기본 출력:
@@ -75,7 +78,7 @@ MIPS 분자는 HALT/TRAP을 제외한 native retirement, 분모는 종료 HALT�
 클록을 측정한 결과가 아니다. `--wait-every 5`에서도 결과는 일치했고, 예를 들어
 반복 Fibonacci는 126 WAIT를 포함해 630 SYS가 된다. 이는 인위적인 검증 입력이다.
 
-생성된 **단순 gate 구현 후보는 185개 74HC 패키지**다. 메모리 IC, 전원, 클록,
+기본 모드의 **단순 gate 구현 후보는 185개 74HC 패키지**다. 메모리 IC, 전원, 클록,
 reset, 부하용 버퍼는 제외한다. 최소 BOM이나 정본 BOM을 뜻하지 않는다.
 동일 논리식과 상수는 공유/단순화하지만, 138 디코더·카운터·다른 게이트 계열 선택,
 그룹 간 spare gate 공유, 레지스터 재사용에 의한 최적화는 하지 않았다.
@@ -101,6 +104,42 @@ reset, 부하용 버퍼는 제외한다. 최소 BOM이나 정본 BOM을 뜻하�
 이 숫자는 **대체 CPLD/FPGA를 더하기 전의 74HC 수**다. CPLD 한 개로 들어간다는
 뜻이 아니며, 핀 수·전압·합성·배치·Design fits는 별도다. ROM 테이블로 대체할 때도
 상태 레지스터·출력 안정화·필요한 다음 상태 로직까지 자동으로 사라지지 않는다.
+
+## 1차 최적화 결과
+
+`--optimized`는 원본을 복제한 뒤 **185 → 167개**, **18개(9.7%) 감소**한
+별도 회로를 만든다. 기본 185개 모델과 그 보고서는 비교 기준으로 유지한다.
+출력은 `simulators\cyclesim\build\ttl-optimized` 아래에 저장한다.
+
+| 단계 | 74HC 패키지 |
+|---|---:|
+| 기본 후보 | 185 |
+| 상수 MUX의 gate 변환·그룹 간 공통식 공유·dead gate 제거·채널/574 재배치 | 174 |
+| 단일 소비자 AND tree를 74HC11/21로 치환 | **167** |
+
+여기서 채널 공유는 실제 패키지 제약을 지킨다. 157은 동일 select를 사용하는
+채널끼리만 묶고, 574는 동일 CLK 및 항상 활성인 Q 출력을 갖는 bit끼리 묶는다.
+각 레지스터의 enable은 외부 feedback mux에 남는다. 574 패키지는 14 → 12개,
+157은 65 → 56개다. ALU 코어 12개, ISA, 상태 비트 수, SYS 스케줄은 유지한다.
+
+최적화된 회로도 정답 모델과 매 SYS·메모리 결과를 비교한다. 모든 opcode 및 스택,
+WAIT 회귀 검증을 두 후보에 모두 적용하며, 상수 MUX 변환은 4상태 입력 전체,
+전체 회로는 X/Z를 포함한 임의 상태에서 관측값과 동시 register update를 비교한다.
+위 다섯 프로그램의 SYS와 MIPS 환산값은 최적화 전과 같다.
+
+**167개는 이번에 구현·실행한 1차 최적화 후보이며 최소값이 아니다.** 138/154
+디코더나 카운터로의 구조 변경, 임시 레지스터 재사용, 상태 인코딩 재설계는
+포함하지 않는다. 그룹 간 공통 gate 공유는 fanout과 배선 배치를 바꾸므로 실제
+보드에서 필요한 buffer 수와 속도는 별도 검증 대상이다. 메모리·reset·클록 등
+집계 제외 범위는 기본 후보와 같다.
+
+최적화 후에는 한 패키지가 여러 논리 그룹에 걸칠 수 있어 `shared`로 표시한다.
+따라서 기본 모델의 제어 55개/스택 43개 같은 단순 그룹 제거 수를 최적화 후보에
+그대로 적용하지 않으며, 최적화 보고서의 `partitions`는 비워 둔다.
+
+추가 부품 기능 출처:
+[Nexperia 74HC11, triple 3-input AND](https://assets.nexperia.com/documents/data-sheet/74HC_HCT11.pdf),
+[TI 74HC21, dual 4-input AND](https://www.ti.com/lit/ds/symlink/sn74hc21.pdf).
 
 ## 검증과 남은 경계
 

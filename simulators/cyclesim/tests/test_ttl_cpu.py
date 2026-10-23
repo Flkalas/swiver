@@ -1,11 +1,22 @@
 """Structural CPU differential tests; every run has a hard step and wall cap."""
 import random
+import sys
 
 import pytest
 
 from simulators.cyclesim.data.sequential import control_for
 from simulators.cyclesim.fixtures.rom_builder import build_fib_recursive_rom, build_fib_to_limit_rom
 from simulators.cyclesim.ttl.compare import compare_step, paired, run_pair
+
+
+@pytest.fixture(params=[False, True], ids=["baseline", "optimized"], autouse=True)
+def ttl_profile(request, monkeypatch):
+    original = paired
+
+    def make_pair(*args, **kwargs):
+        return original(*args, **kwargs, optimized=request.param)
+
+    monkeypatch.setattr(sys.modules[__name__], "paired", make_pair)
 
 
 @pytest.mark.parametrize("opcode", range(256))

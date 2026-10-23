@@ -17,8 +17,8 @@ from simulators.cyclesim.fixtures.rom_builder import build_fib_recursive_rom, bu
 from simulators.cyclesim.ttl.cpu import TtlCpu
 
 
-def paired(blob, ram=None, *, base=0, map_mode=1, r0=0, flags=0):
-    ttl, reference = TtlCpu(), CpuM3b()
+def paired(blob, ram=None, *, base=0, map_mode=1, r0=0, flags=0, optimized=False):
+    ttl, reference = TtlCpu(optimized=optimized), CpuM3b()
     for mem in (ttl.mem, reference.mem.sys):
         mem.map_mode = map_mode
         mem.load_bytes(base, blob, target="ram" if map_mode else "rom")
@@ -67,7 +67,7 @@ def partition(circuit, removed):
                 replacement_device_count=None, fit="not synthesized or fitted")
 
 
-def benchmark(*, wait_every=0):
+def benchmark(*, wait_every=0, optimized=False):
     blob, ram, target, _ = build_fib_to_limit_rom(250)
     cases = [("fibonacci_iterative_233", blob, ram, 0, target)]
     for n in (3, 8):
@@ -80,7 +80,7 @@ def benchmark(*, wait_every=0):
     cases.append(("call_ret_pairs_256", blob, {0x0F00: 0, 0x0F01: 0xF6}, base, 0))
     results = []
     for name, blob, ram, base, expected in cases:
-        ttl, reference = paired(blob, ram, base=base)
+        ttl, reference = paired(blob, ram, base=base, optimized=optimized)
         started = time.perf_counter()
         run_pair(ttl, reference, wall_s=180, wait_every=wait_every)
         if ttl.fault or ttl.r0 != expected:
@@ -108,25 +108,30 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("simulators/cyclesim/build/ttl"))
     parser.add_argument("--wait-every", type=int, default=0, help="Insert WAIT every N host ticks (N>=2)")
+    parser.add_argument("--optimized", action="store_true", help="Map and repack 74HC gates; retain the 12-package ALU")
     args = parser.parse_args()
     if args.wait_every < 0 or args.wait_every == 1: parser.error("--wait-every must be 0 or >=2")
-    rows, circuit = benchmark(wait_every=args.wait_every)
+    if args.optimized and args.output == Path("simulators/cyclesim/build/ttl"):
+        args.output = Path("simulators/cyclesim/build/ttl-optimized")
+    rows, circuit = benchmark(wait_every=args.wait_every, optimized=args.optimized)
     inventory = circuit.inventory()
     netlist = circuit.export()
-    source_paths = [Path(__file__).with_name(name) for name in ("cpu.py", "netlist.py", "compare.py")]
+    source_paths = [Path(__file__).with_name(name) for name in ("cpu.py", "netlist.py", "compare.py", "optimize.py")]
     source_paths += [Path("simulators/cyclesim") / name for name in
                      ("cpu.py", "blocks/alu8.py", "blocks/adder.py", "blocks/mux.py", "values.py",
                       "export/alu8_netlist.py", "data/isa.py", "data/sequential.py", "fixtures/rom_builder.py")]
     report = dict(schema="swiver-ttl-comparison-v1", cases=rows, inventory=inventory,
                   source_sha256={str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_paths},
                   netlist_sha256=hashlib.sha256(json.dumps(netlist, sort_keys=True).encode()).hexdigest(),
+                  optimization=getattr(circuit, "optimization", None),
                   total_74hc_packages=len(circuit.packages),
                   part_totals=dict(sorted(Counter(p.part for p in circuit.packages).items())),
-                  partitions={"control_only": partition(circuit, {"control"}),
+                  partitions=None if args.optimized else {"control_only": partition(circuit, {"control"}),
                               "control_and_stack": partition(circuit, {"control", "stack"}),
                               "everything_except_alu": partition(circuit, set(inventory) - {"alu", "alu_glue"})},
                   deepest_register_paths=circuit.depth_report(),
-                  assumptions=["Zero-delay four-state package equations; counts are this unoptimized candidate, not a minimum BOM.",
+                  assumptions=["Zero-delay four-state package equations; counts are this candidate, not a minimum BOM.",
+                               "Optimized shared packages cross logical groups, so simple per-group device-cut counts are omitted for that profile.",
                                "Memory storage/MMIO devices and initial reset state remain testbench boundaries.",
                                "Same native ISA and SYS schedule; HALT/TRAP excluded from MIPS numerator, all SYS included.",
                                "2 MHz is assumed, not timing-qualified. Logic levels are not nanoseconds.",

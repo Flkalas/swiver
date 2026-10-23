@@ -216,7 +216,10 @@ class Circuit:
             else:
                 x = [v[i] for i in ins]
                 if kind == "74HC04": result = [logic_not(x[0])]
-                elif kind == "74HC08": result = [logic_and(*x)]
+                elif kind in ("74HC08", "74HC11", "74HC21"):
+                    value = 1
+                    for bit in x: value = logic_and(value, bit)
+                    result = [value]
                 elif kind == "74HC32": result = [logic_or(*x)]
                 elif kind == "74HC157": result = [mux2(x[2], x[0], x[1])]
                 elif kind == "74HC245":
@@ -254,11 +257,11 @@ class Circuit:
     def export(self):
         def pins(p):
             result = {pin: self.names[n] for pin, n in p.pins.items()}
-            if p.part in ("74HC04", "74HC08", "74HC32", "74HC157"):
-                channels = 6 if p.part == "74HC04" else 4
+            if p.part in ("74HC04", "74HC08", "74HC32", "74HC157", "74HC11", "74HC21"):
+                channels = {"74HC04": 6, "74HC11": 3, "74HC21": 2}.get(p.part, 4)
+                letters = {"74HC04": "A", "74HC11": "ABC", "74HC21": "ABCD"}.get(p.part, "AB")
                 for ch in range(1, channels + 1):
-                    result.setdefault(f"{ch}A", "GND")
-                    if p.part != "74HC04": result.setdefault(f"{ch}B", "GND")
+                    for letter in letters: result.setdefault(f"{ch}{letter}", "GND")
                     result.setdefault(f"{ch}Y", None)
             elif p.part == "74HC574":
                 for ch in range(8):

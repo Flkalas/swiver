@@ -18,7 +18,7 @@ FAULTS = {0: None, 1: "invalid return stack pointer", 2: "return stack overflow"
           3: "return stack underflow"}
 
 
-def build_cpu():
+def build_cpu(*, optimized=False):
     c = Circuit()
     bus = c.bus("DBUS", 8)
     wait = c.bus("WAIT", 1)[0]
@@ -143,12 +143,16 @@ def build_cpu():
     for name, bit in strobes.items(): c.probes[name] = [bit]
     c.probes.update(RETIRED=[done], ROM_SEL=[rom], RAM_SEL=[ram], MAILBOX_SEL=[mailbox])
     c.finalize()
+    if optimized:
+        from simulators.cyclesim.ttl.optimize import optimize
+        c = optimize(c)
+        strobes = {name: c.probes[name][0] for name in strobes}
     return c, strobes
 
 
 class TtlCpu:
-    def __init__(self):
-        self.circuit, self.strobes = build_cpu()
+    def __init__(self, *, optimized=False):
+        self.circuit, self.strobes = build_cpu(optimized=optimized)
         self.mem = MemSystem()
         self.trace: list[SysTrace] = []
         self._wait_next = False
