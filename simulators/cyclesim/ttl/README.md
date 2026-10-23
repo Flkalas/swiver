@@ -26,7 +26,7 @@
 기본 출력:
 
 - `simulators\cyclesim\build\ttl\netlist.json`: 기능 핀 연결, 부품별 그룹, 관측 신호.
-- `simulators\cyclesim\build\ttl\comparison.json`: 실행 결과, 부품 집계, 통합 후보 경계,
+- `simulators\cyclesim\build\ttl\comparison.json`: 실행 결과, 모델 부품 집계, 모델 그룹 경계,
   조합 논리 깊이, 소스와 넷리스트 SHA-256.
 
 출력은 gitignored이며 명령으로 재생성한다. 호스트 실행 시간은 CPU MIPS와 분리한다.
@@ -96,14 +96,15 @@ reset, 부하용 버퍼는 제외한다. 최소 BOM이나 정본 BOM을 뜻하�
 | 메모리 선택 | 8 |
 | 합계 | 185 |
 
-`comparison.json`은 그룹을 통합했을 때 제거되는 부품과 남는 부품, 경계를 가로지르는
-신호도 집계한다. 제어 그룹만 옮기면 이 후보에서 **55개가 통합 대상, 130개가 잔류**한다.
-제어+스택은 **98개가 통합 대상, 87개가 잔류**한다. 따라서 이번 후보에서는 ALU보다
-제어·스택·주소 경로가 부품 수의 큰 부분이다.
+`comparison.json` v2의 `model_group_cuts`는 모델 그룹 안팎의 패키지를 세는
+장부 정보다. **130/87/16을 CPLD 통합 후 잔여 칩 수로 해석하면 안 된다.**
+실제 통합 회로는 구현하지 않았으며 `is_hybrid_bom=false`, `hybrid_bom_count=null`이다.
+기존 CPLD 설계의 구매 목록과도 다른 회로다.
 
-이 숫자는 **대체 CPLD/FPGA를 더하기 전의 74HC 수**다. CPLD 한 개로 들어간다는
-뜻이 아니며, 핀 수·전압·합성·배치·Design fits는 별도다. ROM 테이블로 대체할 때도
-상태 레지스터·출력 안정화·필요한 다음 상태 로직까지 자동으로 사라지지 않는다.
+이 모델에는 trace 관측용 TRAP/STACK_PUSH/STACK_POP 출력 논리와 2비트 fault
+진단 레지스터도 포함된다. 스택 오류를 검출하고 쓰기를 막는 기능은 실행 계약이지만,
+오류 코드 보관과 trace 출력까지 제품 회로에 그대로 둘 필요는 없다. 이들을 포함한
+185/167개는 최소 CPU 부품 수가 아니다. 상세: [통합 구현 감사](../../../reference/hardware/cpld-integration-audit.md).
 
 ## 1차 최적화 결과
 
@@ -135,7 +136,7 @@ WAIT 회귀 검증을 두 후보에 모두 적용하며, 상수 MUX 변환은 4�
 
 최적화 후에는 한 패키지가 여러 논리 그룹에 걸칠 수 있어 `shared`로 표시한다.
 따라서 기본 모델의 제어 55개/스택 43개 같은 단순 그룹 제거 수를 최적화 후보에
-그대로 적용하지 않으며, 최적화 보고서의 `partitions`는 비워 둔다.
+그대로 적용하지 않으며, 최적화 보고서의 `model_group_cuts`는 비워 둔다.
 
 추가 부품 기능 출처:
 [Nexperia 74HC11, triple 3-input AND](https://assets.nexperia.com/documents/data-sheet/74HC_HCT11.pdf),

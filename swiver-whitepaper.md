@@ -170,6 +170,11 @@ v1.0 sequential은 **통합 64 KiB 주소 공간과 공유 명령·데이터 버
 
 **G-IC:** `reg_we` only (CU→DP).
 
+이 핀 요약은 완성된 순차 CPU 결선표가 아닙니다. 특히 `OPC[4:0]`만으로는
+`0x01`과 reserved `0x21`을 구분할 수 없어 상위 opcode 비트 검증 경로가 필요합니다.
+DP의 현재 정의는 R0뿐이며 전체 데이터패스의 CPLD 통합을 뜻하지 않습니다.
+구현 공백과 부품 집계 범위는 [통합 구현 감사](reference/hardware/cpld-integration-audit.md)를 참고합니다.
+
 ### 3.3 검증 (학습자 경로)
 
 
@@ -274,6 +279,9 @@ ALU A는 CPLD **R0**; ALU B는 **MBR**. 변수·스크래치는 **RAM** ([callin
 물리: **74HC138×2** + 08/32/04 glue — CPLD는 주소 디코드에 관여하지 않음 ([memory-map.md](reference/hardware/memory-map.md)).
 
 ### 5.4 시퀀서 하드웨어
+
+아래는 기존 역할 요약이며 확정 수량표가 아닙니다. 구매 목록의 574×4/161×3과
+PC·IR·abs16·CALL/RET 임시 상태의 실제 할당을 아직 대조하지 못했습니다.
 
 
 | 부품            | 역할                                      |

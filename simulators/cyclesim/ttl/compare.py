@@ -54,17 +54,17 @@ def run_pair(ttl, reference, *, max_steps=100_000, wall_s=60, wait_every=0):
     raise TimeoutError(f"74HC differential step cap {max_steps}")
 
 
-def partition(circuit, removed):
-    """Exact cut of this candidate, not a fitted CPLD/FPGA implementation."""
+def model_group_cut(circuit, removed):
+    """Bookkeeping over model groups; never a realizable hybrid BOM."""
     inside = [p for p in circuit.packages if p.group in removed]
     outside = [p for p in circuit.packages if p.group not in removed]
     internal_nets = {n for p in inside for n in p.pins.values()} - {0, 1, circuit.clock_net}
     external_nets = {n for p in outside for n in p.pins.values()} - {0, 1, circuit.clock_net}
-    return dict(groups=sorted(removed), removed_74hc_packages=len(inside),
-                remaining_74hc_packages=len(outside),
+    return dict(groups=sorted(removed), inside_model_packages=len(inside),
+                outside_model_packages=len(outside), is_hybrid_bom=False,
                 shared_signal_nets_excluding_clock_power=len(internal_nets & external_nets),
                 shared_signals=sorted(circuit.names[n] for n in internal_nets & external_nets),
-                replacement_device_count=None, fit="not synthesized or fitted")
+                hybrid_bom_count=None, fit="not synthesized or fitted")
 
 
 def benchmark(*, wait_every=0, optimized=False):
@@ -120,15 +120,17 @@ def main():
     source_paths += [Path("simulators/cyclesim") / name for name in
                      ("cpu.py", "blocks/alu8.py", "blocks/adder.py", "blocks/mux.py", "values.py",
                       "export/alu8_netlist.py", "data/isa.py", "data/sequential.py", "fixtures/rom_builder.py")]
-    report = dict(schema="swiver-ttl-comparison-v1", cases=rows, inventory=inventory,
+    report = dict(schema="swiver-ttl-comparison-v2", cases=rows, inventory=inventory,
+                  count_scope="all_74hc_comparison_model_including_diagnostic_logic",
+                  is_hybrid_bom=False, hybrid_bom_count=None,
                   source_sha256={str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in source_paths},
                   netlist_sha256=hashlib.sha256(json.dumps(netlist, sort_keys=True).encode()).hexdigest(),
                   optimization=getattr(circuit, "optimization", None),
                   total_74hc_packages=len(circuit.packages),
                   part_totals=dict(sorted(Counter(p.part for p in circuit.packages).items())),
-                  partitions=None if args.optimized else {"control_only": partition(circuit, {"control"}),
-                              "control_and_stack": partition(circuit, {"control", "stack"}),
-                              "everything_except_alu": partition(circuit, set(inventory) - {"alu", "alu_glue"})},
+                  model_group_cuts=None if args.optimized else {"control_only": model_group_cut(circuit, {"control"}),
+                              "control_and_stack": model_group_cut(circuit, {"control", "stack"}),
+                              "everything_except_alu": model_group_cut(circuit, set(inventory) - {"alu", "alu_glue"})},
                   deepest_register_paths=circuit.depth_report(),
                   assumptions=["Zero-delay four-state package equations; counts are this candidate, not a minimum BOM.",
                                "Optimized shared packages cross logical groups, so simple per-group device-cut counts are omitted for that profile.",
@@ -136,7 +138,8 @@ def main():
                                "Same native ISA and SYS schedule; HALT/TRAP excluded from MIPS numerator, all SYS included.",
                                "2 MHz is assumed, not timing-qualified. Logic levels are not nanoseconds.",
                                "Depth paths treat register Q and DBUS as independent launch boundaries; external memory round trip and false-path pruning are omitted.",
-                               "Partitions are package cuts, not proof of fit, pin compatibility or replacement device count."])
+                               "Model group cuts are bookkeeping only, not a hybrid BOM or a replacement device estimate.",
+                               "Trace-only outputs and a two-bit diagnostic fault register are included; required stack guards are distinct from diagnostic reporting."])
     args.output.mkdir(parents=True, exist_ok=True)
     for filename, obj in (("comparison.json", report), ("netlist.json", netlist)):
         (args.output / filename).write_text(json.dumps(obj, indent=2) + "\n", encoding="utf-8")

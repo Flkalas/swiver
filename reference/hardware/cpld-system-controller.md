@@ -6,7 +6,7 @@
 
 **Related:** [control-and-decode.md](control-and-decode.md) · [cpld-dual-routing.md](cpld-dual-routing.md) · [cpld-dual-jtag.md](cpld-dual-jtag.md) · [microcode-spec.md](microcode-spec.md)
 
-**Bitstream:** Sequential CU **Design fits pending**. DP is **R0-only** PLD (`q_a`).
+**Implementation:** CU and R0-only DP (`q_a`) are specifications. No active tracked PLD/HDL or fitted bitstream is supplied under `cpld/`; sequential **Design fits pending**. The Python DP model is not a fitted PLD.
 
 ---
 
@@ -25,6 +25,12 @@
 ---
 
 ## 2. CPLD-CU port list
+
+This is an incomplete interface sketch, not a complete sequential pin assignment.
+`OPC[4:0]` alone aliases valid `0x01` with reserved `0x21`; upper-bit qualification
+or a wider decode input is required. Stack-pointer guard inputs, temporary-state
+allocation and address-path controls also need an explicit implementation.
+See [implementation audit](cpld-integration-audit.md).
 
 ### Inputs
 
