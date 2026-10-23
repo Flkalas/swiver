@@ -5,6 +5,11 @@
 후속 [기가트론 비교 연구](gigatron-lessons-2026-10-23.md)는 적용 가능한 제어·부품 선택과
 현재 PC/RP 증감 전송 비용을 원본 회로 및 로컬 실행으로 확인한다.
 
+**최신 74 전용 축소 후보:** `compact_ttl.py` — 공통 증감·단계 CU를 유지하면서
+**247 → 131개 74HC**, 메모리 3개 포함 **134 IC**로 줄였다.
+아래 「전용 부품으로 다시 설계한 131개 구성」과 실행 근거를 따른다.
+이전 247개 자동 게이트 변환 후보는 비교 기준으로 보존한다.
+
 ## INC/DEC ALU 제어 연결 — 첫 구현 단계
 
 `incdec.IncDecCpu`는 기존 12칩 ALU의 **INC/DEC를 실제 부품 연결로 구동하는 실행 후보**다.
@@ -494,3 +499,73 @@ CPLD 식을 직접 게이트로 옮긴 후보는 294개, 중간 명령 코드 �
 생성 넷리스트와 집계는 `simulators\cyclesim\build\structured-ttl\`에 저장한다.
 수량·소스 해시·재귀 CALL/RET 검증 기록은
 [structured-ttl-evidence.json](structured-ttl-evidence.json)에 보존한다.
+
+## 전용 부품으로 다시 설계한 131개 구성
+
+`compact_ttl.py`는 CPLD 식의 자동 게이트 변환을 대신하여, 실제 74 패키지의
+기능에 맞춰 제어와 저장·버스를 다시 설계한 후보다. ISA, 외부 12칩 ALU,
+공통 PC/RP 증감, 단계별 순차 실행, 스택 범위·정렬·overflow/underflow 검사를
+유지한다. CPLD와 제어 ROM은 없다.
+
+| 기능 | 부품 | 수량 |
+|---|---|---:|
+| 기존 ALU | 153×8 + 283×2 + 157×2 | 12 |
+| 데이터·opcode 저장 | 377 | 12 |
+| 플래그·오류·operand 상태 | 574 | 1 |
+| 주 절차·공통 단계·버스 위상 | 161 | 4 |
+| 주 절차·단계·위상·명령 디코드 | 238 | 8 |
+| 공통 버스 3-state 드라이버 | 244 | 9 |
+| 기타 제어 MUX | 157 | 6 |
+| 반전 | 04 | 14 |
+| AND | 08×27 + 11×3 + 21×7 | 37 |
+| OR | 32×15 + 4075×13 | 28 |
+| **74HC 합계** | | **131** |
+| 프로그램 Flash + SRAM×2 | | **3** |
+| **메모리 포함** | | **134** |
+
+247개 기준 **116개, 46.96% 감소**다. 발진기, 물리 reset/부팅 회로, 부하 버퍼,
+메일박스 코프로세서, 전원·수동부품은 이전과 같이 별도다. 구매 가능 패키지와
+현재 재고만으로 제작 가능한지는 이번 기능·수량 검증에 포함하지 않는다.
+
+변경 내용:
+
+- 11바이트 데이터 저장의 574+유지용 157×2를 enable 내장 377로 바꾸었다.
+  **데이터 유지용 MUX 22개를 없앴다.** opcode도 377 하나에 저장한다.
+- 157 선택망으로 흉내 내던 버스를 실제 3-state 공통 버스로 바꾸었다.
+  레지스터 8곳과 상수 출력을 244×9로 연결하고, 메모리는 같은 버스를 직접 구동한다.
+- 주 절차 5비트는 161×2, 공통 단계와 버스 위상은 각각 161×1이다.
+  161의 병렬 load/enable/RCO를 실제로 연결하여 다음 값을 계산하는 게이트를 줄였다.
+- 주 절차·단계·명령을 238로 디코드하고, 소스·목적지·ALU 동작을 직접 생성한다.
+  외부 opcode를 중간 class 비트로 다시 인코딩하는 회로도 제거했다.
+- 단일 소비자 OR tree를 3입력 OR가 세 개 든 4075로 묶었다. 같은 select를 공유하는
+  MUX, 같은 클록의 574만 패키징하며, 377의 서로 다른 enable을 합치지 않는다.
+
+부품 기능은 [377](https://assets.nexperia.com/documents/data-sheet/74HC_HCT377.pdf),
+[161](https://www.ti.com/lit/ds/symlink/cd74hc161.pdf),
+[238](https://assets.nexperia.com/documents/data-sheet/74HC_HCT238.pdf),
+[244](https://assets.nexperia.com/documents/data-sheet/74HC_HCT244.pdf),
+[4075](https://assets.nexperia.com/documents/data-sheet/74HC_HCT4075.pdf)의 기능표에 따른다.
+377은 enable이 LOW일 때만 공통 상승 에지에서 적재한다. 161의 clear는 비동기이며,
+load가 count enable보다 우선한다. 버스 충돌은 X로 해석하며 CPU 실행 중에는
+두 드라이버가 동시에 켜지지 않는지도 검사한다. ALU 결과를 고장 주입하면 PC에도
+반영된다. 제어·증감·스택 검사에 호스트의 opcode 실행 함수를 사용하지 않는다.
+
+최종 후보에서 256 opcode × 두 플래그 조건, PC wrap, CALL/RET 경계, Boot/Run 보호,
+MMIO, WAIT, 재귀 실행과 ALU 고장 전파 **541개**가 통과했다. 새 부품 및 패키지
+수량 경계 검사는 **6개**, 기존 netlist/optimizer 회귀는 **10개**, 기존 74 CPU
+회귀는 **580개**가 통과했다. 반복 Fibonacci 8,920, 재귀 Fibonacci(3) 6,604,
+ADD 256회 12,316 tick으로 기존 공통 증감 후보의 클록 수를 유지한다.
+
+이 수량은 생성된 부품 연결에서 센 값이다. 최소 칩 수, 실물 최대 클록, ns 글리치·
+fanout·setup/hold 검증 완료를 뜻하지 않는다. 전원 투입 상태는 fixture이고
+reset-vector 부팅은 별도다. Gigatron과 동일한 칩 수를 달성했다는 주장도 아니다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.compact_ttl
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_structured_ttl.py -k CompactTtlCpu -q
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_compact_ttl_parts.py -q
+```
+
+`simulators\cyclesim\build\compact-ttl\netlist.json`은 실제 패키지·기능 핀 연결,
+`comparison.json`은 집계와 프로그램 대조 결과다. 소스/넷리스트 해시를 포함한
+기록은 [compact-ttl-evidence.json](compact-ttl-evidence.json)에 보존한다.

@@ -1,0 +1,121 @@
+{
+  "scope": "Package-oriented all-74 shared-adjust and class/step CPU; no timing acceptance",
+  "baseline_logic_packages": 247,
+  "logic_packages": 131,
+  "saved_packages": 116,
+  "reduction_fraction": 0.46963562753036436,
+  "program_memory_packages": 3,
+  "logic_plus_program_memory": 134,
+  "parts": {
+    "74HC04": 14,
+    "74HC08": 27,
+    "74HC11": 3,
+    "74HC153": 8,
+    "74HC157": 8,
+    "74HC161": 4,
+    "74HC21": 7,
+    "74HC238": 8,
+    "74HC244": 9,
+    "74HC283": 2,
+    "74HC32": 15,
+    "74HC377": 12,
+    "74HC4075": 13,
+    "74HC574": 1
+  },
+  "groups": {
+    "alu": {
+      "74HC153": 8,
+      "74HC157": 2,
+      "74HC283": 2
+    },
+    "alu_control": {
+      "74HC157": 1
+    },
+    "bus": {
+      "74HC04": 1,
+      "74HC08": 1,
+      "74HC244": 9
+    },
+    "control": {
+      "74HC04": 4,
+      "74HC08": 17,
+      "74HC157": 1,
+      "74HC161": 4,
+      "74HC238": 8,
+      "74HC32": 10,
+      "74HC377": 1,
+      "74HC4075": 10,
+      "74HC574": 1
+    },
+    "datapath": {
+      "74HC377": 11
+    },
+    "flags_stack_checks": {
+      "74HC04": 2,
+      "74HC08": 2,
+      "74HC11": 1,
+      "74HC157": 3,
+      "74HC21": 3,
+      "74HC4075": 3
+    },
+    "memory_decode": {
+      "74HC04": 2,
+      "74HC08": 2,
+      "74HC21": 2,
+      "74HC32": 1
+    },
+    "shared": {
+      "74HC04": 5,
+      "74HC08": 5,
+      "74HC11": 2,
+      "74HC157": 1,
+      "74HC21": 2,
+      "74HC32": 4
+    }
+  },
+  "cplds": 0,
+  "control_roms": 0,
+  "isa_and_stack_checks_preserved": true,
+  "cases": [
+    {
+      "name": "fib_iterative",
+      "ticks": 8920,
+      "instructions": 160,
+      "architectural_and_memory_access_match": true
+    },
+    {
+      "name": "fib_recursive_3",
+      "ticks": 6604,
+      "instructions": 107,
+      "architectural_and_memory_access_match": true
+    },
+    {
+      "name": "add_256",
+      "ticks": 12316,
+      "instructions": 257,
+      "architectural_and_memory_access_match": true
+    }
+  ],
+  "physical_timing_verified": false,
+  "procurement_availability_verified": false,
+  "excludes": [
+    "oscillator",
+    "physical reset/boot circuit",
+    "load buffers",
+    "mailbox coprocessor",
+    "power/passives"
+  ],
+  "source_sha256": {
+    "simulators/cyclesim/hybrid/compact_ttl.py": "8e2196624b6069803f9929e06838c085b73c39a50c55b413d89783458e36a658",
+    "simulators/cyclesim/hybrid/structured_ttl.py": "987f0c2d47967afb17ac4208f66ed9695430bedd6f4176a734b1dd4fdb3175eb",
+    "simulators/cyclesim/ttl/netlist.py": "d054768bd7da2b3b88686b4186dc49060247edcb17e83c0c8d1150797a5c7a3a",
+    "simulators/cyclesim/ttl/optimize.py": "a6a1f5753d9ffc25485c69c306b84e32a5dc4f7601cbbac08da240881722b76b"
+  },
+  "netlist_sha256": "968bd286248b577faf76de4ca059571f54909134f122fe6eda346ec8a1719688",
+  "validation": {
+    "compact_cpu_tests_passed": 541,
+    "package_tests_passed": 6,
+    "netlist_optimizer_regressions_passed": 10,
+    "original_ttl_cpu_regressions_passed": 580
+  }
+}

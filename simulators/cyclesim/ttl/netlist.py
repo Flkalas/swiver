@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 from simulators.cyclesim.blocks.alu8 import chip_outputs
 from simulators.cyclesim.blocks.mux import mux2
-from simulators.cyclesim.values import X, Z, from_bits, logic_and, logic_not, logic_or
+from simulators.cyclesim.values import X, Z, from_bits, logic_and, logic_not, logic_or, resolve
 
 
 @dataclass
@@ -240,9 +240,23 @@ class Circuit:
                     for bit in x: value = logic_and(value, bit)
                     result = [value]
                 elif kind == "74HC32": result = [logic_or(*x)]
+                elif kind == "74HC4075": result = [logic_or(logic_or(x[0],x[1]),x[2])]
                 elif kind == "74HC157": result = [mux2(x[2], x[0], x[1])]
                 elif kind == "74HC245":
                     result = [Z if x[8] == 1 else bit if x[8] == 0 else X for bit in x[:8]]
+                elif kind == "74HC244":
+                    result = [Z if x[8] == 1 else bit if x[8] == 0 else X for bit in x[:8]]
+                elif kind == "74HC238":
+                    enabled = logic_and(logic_and(logic_not(x[3]), logic_not(x[4])), x[5])
+                    address = from_bits(x[:3])
+                    result = [0 if enabled == 0 else int(i == address)
+                              if enabled == 1 and address is not None else X for i in range(8)]
+                elif kind == "RESOLVE":
+                    result = [resolve(x)]
+                elif kind == "161_RCO":
+                    value = 1
+                    for bit in x: value = logic_and(value, bit)
+                    result = [value]
                 elif kind == "74HC283":
                     pins = {f"A{i}": x[i] for i in range(4)}
                     pins.update({f"B{i}": x[i + 4] for i in range(4)})
@@ -276,9 +290,9 @@ class Circuit:
     def export(self):
         def pins(p):
             result = {pin: self.names[n] for pin, n in p.pins.items()}
-            if p.part in ("74HC04", "74HC08", "74HC32", "74HC157", "74HC11", "74HC21"):
-                channels = {"74HC04": 6, "74HC11": 3, "74HC21": 2}.get(p.part, 4)
-                letters = {"74HC04": "A", "74HC11": "ABC", "74HC21": "ABCD"}.get(p.part, "AB")
+            if p.part in ("74HC04", "74HC08", "74HC32", "74HC157", "74HC11", "74HC21", "74HC4075"):
+                channels = {"74HC04": 6, "74HC11": 3, "74HC21": 2, "74HC4075": 3}.get(p.part, 4)
+                letters = {"74HC04": "A", "74HC11": "ABC", "74HC21": "ABCD", "74HC4075": "ABC"}.get(p.part, "AB")
                 for ch in range(1, channels + 1):
                     for letter in letters: result.setdefault(f"{ch}{letter}", "GND")
                     result.setdefault(f"{ch}Y", None)

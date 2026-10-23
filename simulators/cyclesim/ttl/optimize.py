@@ -12,7 +12,7 @@ from copy import deepcopy
 from simulators.cyclesim.ttl.netlist import Package
 
 CAPACITY = {"74HC04": 6, "74HC08": 4, "74HC32": 4, "74HC157": 4,
-            "74HC11": 3, "74HC21": 2}
+            "74HC11": 3, "74HC21": 2, "74HC4075": 3}
 
 
 def inputs(op):
@@ -23,7 +23,7 @@ def outputs(op):
     return list(op[2].values()) if op[0] == "ALU" else list(op[2])
 
 
-def optimize(original, *, multi_input=True):
+def optimize(original, *, multi_input=True, multi_or=False):
     c = deepcopy(original)
     source = {p.ref: p for p in c.packages}
     aliases = {}
@@ -72,22 +72,25 @@ def optimize(original, *, multi_input=True):
     sinks = [n for bits in c.probes.values() for n in bits]
     sinks += [n for _, _, d in registers for n in d]
 
-    if multi_input:
+    if multi_input or multi_or:
         # Collapse single-consumer AND trees only. No duplicate fanout logic.
         users = Counter(sinks + [n for op in ops for n in inputs(op)])
         producers = {n: op for op in ops for n in outputs(op)}
         rewritten = []
         for kind, ins, out, ref in ops:
-            if kind == "74HC08":
+            if (multi_input and kind == "74HC08") or (multi_or and kind == "74HC32"):
+                original_kind = kind
                 leaves = list(ins)
-                while len(leaves) < 4:
+                limit = 4 if kind == "74HC08" else 3
+                while len(leaves) < limit:
                     child = next((n for n in leaves if users[n] == 1 and n in producers
-                                  and producers[n][0] == "74HC08"), None)
+                                  and producers[n][0] == original_kind), None)
                     if child is None: break
                     leaves.remove(child)
                     leaves.extend(producers[child][1])
                 if len(leaves) > 2:
-                    kind, ins = {3: "74HC11", 4: "74HC21"}[len(leaves)], tuple(leaves)
+                    kind = {3: "74HC11", 4: "74HC21"}[len(leaves)] if original_kind == "74HC08" else "74HC4075"
+                    ins = tuple(leaves)
             rewritten.append((kind, ins, out, ref))
         ops = rewritten
 
@@ -109,6 +112,9 @@ def optimize(original, *, multi_input=True):
         return p
 
     for kind, ins, out, ref in ops:
+        if kind in ("RESOLVE", "161_RCO"):
+            packed_ops.append((kind, ins, out, ref))
+            continue
         old = source[ref]
         if kind == "ALU":
             p = package(old.part, "alu", ref)
@@ -132,11 +138,17 @@ def optimize(original, *, multi_input=True):
             p.pins.update({f"B{i}": ins[4 + i] for i in range(4)})
             p.pins.update({f"S{i}": out[i] for i in range(4)})
             p.pins.update(CIN=ins[8], COUT=out[4])
-        elif kind == "74HC245":
+        elif kind in ("74HC245", "74HC244"):
             p = package(kind, old.group)
             p.pins.update({f"A{i}": ins[i] for i in range(8)})
             p.pins.update({f"B{i}": out[i] for i in range(8)})
-            p.pins.update(DIR=1, OE_N=ins[8])
+            if kind == "74HC245": p.pins.update(DIR=1, OE_N=ins[8])
+            else: p.pins.update(OE1_N=ins[8], OE2_N=ins[8])
+        elif kind == "74HC238":
+            p = package(kind, old.group)
+            p.pins.update({f"A{i}": ins[i] for i in range(3)})
+            p.pins.update(E1_N=ins[3], E2_N=ins[4], E3=ins[5])
+            p.pins.update({f"Y{i}": out[i] for i in range(8)})
         else: raise ValueError(f"cannot repack {kind}")
         packed_ops.append((kind, ins, out, p.ref))
 
