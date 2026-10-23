@@ -41,9 +41,21 @@ uv run --python .venv\Scripts\python.exe -m simulators.cyclesim viewer
 ```
 
 브라우저 또는 Orca 브라우저에서 **http://127.0.0.1:8765/** 를 연다.
-화면에서 **칩 배선도**, **게이트 배선도**, **830 배치 탐색**, **12칩 전체 구조**를
-선택한다. 빵판 탐색기도 같은 서버에서 사용하므로 별도 실행 명령은 없다.
+화면에서 **CPU 전체 연결도**, **ALU 칩 배선도**, **게이트 배선도**, **830 배치 탐색**,
+**ALU 12칩 전체 구조**를 선택한다. 빵판 탐색기도 같은 서버에서 사용하므로 별도 실행 명령은 없다.
 실행한 터미널에서 `Ctrl+C`를 누르면 종료된다.
+
+**CPU 전체 연결도 바로 열기:** [35칩 구성](http://127.0.0.1:8765/?view=cpu&variant=35),
+[29칩 구성](http://127.0.0.1:8765/?view=cpu&variant=29),
+[24칩 구성](http://127.0.0.1:8765/?view=cpu&variant=24).
+화면 오른쪽 위에서 구성을 전환하고, 버스 → 비트 → 연결된 칩의 핀 순서로 따라간다.
+칩을 누르면 기능 핀별 연결표가 나온다. 검색, 신호 종류 필터, 드래그 이동,
+확대/축소, 선택 확대와 연결표 JSON 다운로드를 지원한다.
+
+이 화면은 [실험용 RAM ISA의 두 CPLD 비교](simulators/cyclesim/hybrid/ram-educational.md)에
+사용한 연결표다. CPLD 신호 핀은 저장된 vendor fit의 PLCC44 번호를 표시하고,
+74·메모리는 기능 핀명을 표시한다. 논리 연결과 칩/단자 수를 보는 화면이며,
+CPU 실행 파형·실제 점퍼 배치·보드 타이밍은 표시하지 않는다.
 
 ### 2. 수정하면서 실행 — 자동 리로드
 
@@ -137,13 +149,15 @@ uv run --python .venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/tes
 uv pip install --python .venv\Scripts\python.exe -r simulators\cyclesim\requirements-viewer-dev.txt
 uv run --python .venv\Scripts\python.exe -m playwright install chromium
 
-# ALU 뷰어 / 830 배치 탐색기 검증
+# CPU 전체 연결도 / ALU 뷰어 / 830 배치 탐색기 검증
+uv run --python .venv\Scripts\python.exe -m simulators.cyclesim.verify_cpu_viewer
 uv run --python .venv\Scripts\python.exe -m simulators.cyclesim.verify_viewer
 uv run --python .venv\Scripts\python.exe -m simulators.cyclesim.verify_placement
 ```
 
 검증 명령은 임시 로컬 서버를 직접 열고 닫는다. 스크린샷과 결과는
-`simulators\cyclesim\build\viewer-evidence`에 저장한다.
+ALU는 `simulators\cyclesim\build\viewer-evidence`, CPU 연결도는
+`simulators\cyclesim\build\cpu-viewer-evidence`에 저장한다.
 
 ### 7. CPU 예제 프로그램 실행 (CLI)
 

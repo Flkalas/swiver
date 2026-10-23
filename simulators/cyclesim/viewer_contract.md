@@ -84,3 +84,52 @@ only in SUB/CMP. CPU policy is descriptive and does not update CPU state.
 Direct mode has null ACC policy and no implied flag writes.
 NOP uses existing zero controls, so physical Y=A; CPU state holds.
 CMP makes SUB Y and carry but inhibits ACC writes.
+
+## CPU topology API v1 (independent of ALU observations)
+
+Open `/?view=cpu&variant=35` for the experimental RAM ISA whole-CPU view.
+`variant` may be `24`, `29`, or `35`; the root URL still opens the ALU assembly view.
+
+- `GET /api/cpu/circuit?variant=35`: `swiver-cpu-viewer-v1` topology.
+- `GET /api/cpu/netlist?variant=35`: the original comparison manifest, for download.
+- Omitted variant defaults to `35`; invalid, duplicate, or extra query arguments return 400.
+- Unavailable or inconsistent evidence returns 503 with `{error: string}`. These
+  read-only endpoints never change the ALU session.
+
+`cpu_viewer_model.py` regenerates the manifests using the tracked
+`hybrid/ram-educational-evidence.json` fit records. It checks generated CUPL source
+hashes, successful/consistent fit results, manifest hashes and wiring metrics.
+No vendor executable, ignored build output, or CPU simulation is run by the server.
+The evidence is read afresh for each topology request.
+
+```text
+{
+  schema, variant, variants: [{id,title,description}], title, description,
+  total_ic, logic_74, part_totals, metrics, netlist_sha256, board,
+  components: [{id,part,group,role,pins:{functional_pin:net_id|null},
+                signal_pads:{functional_pin:PLCC44_pad}, fit?:{...}}],
+  nets: [{id,kind:"data"|"address"|"control"|"power"|"jtag",
+          inter_ic, endpoints:[{component,pin,pad:number|null}]}],
+  buses: [{id,label,nets:[least_significant_net,...]}],
+  boundary, pin_boundary, count_boundary, excluded
+}
+```
+
+Only fitted CPLD **signal** pins have physical pad numbers. Other pins retain
+functional names; null pins are NC, not grounded. The manifest does not expand
+all physical power contacts. Bus membership is explicit; `PC` excludes `PC_CARRY`
+and `A` excludes `ADDRESS`. All endpoints, including multiple inputs on the same
+package, are listed separately.
+
+The SVG draws one logical branch per connected chip for the selected net or
+explicit bus bundle. These strokes are not placed wires or physical jumper counts.
+Chip selection opens its pin table; choosing a pin selects its actual net.
+The UI does not display CPU electrical values or simulate CPU execution. Geometry,
+pan/zoom, filtering and selection remain client-side; ALU polling does not reset
+them. New variant requests cancel old ones and ignore obsolete responses even if
+cancellation is ineffective. Failed requests hide the old topology and offer retry.
+
+Validation: `python -m simulators.cyclesim.verify_cpu_viewer` runs real Chromium
+against an ephemeral server, checks all variants, pins, downloads, selection,
+out-of-order responses, failure/retry, ALU separation and narrow layouts. Its
+screenshots and result record are in `build/cpu-viewer-evidence`.

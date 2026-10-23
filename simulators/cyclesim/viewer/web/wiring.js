@@ -4,7 +4,8 @@ window.SwiverViews = (() => {
   const $ = id => document.getElementById(id);
   const esc = v => String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let circuit, snapshot, selectNet, selectBit, selected = 'net_c_lo', bit = 0, filter = '', chip = '', group = 'all';
-  let view = 'assembly';
+  let view = new URLSearchParams(location.search).get('view') === 'cpu' ? 'cpu' : 'assembly';
+  const headerTitle = document.querySelector('.header-title').innerHTML;
   const short = id => id.replace('U_ALU_','').replace('157_YBP_','157_');
   const netLabel = id => id.replace(/^net_/,'').replace(/^pwr_/,'').toUpperCase();
   const value = net => snapshot?.signals[net] ?? '—';
@@ -20,13 +21,19 @@ window.SwiverViews = (() => {
   }
   function mode(next) {
     view=next;
-    for (const name of ['assembly','gates','overview','placement']) {
+    for (const name of ['assembly','gates','overview','placement','cpu']) {
       $(`view-${name}`).setAttribute('aria-pressed',String(name===view));
       document.querySelector(name==='overview'?'.workspace':`#${name}-view`).hidden=name!==view;
     }
-    document.querySelector('.controls').hidden=['assembly','placement'].includes(view);
-    document.querySelector('.observations').hidden=['assembly','placement'].includes(view);
-    document.querySelector('.explanation').hidden=['assembly','placement'].includes(view);
+    document.querySelector('.controls').hidden=['assembly','placement','cpu'].includes(view);
+    document.querySelector('.observations').hidden=['assembly','placement','cpu'].includes(view);
+    document.querySelector('.explanation').hidden=['assembly','placement','cpu'].includes(view);
+    document.body.classList.toggle('cpu-mode',view==='cpu');
+    document.querySelector('.header-title').innerHTML=view==='cpu'?'CPU 연결도 <span>TWO CPLDs / SHARED 8-BIT BUS</span>':headerTitle;
+    const url=new URL(location.href);
+    if(view==='cpu') url.searchParams.set('view','cpu'); else url.searchParams.delete('view');
+    history.replaceState(null,'',url);
+    if(view==='cpu') window.SwiverCpu.open();
     if(view==='overview') $('fit').click();
     if(view==='placement') window.SwiverPlacement.open();
   }
@@ -101,7 +108,7 @@ window.SwiverViews = (() => {
   function render(){if(!circuit)return;renderAssembly();renderGates();}
   document.addEventListener('click',e=>{const target=e.target.closest('[data-wire-net]');if(target&&circuit) {selected=target.dataset.wireNet;selectNet(selected);} });
   document.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)&&e.target.matches('g[data-wire-net]')) {e.preventDefault();selected=e.target.dataset.wireNet;selectNet(selected);}});
-  for(const name of ['assembly','gates','overview','placement']) $(`view-${name}`).addEventListener('click',()=>mode(name));
+  for(const name of ['assembly','gates','overview','placement','cpu']) $(`view-${name}`).addEventListener('click',()=>mode(name));
   $('assembly-search').addEventListener('input',e=>{filter=e.target.value.toLowerCase();renderList();});
   $('assembly-chip').addEventListener('change',e=>{chip=e.target.value;renderList();});
   $('assembly-group').addEventListener('change',e=>{group=e.target.value;renderList();});

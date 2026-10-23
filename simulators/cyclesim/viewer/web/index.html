@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172b32">
-  <title>Swiver · ALU 회로 실험실</title>
+  <title>Swiver · 회로 실험실</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/wiring.css">
   <link rel="stylesheet" href="/placement.css">
+  <link rel="stylesheet" href="/cpu.css">
   <script src="/placement.js" defer></script>
+  <script src="/cpu.js" defer></script>
   <script src="/wiring.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
@@ -34,7 +36,30 @@
 
     <div id="status-banner" class="status-banner" role="status" aria-live="polite">Python 모델에 연결하고 있습니다. 관측값을 기다려 주세요.</div>
 
-    <nav class="view-tabs" aria-label="회로 화면 선택"><button id="view-assembly" aria-pressed="true">칩 배선도 <small>조립용 · DIP 핀</small></button><button id="view-gates" aria-pressed="false">게이트 배선도 <small>시뮬레이션용</small></button><button id="view-placement" aria-pressed="false">830 배치 탐색</button><button id="view-overview" aria-pressed="false">12칩 전체 구조</button></nav>
+    <nav class="view-tabs" aria-label="회로 화면 선택"><button id="view-cpu" aria-pressed="false">CPU 전체 연결도 <small>24 / 29 / 35칩</small></button><button id="view-assembly" aria-pressed="true">ALU 칩 배선도 <small>조립용 · DIP 핀</small></button><button id="view-gates" aria-pressed="false">게이트 배선도 <small>시뮬레이션용</small></button><button id="view-placement" aria-pressed="false">830 배치 탐색</button><button id="view-overview" aria-pressed="false">ALU 12칩 전체 구조</button></nav>
+
+    <section id="cpu-view" hidden aria-label="CPU 전체 연결도">
+      <div class="cpu-heading"><div><div class="eyebrow">SWIVER / SYSTEM CONNECTIONS</div><h1>칩에서 핀까지, 전체 연결을 따라갑니다.</h1><p>공통 8비트 버스 · 외부 12칩 ALU · ATF1504 두 개</p></div><label>구성 선택<select id="cpu-variant"><option value="24">24칩 · 기본형</option><option value="29">29칩 · IR·단계 외부</option><option value="35" selected>35칩 · IR·단계·PC 외부</option></select></label></div>
+      <div id="cpu-message" class="cpu-message" role="status" aria-live="polite">연결표를 불러옵니다.</div><button id="cpu-retry" hidden>연결표 다시 불러오기</button>
+      <div id="cpu-content" hidden>
+        <div id="cpu-stats" class="cpu-stats" aria-label="구성별 칩과 연결 수"></div>
+        <div class="cpu-layout">
+          <div class="cpu-map-panel panel">
+            <div class="cpu-map-head"><div><h2>논리 연결도</h2><p id="cpu-description"></p></div><a id="cpu-download" download="swiver-cpu-netlist.json">연결표 JSON ↓</a></div>
+            <div id="cpu-buses" class="cpu-buses" aria-label="버스 선택"></div>
+            <div class="cpu-map-tools"><span id="cpu-map-caption">버스 또는 칩을 선택하세요.</span><div><button id="cpu-zoom-out" aria-label="CPU 연결도 축소">−</button><button id="cpu-zoom-in" aria-label="CPU 연결도 확대">＋</button><button id="cpu-fit">전체 보기</button><button id="cpu-focus">선택 확대</button></div></div>
+            <svg id="cpu-map" viewBox="0 0 1328 800" role="group" aria-label="CPU 칩과 신호 연결도. 드래그로 이동, 버튼으로 확대." tabindex="0"><g id="cpu-scene"></g></svg>
+            <div class="cpu-map-legend"><span><i class="cpu-legend-active"></i>선택 신호의 연결</span><span><i></i>다른 칩</span><span>선 교차는 접속점이 아닙니다 · 실제 배치/배선 길이 아님</span></div>
+            <div class="cpu-fit-row" id="cpu-fits"></div>
+          </div>
+          <aside class="cpu-sidebar" aria-label="칩과 신호 탐색">
+            <div class="panel cpu-browser"><div class="cpu-browser-head"><h2>연결 찾기</h2><span id="cpu-search-count"></span></div><label class="cpu-search-label" for="cpu-search">칩 이름 · 부품 번호 · 신호<input id="cpu-search" placeholder="예: PC0, 74HC161, DB[0]" autocomplete="off" type="search"></label><label class="cpu-filter-label">표시<select id="cpu-filter"><option value="all">칩과 모든 신호</option><option value="chips">칩</option><option value="data">데이터</option><option value="address">주소</option><option value="control">제어</option><option value="power">전원·상수</option><option value="jtag">JTAG</option></select></label><div id="cpu-results" class="cpu-results"></div></div>
+            <div class="panel cpu-inspector"><div class="cpu-inspector-top"><span class="eyebrow">CONNECTION INSPECTOR</span><button id="cpu-clear" class="quiet">선택 해제</button></div><div id="cpu-detail"></div></div>
+          </aside>
+        </div>
+        <details class="panel cpu-notes"><summary>부품 합계와 표시 범위</summary><div class="cpu-note-columns"><div><h3>부품 합계</h3><div id="cpu-parts"></div></div><div id="cpu-boundaries"></div></div></details>
+      </div>
+    </section>
 
     <section id="placement-view" class="panel" hidden aria-label="830 빵판 배치 탐색기">
       <div class="placement-head"><div><div class="eyebrow">BREADBOARD PLACEMENT EXPLORER</div><h2>12개 칩, 어디에 놓을까요?</h2><p>5장에 4–1 / 4–1 / 2로 배치합니다. 가산기를 보드 안쪽 끝으로 모으고 출력 MUX를 가까이 맞춥니다.</p></div><span class="tag">153 × 8 → 283 × 2 → 157 × 2</span></div>

@@ -52,6 +52,30 @@ def test_real_http_session(server):
     assert reset["inputs"]["a"] == reset["inputs"]["b"] == 0
 
 
+def test_cpu_topology_and_download_do_not_mutate_alu(server):
+    _, before = call(server, "/api/snapshot")
+    for variant in ("24", "29", "35"):
+        status, circuit = call(server, f"/api/cpu/circuit?variant={variant}")
+        assert status == 200 and circuit["total_ic"] == int(variant)
+        status, board = call(server, f"/api/cpu/netlist?variant={variant}")
+        assert status == 200 and board == circuit["board"]
+    assert call(server, "/api/cpu/circuit")[1]["variant"] == "35"
+    assert call(server, "/api/snapshot")[1] == before
+    for path in ("/cpu.js", "/cpu.css"):
+        assert call(server, path)[0] == 200
+    for query in ("variant=23", "variant=", "variant=24&variant=35", "file=..", "variant=35&extra=1"):
+        assert call(server, "/api/cpu/circuit?" + query)[0] == 400
+    assert call(server, "/api/cpu/circuit?variant=35", headers={"Host": "example.com"})[0] == 403
+
+
+def test_cpu_topology_failure_is_visible_and_does_not_break_alu(server, monkeypatch):
+    from simulators.cyclesim import cpu_viewer_model
+    monkeypatch.setattr(cpu_viewer_model, "EVIDENCE", cpu_viewer_model.EVIDENCE.with_name("absent.json"))
+    status, error = call(server, "/api/cpu/circuit")
+    assert status == 503 and error["error"]
+    assert call(server, "/api/circuit")[0] == 200
+
+
 @pytest.mark.parametrize("value", [-1, 256, True, None, 1.5, "12"])
 def test_invalid_input_preserves_state(server, value):
     _, before = call(server, "/api/snapshot")

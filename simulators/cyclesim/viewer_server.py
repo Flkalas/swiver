@@ -9,15 +9,17 @@ import logging
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 
 from simulators.cyclesim.viewer_model import AluSession, circuit_definition
+from simulators.cyclesim.cpu_viewer_model import cpu_circuit
 from simulators.cyclesim.breadboard import search, evaluate, PROFILE, LIMITATIONS, VERSION
 
 WEB_ROOT = Path(__file__).with_name("viewer") / "web"
 ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
           "/wiring.js": ("wiring.js", "text/javascript"), "/wiring.css": ("wiring.css", "text/css"),
           "/placement.js": ("placement.js", "text/javascript"), "/placement.css": ("placement.css", "text/css"),
+          "/cpu.js": ("cpu.js", "text/javascript"), "/cpu.css": ("cpu.css", "text/css"),
           "/style.css": ("style.css", "text/css")}
 MAX_BODY = 8192
 
@@ -79,6 +81,18 @@ class ViewerHandler(BaseHTTPRequestHandler):
             self.respond(200, {"version": VERSION, "profile": PROFILE, "limitations": LIMITATIONS})
         elif path == "/api/circuit":
             self.respond(200, circuit_definition())
+        elif path in ("/api/cpu/circuit", "/api/cpu/netlist"):
+            query = parse_qs(urlsplit(self.path).query, keep_blank_values=True)
+            if set(query) - {"variant"} or ("variant" in query and query["variant"] not in (["24"], ["29"], ["35"])):
+                self.respond(400, {"error": "variant는 24, 29, 35 중 하나만 지정하세요."})
+                return
+            try:
+                circuit = cpu_circuit(query.get("variant", ["35"])[0])
+            except (OSError, ValueError, KeyError, AssertionError):
+                logging.exception("CPU topology evidence could not be verified")
+                self.respond(503, {"error": "CPU 연결표 검증 자료를 불러올 수 없습니다. 서버 로그를 확인해 주세요."})
+                return
+            self.respond(200, circuit["board"] if path.endswith("netlist") else circuit)
         elif path == "/api/snapshot":
             with self.server.session_lock:
                 snapshot = self.server.session.snapshot()
@@ -141,7 +155,8 @@ class ViewerHandler(BaseHTTPRequestHandler):
 
 def serve(port: int = 8765) -> None:
     with ViewerServer(port) as server:
-        print(f"Swiver ALU viewer: http://127.0.0.1:{server.server_port}", flush=True)
+        print(f"Swiver circuit viewer: http://127.0.0.1:{server.server_port}", flush=True)
+        print(f"CPU topology: http://127.0.0.1:{server.server_port}/?view=cpu&variant=35", flush=True)
         print("Zero-delay functional model; Ctrl+C to stop.", flush=True)
         try:
             server.serve_forever()
