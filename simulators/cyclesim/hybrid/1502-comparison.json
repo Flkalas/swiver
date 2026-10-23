@@ -1,0 +1,39 @@
+{
+  "with_1502": {
+    "total_ic": 32,
+    "unique_signal_nets": 121,
+    "functional_signal_endpoints": 524
+  },
+  "without_1502": {
+    "total_ic": 36,
+    "unique_signal_nets": 139,
+    "functional_signal_endpoints": 565
+  },
+  "reduction": {
+    "total_ic": 4,
+    "unique_signal_nets": 18,
+    "functional_signal_endpoints": 41
+  },
+  "replacement_parts": {
+    "SST39SF010A": 1,
+    "74HC273": 1,
+    "74HC238": 2,
+    "74HC138": 1
+  },
+  "extra_existing_hc14_gates": 2,
+  "boundary": "Same Boolean edge outputs; decoder delay/glitches require timing checks; not a global minimum or wire-length proof",
+  "validation": {
+    "pytest_cases_passed": 10,
+    "control_input_combinations": 512,
+    "decoder_register_words": 256,
+    "pre_fit_edge_model": true,
+    "electrical_timing_verified": false
+  },
+  "source_sha256": "7af5bd6027743472b6586289b419f88b4bd0b0b779a7e531c69dfe637272b77d",
+  "encoded_rom_sha256": "4e1807002b32fda0c413b04d9a2300c242733b64c17fa53405f9a3ada0709fdf",
+  "sources": [
+    "https://www.ti.com/lit/ds/symlink/sn74hc273.pdf",
+    "https://www.ti.com/lit/ds/symlink/sn74hc138.pdf",
+    "https://assets.nexperia.com/documents/data-sheet/74HC_HCT238.pdf"
+  ]
+}

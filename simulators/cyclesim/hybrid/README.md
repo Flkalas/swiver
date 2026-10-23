@@ -278,3 +278,54 @@ ROM 주소선 및 fan-out이 생기므로 전체 배선이 감소했다고 단�
 저장한다. 소스·도구·보고서·JEDEC 해시와 핀 배치는
 [external-fit-evidence.json](external-fit-evidence.json), 기능 연결표는
 [external-wiring.json](external-wiring.json)에 보존한다.
+
+
+## ATF1502 제거 비교: 필수 여부와 실제 절감 효과
+
+**1502 자체는 기능상 필수는 아니다.** 현재 역할은 조합 디코드만이 아니라
+11개 래치 클록 + bank OE 5개를 클록에 맞춰 출력하는 것이다. 이를 다른 부품으로
+대체할 수 있다. 다만 현재 두 1504는 일반 I/O를 27/28, 28/28 사용하므로,
+16개 출력을 그대로 두 칩에 옮길 여유는 없다. 인코딩·기능 분할까지 바꾼 설계의
+불가능성이나 최소 칩 수를 증명한 것은 아니다.
+
+`control_ablation.py`에서 실제 제거 후보 두 개를 만들었다. 먼저 16비트를 직접
+출력하는 ROM×2 + 273×2 + 04×1로 대체했고, 배선을 줄이기 위해 아래 인코딩형으로
+개선했다. 둘 다 5 IC이며, 아래 표는 **배선이 더 적은 인코딩형**과 비교한다.
+
+- ROM×1: COMMAND 6 + phase 2 + WAIT 1 = 9비트 주소, 512바이트 제어표.
+- 74HC273×1: 쓰기 목적지 4비트 + 캡처 1비트 + 읽기 소스 3비트를 저장.
+- 74HC238×2: 11개 양극성 래치 클록을 생성.
+- 74HC138×1: 5개 음극성 bank OE를 생성. 코드 0 출력은 미접속하여 reset 뒤 비활성.
+- 기존 HC14의 빈 게이트 2개: reset 및 캡처 반전. HC14 패키지 추가 없음.
+
+273의 직접 clear 및 238/138 출력 극성은
+[TI 273](https://www.ti.com/lit/ds/symlink/sn74hc273.pdf),
+[Nexperia 238](https://assets.nexperia.com/documents/data-sheet/74HC_HCT238.pdf),
+[TI 138](https://www.ti.com/lit/ds/symlink/sn74hc138.pdf)의 기능표에 따른다.
+쓰기 디코더 주소는 setup에서 먼저 설정하고 캡처 펄스 동안 유지한다. 디코더의
+전파 지연과 실제 글리치는 Boolean 검증에 포함하지 않는다.
+
+| 같은 전체 CPU 기준 | 1502 사용 | 인코딩형 대체 | 1502의 절감 |
+|---|---:|---:|---:|
+| 전체 IC | 32 | 36 | **4 IC** |
+| 고유 신호 net | 121 | 139 | **18개** |
+| 기능 신호 핀 접점 | 524 | 565 | **41개** |
+
+접점은 전원·GND·NC를 제외하고 연결표에서 센 값이며 점퍼선 개수/길이가 아니다.
+래치로 나가는 16개 클록/OE 선은 양쪽에서 그대로 필요하다. 감소분은 주로 제어
+블록 내부의 ROM→레지스터→디코더 연결이다. 인코딩형 대체안의 부품/접점 비용이
+유일한 대안 또는 전역 최소라고 주장하지 않는다. 현재 검증된 분할에서는 1502가
+부품과 제어부 연결을 줄인다는 근거가 된다.
+
+모든 512 입력 조합에서 기존 CUPL의 다음 출력과 두 대체안이 일치하고, 256개
+레지스터 출력값에 대해 실제 디코더 연결의 Boolean 결과를 확인했다. 재귀 CALL/RET,
+WAIT, Boot/Run·MMIO, 스택 오류 뒤 정지를 포함한 10개 테스트가 통과했다.
+CPU 동작 비교는 pre-fit 클록 에지 모델이며, 보드 타이밍은 여전히 미검증이다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.control_ablation
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_control_ablation.py -q
+```
+
+요약은 [1502-comparison.json](1502-comparison.json), 대체 연결표와 ROM 이미지는
+`simulators\cyclesim\build\hybrid-partition`에 생성한다.
