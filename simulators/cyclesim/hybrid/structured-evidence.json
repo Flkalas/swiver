@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-23",
+  "measurement": {
+    "scope": "Pre-fit structured sequencer; output decode and flags/guards remain transfer-model abstractions",
+    "main_continuations": 27,
+    "control_register_bits": 15,
+    "distinct_commands_including_idle": 43,
+    "control_rom": false,
+    "full_cpu_fit_verified": false,
+    "physical_timing_verified": false,
+    "cases": [
+      {
+        "name": "fib_iterative",
+        "ticks": {
+          "IncDecCpu": 8920,
+          "StructuredCpu": 8920,
+          "StructuredEquationCpu": 8920
+        },
+        "instructions_including_halt": 160,
+        "observed_control_combinations": 89,
+        "architectural_and_memory_access_match": true
+      },
+      {
+        "name": "fib_recursive_3",
+        "ticks": {
+          "IncDecCpu": 6604,
+          "StructuredCpu": 6604,
+          "StructuredEquationCpu": 6604
+        },
+        "instructions_including_halt": 107,
+        "observed_control_combinations": 143,
+        "architectural_and_memory_access_match": true
+      },
+      {
+        "name": "fib_recursive_8",
+        "ticks": {
+          "IncDecCpu": 99548,
+          "StructuredCpu": 99548,
+          "StructuredEquationCpu": 99548
+        },
+        "instructions_including_halt": 1633,
+        "observed_control_combinations": 143,
+        "architectural_and_memory_access_match": true
+      },
+      {
+        "name": "add_256",
+        "ticks": {
+          "IncDecCpu": 12316,
+          "StructuredCpu": 12316,
+          "StructuredEquationCpu": 12316
+        },
+        "instructions_including_halt": 257,
+        "observed_control_combinations": 17,
+        "architectural_and_memory_access_match": true
+      }
+    ],
+    "generated_fields_source_sha256": "a40f109fc009ed1bbf2c41643de0eb968c39c41b1af2bd95edabe20423f9432e",
+    "source_sha256": {
+      "structured_cu.py": "618c401c1b36920e4deede5a8d4440fbdda7fd065a5ce6b489968652ba0a2d13",
+      "structured_fit.py": "9057caa60a84320309ae6795d8223698202199c594724fdd47e20498b8d0a2d0",
+      "structured_model.py": "89628331d9da5092b2541881b55d90578433e7cf46294dbd6e7b877684dcd282",
+      "structured_measure.py": "df182aacaf9712dd260a5e2592d33028a1120260468261bded8b81d0a19da7ed",
+      "incdec.py": "2bb3b039109a80327d4260bf28dec545eb31ccf482f083b3e18342e440a8a9e2",
+      "cpu.py": "375fe743583af2fb765f6b873186d32d60ba2225ca60b4be995e24efc706165a"
+    }
+  },
+  "fit": {
+    "source_sha256": "a40f109fc009ed1bbf2c41643de0eb968c39c41b1af2bd95edabe20423f9432e",
+    "compile_exit": 0,
+    "design_fits": false,
+    "fit_exit": 402,
+    "preplacement_logic_cells": 69,
+    "resource_report_consistent": false,
+    "fit_output": "Atmel ATF1504 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\nXor Detection ...\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n ## Warning : Design is large \n---------------------------------------------------------\n Fitter_Pass 2, Preassign = KEEP, LOGIC_DOUBLING : ON \n ... \n ## Warning : Even with doubling, design is still large \n Design does not fit \n \n",
+    "strategies": [
+      [
+        "XOR_Synthesis",
+        "ON"
+      ]
+    ],
+    "device": "ATF1504AS",
+    "package": "PLCC44",
+    "jtag": "ON",
+    "requested_tpd_ns": 10,
+    "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+  },
+  "fit_variants": [
+    {
+      "name": "strmini0",
+      "order": "fields",
+      "nodes": [
+        "leave"
+      ],
+      "result": {
+        "source_sha256": "cfe682cd99b5025f3ed0ee463cd6ce1f8bd425fed6602611aab00b49f0d7c22f",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 503,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    },
+    {
+      "name": "strmini1",
+      "order": "fields",
+      "nodes": [
+        "last"
+      ],
+      "result": {
+        "source_sha256": "08c3d063c0daed5921c4586ba8413055f7ebe264316d9087701da8504a0f676f",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 503,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    },
+    {
+      "name": "strmini2",
+      "order": "fields",
+      "nodes": [
+        "advance"
+      ],
+      "result": {
+        "source_sha256": "8c4591028def614ab1ead2e6a3860924c67da5faca222408ff02a3d6beaa8edc",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 402,
+        "preplacement_logic_cells": 66,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    },
+    {
+      "name": "strmini3",
+      "order": "fields",
+      "nodes": [
+        "leave",
+        "last"
+      ],
+      "result": {
+        "source_sha256": "e7d7bbca98fcd940bd0b471aa3207234908aaf8ad516155ab13f48a736b08087",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 503,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    },
+    {
+      "name": "strmini4",
+      "order": "fields",
+      "nodes": [
+        "execsel"
+      ],
+      "result": {
+        "source_sha256": "977148d6bb0c74cf441f99b5a018be74fb3752a99268a452734b1a35bf94397c",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 402,
+        "preplacement_logic_cells": 86,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    },
+    {
+      "name": "strmini5",
+      "order": "fields",
+      "nodes": [
+        "n0",
+        "n1",
+        "n2",
+        "n3",
+        "n4"
+      ],
+      "result": {
+        "source_sha256": "595ea5614a2abacddcf2db7425f10b99466aae137ee124b047690a9e4de896d4",
+        "compile_exit": 0,
+        "design_fits": false,
+        "fit_exit": 402,
+        "preplacement_logic_cells": 79,
+        "resource_report_consistent": false,
+        "strategies": [
+          [
+            "XOR_Synthesis",
+            "ON"
+          ]
+        ],
+        "device": "ATF1504AS",
+        "package": "PLCC44",
+        "jtag": "ON",
+        "requested_tpd_ns": 10,
+        "validation_boundary": "Partition fit experiment only; no pin-level CPU simulation or timing acceptance"
+      }
+    }
+  ],
+  "tools_sha256": {
+    "cupl.exe": "7b503d85dc76502e0c339d8c3472775d87949409d5d1a0d5b3302f4e5ea3d544",
+    "fit1504.exe": "8e92e38ed42003d47a3a3a55eddbe1b5ad947225ce14c6ea55ca8afed9cafdba"
+  }
+}

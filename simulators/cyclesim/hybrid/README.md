@@ -388,3 +388,56 @@ CPU 동작 비교는 pre-fit 클록 에지 모델이며, 보드 타이밍은 여
 
 요약은 [1502-comparison.json](1502-comparison.json), 대체 연결표와 ROM 이미지는
 `simulators\cyclesim\build\hybrid-partition`에 생성한다.
+
+## PC/RP 공통 증감과 명령 종류·단계 카운터 CU (2026-10-23)
+
+`structured_cu.py`는 기존 INC/DEC 12-chip 74 ALU 후보 위에서 실행하는 새
+시퀀서다. PC/RP 대상, 증감 방향과 복귀 위치는 주 절차 코드에서 해석하며,
+각 호출 위치에 저·고 바이트 실행 상태를 복제하지 않는다. 공통 단계가
+저 바이트 계산 → 쓰기 → carry/borrow가 있을 때 고 바이트 계산 → 쓰기를
+실행한다. RET의 −2만 MBR에 2를 적재한 뒤 SUB하고, ±1은 기존 INC/DEC를 쓴다.
+
+명령 종류 4비트, 주 절차 5비트, 공통 단계 3비트, 두 번째 피연산자 여부 1비트,
+버스 위상 2비트로 구성했다. 27개 주 절차는 **전체 FSM 상태 수가 아니다**.
+종류·단계·피연산자·위상을 합친 제어 레지스터는 15비트이며, 실제 상태 조합은
+더 많다. 주소의 lo/hi 전송, PC/RP 증감, CALL/RET 스택 접근을 공유한다.
+43개 명령 코드(비활성 포함)를 출력하며, `fields` 인코딩은 7비트다.
+
+`structured_fit.py`는 이를 Boolean 식으로 낮춰 CUPL을 생성한다. Python 표는
+생성 시 사용하며 **실행 중 제어 ROM 읽기는 없다**. `structured_model.py`는
+생성된 CUPL 식을 매 클록 평가하여 실행한다. 출력 코드의 래치/OE 디코드와
+플래그·스택 검사는 아직 기존 Transfer 모델이 담당한다. 따라서 새 3-CPLD
+전체 배선 모델이나 전체 CPU fit 완료를 뜻하지 않는다. 기존 ROM형 분할은
+비교 기준으로 보존했다. reset-vector 부팅과 실물 타이밍도 계속 미검증이다.
+
+| WAIT 없는 프로그램 | 기존 INC/DEC | 공통 CU | 생성 CUPL 실행 |
+|---|---:|---:|---:|
+| 반복 Fibonacci | 8,920 | 8,920 | 8,920 |
+| 재귀 Fibonacci(3) | 6,604 | 6,604 | 6,604 |
+| 재귀 Fibonacci(8) | 99,548 | 99,548 | 99,548 |
+| ADD 256회 | 12,316 | 12,316 | 12,316 |
+
+단위는 후보 모델의 4위상 전송 클록이다. 규범 모델의 논리 SYS 수와 다르며,
+실측 MHz/MIPS가 아니다. ISA 상태와 모든 메모리 접근 순서를 매 명령마다
+독립 참조 CPU와 대조했다. 제어 공유에 따른 추가 호출/복귀 클록은 없다.
+256 opcode × 플래그 조합, 스택 경계 오류, PC wrap, Boot/Run·MMIO, WAIT,
+재귀 CALL/RET 및 생성 식의 모든 합법 단계 출력을 별도 테스트한다.
+
+**ATF1504AS PLCC44, JTAG ON의 Design fits는 아직 실패**다. 기본 `fields`
+인코딩은 배치 전 69 Logic Cell로 용량 초과했다. 이는 사용 MC 확정값이 아니다.
+중간 논리 노드를 명시하는 후보들도 용량 초과 또는 grouping/placement 실패였다.
+이 결과는 명령 코드 출력 시퀀서만의 결과이므로, 예전 출력·검사 로직 포함 CU의
+셀 수와 직접 비교하여 절감률을 계산할 수 없다. 새 구성의 전체 칩 수·배선 수와
+핀 배치는 아직 확정하지 않는다. ISA나 스택 검사를 빼서 fit한 결과도 아니다.
+
+```powershell
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.structured_measure
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.structured_fit
+.\.venv\Scripts\python.exe -m simulators.cyclesim.hybrid.structured_fit --order fields --nodes leave last
+.\.venv\Scripts\python.exe -m pytest simulators/cyclesim/tests/test_hybrid_structured.py -q
+```
+
+측정은 `build\hybrid\structured-comparison.json`, 피팅 PLD·로그·보고서는
+`build\hybrid-partition\strucseq\`에 생성한다(위 경로는 cyclesim 기준).
+재현 당시 측정 및 기본 fit 요약은 [structured-evidence.json](structured-evidence.json)에
+보존한다. 실패한 fit 요약은 성공한 JEDEC 또는 배치 완료 핀 배치를 제공하지 않는다.
