@@ -80,7 +80,7 @@ def main():
             if fit.get(name, {}).get("source_sha256") != hashlib.sha256(source.encode("ascii")).hexdigest():
                 raise ValueError("Stale fit evidence: rerun hybrid.fit_blocks")
         report["block_fit_evidence"] = fit
-        report["full_cu_fit"] = "not implemented"
+        report["full_cu_fit"] = "Direct FSM candidate fails ATF1504 fit; see cu-fit-evidence.json"
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "comparison.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     for row in rows: print(json.dumps(row))

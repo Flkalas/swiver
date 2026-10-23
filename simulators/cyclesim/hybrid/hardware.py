@@ -52,6 +52,7 @@ def port_budget():
         guard_facts=4, micro_pc_allowance=6, transfer_phase=2, halted=1,
         registered_control_outputs=18, constant_bus_output=8,
         combinational_expansion_allowance=[8, 20], total=[58, 70])
+    result["CU"]["mc_budget"]["status"] = "Historical estimate; direct CU FSM failed fit. See cu-fit-evidence.json."
     result["DECODE"]["mc_budget"] = dict(outputs=6, shared_terms_allowance=[2, 10], total=[8, 16])
     return result
 
@@ -98,11 +99,11 @@ def manifest(use_1502=True):
                 packages=packages, part_totals=totals, total_ic=len(packages),
                 oscillator_modules=1, external_latch_bits=8 * len(LATCHES),
                 dp_state_bits=8 * len(DP_REGS), cpld_budgets=budgets,
-                cpld_fit="full CU not implemented; block fit evidence is reported separately",
+                cpld_fit="direct CU FSM candidate does not fit; DP/decoder block fits reported separately",
                 decoder_equations=d.export(),
                 boundaries=["CPLDs are functional Python blocks, not gate/fitter models.",
-                    "CU instruction generator has not been lowered to a complete finite-state netlist.",
-                    "Six micro-PC bits are a budget, not a measured compiled state count.",
+                    "Direct CU FSM lowering exists but fails ATF1504 fit; not pin-level simulated.",
+                    "Six micro-PC bits were an estimate; direct lowering requires nine state bits.",
                     "Registered latch clocks use setup/capture/hold/release; no combinational clock gating.",
                     "Functional interconnect only: power pins, PLCC pad placement and PCB routing not exported.",
                     "Memory dictionaries and initial fixture state are simulation boundaries.",

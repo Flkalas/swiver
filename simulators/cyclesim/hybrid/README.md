@@ -10,6 +10,7 @@ ATF1504 **2개**를 기본으로, 보유 ATF1502를 메모리 디코더로 추�
 
 ```powershell
 .\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.fit_blocks
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.fit_cu
 .\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.hybrid.compare
 .\.venv\Scripts\python.exe -X utf8 -m pytest -q simulators/cyclesim/tests/test_hybrid_cpu.py
 ```
@@ -67,7 +68,7 @@ PLCC44 어댑터는 2개뿐이므로 **1502 장착용 1개가 추가로 필요**
 
 | 블록 | 일반 I/O 사용 / JTAG 유지 시 예산 | 전용 입력 | 확인 |
 |---|---:|---|---|
-| CU 1504 | **27 / 28** | CLK, RESET, WAIT | 포트 예산만 확인; 전체 CU HDL 미구현 |
+| CU 1504 | **27 / 28** | CLK, RESET, WAIT | 직접 전개 FSM의 CUPL 컴파일 성공, **Design does not fit** |
 | DP 1504 | **21 / 28** | CLK, RESET | 생성한 40비트 bank + ALU A/DBUS mux가 **Design fits successfully** |
 | 디코더 1502 | **23 / 28** | 없음 | 생성한 메모리 디코드가 **Design fits successfully** |
 
@@ -83,10 +84,23 @@ WinCUPL compiler와 FIT1504/FIT1502에 **PLCC44, JTAG ON, tPD 요청 10ns**를 �
 [1504 데이터시트](https://ww1.microchip.com/downloads/en/DeviceDoc/ATF1504AS%28L%29-5V-64-Macrocell-CPLD-Data-Sheet-20006580A.pdf),
 [1502 데이터시트](https://ww1.microchip.com/downloads/aemDocuments/documents/MPD/ProductDocuments/DataSheets/ATF1502AS-ATF1502ASL-5V-32-Macrocell-CPLD-Data-Sheet-20006619A.pdf)를 따른다.
 
-**전체 CU는 Python 전송 시퀀서다.** IR·플래그·carry·스택 검사 사실·전송 phase·
-마이크로주소·등록 출력까지 포함한 사전 예산은 **58~70 MC**이며 64를 넘을 수 있다.
-마이크로주소 6비트는 아직 컴파일한 상태 수가 아니라 배정 목표다. 따라서 25개는
-**CU까지 한 칩에 수용할 때의 후보 부품 수**다. 전체 하이브리드 fit 완료로 표시하지 않는다.
+**CU 직접 구현의 첫 fit 결과는 실패다.** `cu_fsm.py`에서 공통 suffix를 공유하는
+명시적 전송 FSM과 CUPL을 생성했다. 292개 전송 상태에 9비트 상태 레지스터와
+2비트 전송 phase가 필요하다. WinCUPL 컴파일은 성공했지만 FIT1504는 logic doubling도
+시도한 뒤 **`Design does not fit` (exit 402)** 을 반환했다.
+
+실패 보고서는 배치 전 **251 Logic Cell**로 중단했다고 기록한다. 이는 성공한 배치의
+사용 MC 수나 최적화된 구현의 최소 MC 수가 아니다. 실패 보고서 하단의 `1/64`는
+중단 후 불완전 배치 통계이므로 CU 사용량으로 읽으면 안 된다.
+기존 **58~70 MC / 6비트 상태 주소는 사전 추정치였으며 이 구현으로 확인되지 않았다.**
+따라서 위 25개/34개는 여전히 CU 한 칩 수용을 전제로 한 후보 수량이며, 현재 구현으로
+동작 가능한 완성 하드웨어 수량으로 확정할 수 없다.
+
+`fit_cu`는 실패 시 종료 코드 1을 반환하고 `build/hybrid-cu-fit`에 생성 소스와 로그를
+남긴다. 재현 근거는 [cu-fit-evidence.json](cu-fit-evidence.json)에 보관한다.
+전송 FSM의 명령 결과·메모리 순서는 기준 CPU와 비교했지만, 생성 CUPL의 핀 단위
+시뮬레이션과 post-fit 검증은 수행하지 않았다. reset-vector 부팅도 기존 후보처럼
+미구현이다. 이 실패는 직접 전개 방식에 대한 결과이며, ISA 자체의 수용 불가능 증명이 아니다.
 
 ## 실행 검증과 속도
 

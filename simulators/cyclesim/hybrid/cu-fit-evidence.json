@@ -1,0 +1,18 @@
+{
+  "source_sha256": "28182e1dd6ec4a869fb4377cedf5a4006ff1876be2a9622a4c67da802016422b",
+  "states": 292,
+  "state_bits": 9,
+  "compile_exit": 0,
+  "design_fits": false,
+  "device": "ATF1504AS",
+  "package": "PLCC44",
+  "jtag": "ON",
+  "requested_tpd_ns": 10,
+  "fitter_sha256": "8e92e38ed42003d47a3a3a55eddbe1b5ad947225ce14c6ea55ca8afed9cafdba",
+  "scope": "Direct binary CU FSM candidate; not a minimum-area proof or board qualification",
+  "fit_exit": 402,
+  "fit_output": "Atmel ATF1504 Fitter Version 1918 (3-21-07)\nCopyright 1999,2000 Atmel Corporation\n---------------------------------------------------------\n Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : OFF \n ... \n ## Warning : Design is large \n---------------------------------------------------------\n Fitter_Pass 2, Preassign = KEEP, LOGIC_DOUBLING : ON \n ... \n ## Warning : Even with doubling, design is still large \n Design does not fit \n \n",
+  "preplacement_logic_cells": 251,
+  "failure_detail": "# Aborting : Design is large, it contains 251 Logic Cell",
+  "validation_boundary": "Transfer graph tested against CpuM3b; generated CUPL is not pin-level or post-fit simulated."
+}
