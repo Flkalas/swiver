@@ -37,6 +37,18 @@ separate hardware checks. Frozen standalone ALU ns evidence is retained and is
 not revalidated by functional CPU tests.
 
 
+## 74HC 전체 CPU 비교 실험
+
+제어 FSM·ALU·레지스터·PC·스택·주소 선택을 74HC 부품으로 연결한
+[실험 모델](ttl/README.md)을 기능 CPU와 SYS 단위로 비교할 수 있다.
+
+```powershell
+.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.ttl.compare
+```
+
+`build\ttl\comparison.json`과 `netlist.json`에 결과·부품 수·연결을 저장한다.
+정본 CPLD 구성을 변경하지 않으며, 제로 지연 기능 검증과 실제 타이밍 합격은 구분한다.
+
 ## 실시간 ALU 뷰어
 
 저장소 루트에서 실행한다. `.venv`를 사용하고 기존 `uv.toml`의

@@ -12,6 +12,10 @@
 
 ## 실행 방법 (Windows PowerShell)
 
+74HC로 제어·데이터패스를 구성한 전체 CPU 실험과 기존 기능 모델의 비교는
+[74HC CPU 비교 안내](simulators/cyclesim/ttl/README.md)를 참고한다.
+가상환경 설치 후 `.\.venv\Scripts\python.exe -X utf8 -m simulators.cyclesim.ttl.compare`로 실행한다.
+
 아래 명령은 **저장소 루트**에서 실행한다. 설치 위치가 다르면 첫 경로를 바꾼다.
 Python 3.12와 `uv` 명령을 사용하며, 기존 `uv.toml`의 `link-mode = "symlink"`는 유지한다.
 
